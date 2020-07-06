@@ -1,0 +1,14 @@
+tesi*/
+e_journals*/
+logs/
+save1/
+tmp/
+zip/
+.vscode/
+*.old
+*.log
+*.srt
+*.ids
+*.txt
+etd.csv
+e_journals.csv

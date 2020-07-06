@@ -1,0 +1,107 @@
+# 12/09/2019 (Messuti)
+#   la nuova url https://iris.unica.it/oai/request che sostituisce  http://veprints.unica.it/cgi/oai2
+#   I pattern dei repositories di tesi sono essenzialmente due:
+#       - /oai/request per i repo DSpace
+#       - /cgi/oai2 per i repo EPrints
+#
+# 12/09/2019 unige
+# 12/09/2019 unical
+# 16/10/2019 sns
+# ---------------------
+
+#id|name|url|contact|format|sets
+
+#1|depositolegale|http://tesi.depositolegale.it/cgi/oai2|giovanni.bergamin@depositolegale.it|didl|all
+## Sito con tesi sotto embargo
+#2|imtlucca|http://e-theses.imtlucca.it/cgi/oai2|t.iannizzi@imtlucca.it, leonardo.mezzina@imtlucca.it|didl|74797065733D696D745F706864746865736973
+#3|liuc|http://arl.liuc.it/oai/request|lballestra@liuc.it, arefraschinparallel_input_filei@liuc.it|didl|col_2468_2
+#4|luiss|https://eprints.luiss.it/cgi/oai2|cannulli@luiss.it, eprints@luiss.it|didl|74797065733D746865736973
+#6|unibg|https://aisberg.unibg.it/oai/request|aisberg@unibg.it|didl|com_10446_73164
+#7|unibo|http://amsdottorato.unibo.it/cgi/oai2|marialaura.vignocchi@unibo.it, roberta.lauriola@unibo.it|didl|all
+## 12/09/2019 cambio dns da veprints a iris, 27/01/2020 set com_11584_207615 --> col_11584_207612 (mail storti)! NO e\ il 615
+#8|unica|https://iris.unica.it/oai/request|s.astrella@unica.it|didl|col_11584_207612
+#9|unimc|https://u-pad.unimc.it/oai/harvest-bnc|sonia.cavirani@unicam.it,sara.morici@unimc.it,lorenzo.delvecchio@unimc.it|didl|phdThesis
+#=================================================
+# 31/01/2020 Tesi sotto embargo. Scarico pdf con gestione login/pwd
+# Rifatto Harvest unicatt dal 1900 al 26/01/2020
+10|unicatt|http://tesionline.unicatt.it/dspace-oai/request|sara.ricetto@unicatt.it|didl|all
+
+#=================================================
+
+#11|unict|http://archivia.unict.it/dspace-oai/request|angelo@unict.it|didl|hdl_10761_28
+## 28/01/2020 Vecchio sito (http://eprints.unife.it/cgi/oai2) dava 0 ed abbiamo trovato queso nuovo riferimento
+#12|unife|http://iris.unife.it/oai/request|uib@unife.it|didl|col_11392_2380873
+#13|unimi|https://air.unimi.it/oai/request|paola.galimberti@unimi.it,air.admin@unimi.it,laura.gioppo@unimi.it,laura.santoro1@unimi.it|didl|col_2434_146884
+#14|unimib|https://boa.unimib.it/oai/request|bonaria.biancu@unimib.it, boa@unimib.it|didl|col_10281_9145
+#15|unimol|https://iris.unimol.it/oai/request|mancini@unimol.it, openair@unimol.it|didl|col_11695_66211
+#16|unina|http://www.fedoa.unina.it/cgi/oai2|ronca@unina.it, nmadonna@unina.it|didl|74797065733D7468657369735F706864
+
+# 03/02/2020 Tesi sotto embargo. Scaricabili se accesso fatto da Firenze tramite IP riconosciuto?
+#17|uninsubria|http://insubriaspace.cineca.it/dspace-oai/request|daniela.cermesoni@uninsubria.it|didl|hdl_10277_2
+
+#18|unipi|https://etd.adm.unipi.it/ETD-db/NDLTD-OAI/oai.pl|g.castriotta@adm.unipi.it|didl|dtype:PhD
+#19|unipr|http://dspace-unipr.cineca.it/dspace-oai/request|fabrizia.bevilacqua@unipr.it|didl|hdl_1889_492
+#20|uniroma1|https://iris.uniroma1.it/oai/request|marco.schaerf@uniroma1.it|didl|com_11573_784460
+## Ok 09/12/2019. Problemi raggiungibilita?
+#21|unisa|http://elea.unisa.it/oai/request|grufino@unisa.it|didl|com_10556_45
+
+## 22 Mail cambiata il 17/12/2019
+#22|uniss|http://eprints.uniss.it/cgi/oai2|fmadrau@uniss.it, arruc@uniss.it|didl|74797065733D646F63746F72616C5F746865736973
+
+#23|unitn|http://eprints-phd.biblio.unitn.it/cgi/oai2|ePrints@unitn.it, francesca.valentini@unitn.it, filippo.moser@unitn.it, valentina.fasolino@unitn.it|didl|all
+#24|units|https://arts.units.it/oai/request|piscanc@units.it|didl|com_11368_2907476
+#25|unive|http://dspace.unive.it/oai/request|sattin@unive.it, protocollo.pec@unive.it, archivio.tesi@unive.it|didl|hdl_10579_57
+#26|univpm|https://iris.univpm.it/oai/request|marinella.mazzieri@univpm.it, d.ripanti@univpm.it|didl|col_11566_241824
+
+#27|univr|https://iris.univr.it/oai/request|maria.gabaldo@univr.it, open.archive@ateneo.univr.it, giovanni.baietta@collab.univr.it|didl|col_11562_924246
+
+#28|unipd|http://paduaresearch.cab.unipd.it/cgi/oai2_hn|antonella.zane@unipd.it|didl|74797065733D746573695F64695F646F74746F7261746F
+
+# 05/02/2020 Tesi sotto embargo scaricate correttamente (da Firenze)
+
+#OLD 29|unimore|http://morethesis.unimore.it/ETD-db/NDLTD-OAI/oai.pl|danilo.crecchia@unimore.it|didl|dtype:PhD
+#29|unimore|https://iris.unimore.it/oai/request|danilo.crecchia@unimore.it|didl|col_11380_1196085
+
+#30|uniud|https://air.uniud.it/oai/request|catalogo.air@uniud.it|didl|col_11390_1123315
+#31|unipa|https://iris.unipa.it/oai/request|marcorosolino.chifari@unipa.it, luca.conigliaro@unipa.it|didl|col_10447_71205
+
+# 14/04/2020 Per generazione NBN abbiamo bisogno del datasource
+#33|sissa|https://iris.sissa.it/oai/request|talpo@sissa.it|didl|col_20.500.11767_64|datasource_name
+
+#34|lumsa|https://ricercascientifica.lumsa.it/ezoai/oai2|n.buonocore@lumsa.it, sistemi_informativi@lumsa.it|didl|all
+#35|unifi|https://flore.unifi.it/oai/request|valdo.pasqui@unifi.it|didl|com_2158_1001462
+## No didl resource
+#36|unisi|https://usiena-air.unisi.it/oai/harvest-bnc|cristina.mencarelli@unisi.it|didl|phdThesis
+#37|unifg|https://fair.unifg.it/oai/request|a.trombin@almaviva.it|didl|col_11369_320420
+#38|uniupo|https://iris.uniupo.it/oai/request|openaire@uniupo.it|didl|col_11579_68244
+#39|unibz|https://bia.unibz.it/oai/request|Luigi.Siciliano@unibz.it|didl|com_10863_114
+
+# 03/02/2020 Tesi sotto embargo scaricate corretamente
+#40|sssup|https://dta.santannapisa.it/ETD-db/NDLTD-OAI/oai.pl|giovanni.castriotta@unipi.it|didl|dtype:PhD
+
+#41|poliba|https://iris.poliba.it/oai/request|b.pastorelli@cineca.it|didl|col_11589_92814
+#42|unime|https://iris.unime.it/oai/request|ricerca@unime.it|didl|col_11570_3101346
+#43|polito|https://iris.polito.it/oai/request|paolo.tealdi@polito.it|didl|col_11583_2614423
+#44|iulm|https://apeiron.iulm.it/oai/request|apeiron@iulm.it|didl|col_10808_21365
+## No didl resource
+#45|uniba|https://ricerca.uniba.it/oai/request|onofrio.erriquez@uniba.it|didl|col_11586_220559
+#46|unige|https://iris.unige.it/oai/request|IRIS@unige.it|didl|col_11567_928192
+## Testato il 24/10/2019
+#47|unical|http://dspace.unical.it:8080/oai/request|joseph.rogani@unical.it|didl|com_10955_10
+#48|sns|http://dspace.sns.it:8180/oai/request|fabrizio.rossi@sns.it|didl|hdl_10671_758
+
+
+
+
+# ==================
+# TODO
+# ==================
+## Alla data del 27/01/2020 e 13/02/2020 il sito non e' raggiungibile. In manutenzione.
+# Non riusciamo a contattare nessuno
+#5|roma3|http://dspace-roma3.caspur.it/dspace-oai-roma3/request|staccone@uniroma3.it|didl|hdl_2307_55
+
+# 24/01/2020 Rossana Zucchinali mail con richiesta di esclusione
+#32|polimi|https://www.politesi.polimi.it/dspace-oai/bncf|michele.rubini@polimi.it, rossana.zucchinali@polimi.it|didl|hdl_10589_32801
+
+# 05/12/2019 Rosaria di Martino. Non sono ancora pronti.
+#49|unicampania|https://iris.unicampania.it/oai/request|centro.sba@unicampania.it,rosaria.dimartino@unicampania.it|didl|all

@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# ./http_code oai:etd.adm.unipi.it:etd-04152019-173128 http://etd.adm.unipi.it/theses/available/etd-04152019-173128/unrestricted/PhD_Activity_Report_Ludovica_Cacopardo.pdf
+
+
+# parallel --colsep '\t' -j6 ./http_code {} {} :::: /home/argentino/magazzini_digitali/harvest/tesi/02_seeds/2019_11_03_tesi_imtlucca.seeds
+
+# http://e-theses.imtlucca.it/179/1/Fontana_phdthesis.pdf
+# http://e-theses.imtlucca.it/180/1/Nicosia_phdthesis.pdf
+# http://e-theses.imtlucca.it/184/1/Trapin_phdthesis.pdf
+
+# -w write
+#curl -k -L -s -o /dev/null -w "%{http_code} %{content_type}" http://e-theses.imtlucca.it/179/1/Fontana_phdthesis.pdf
+
+
+ID=$1
+URL=$2
+
+# echo "d1="$1
+# echo "d2="$2
+
+CODE=$(curl -k -L -s -o /dev/null -w "%{http_code} %{content_type}" $URL)
+
+echo $ID        $URL    $CODE

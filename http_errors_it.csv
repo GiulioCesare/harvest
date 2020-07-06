@@ -1,0 +1,78 @@
+100|Continua.
+101|Scambio protocolli in corso.
+200|OK la richiesta ha avuto esito positivo.
+201|Creato.
+202|Accettato.
+203|Informazioni non autorevoli.
+204|Nessun contenuto.
+205|Reimposta contenuto.
+206|Contenuto parziale.
+207|Multi-Status (webDay) o (WebDAV IIS).
+301|Spostato permanentemente.
+302|Trovato. Questo codice spesso è rappresentato come "Oggetto spostato" per l'autenticazione basata su form.
+304|Non modificato.
+307|Reindirizzamento temporaneo.
+400|Richiesta non valida.
+401|Accesso negato.
+401.1|Accesso non riuscito.
+401.2|Accesso non riuscito a causa della configurazione del server.
+401.3|Accesso negato dall'ACL sulla risorsa.
+401.4|Autorizzazione non riuscita a causa del filtro.
+401.5|Autorizzazione non riuscita a causa dell'applicazione ISAPI/CGI.
+401.7|Accesso negato dal criterio di autorizzazione dell'URL sul server Web.
+403|Operazione non consentita.
+403.1|Accesso in esecuzione non consentito.
+403.2|Accesso in lettura non consentito.
+403.3|Accesso in scrittura non consentito.
+403.4|Necessario SSL.
+403.5|Necessario SSL 128.
+403.6|Indirizzo IP rifiutato.
+403.7|Necessario certificato client.
+403.8|Accesso al sito negato.
+403.9|Troppi utenti.
+403.10|Configurazione non valida.
+403.11|Modifica password.
+403.12|Accesso negato al programma di mapping.
+403.13|Certificato client revocato.
+403.14|Impossibile visualizzare il contenuto della directory.
+403.15|Superato il numero di licenze di accesso client.
+403.16|Certificato client non attendibile o non valido.
+403.17|Certificato client scaduto o non ancora valido.
+403.18|Impossibile eseguire l'URL richiesto nel pool di applicazioni corrente.
+403.19|Impossibile eseguire le richieste CGI per il client in questo pool di applicazioni.
+403.20|Accesso a Passport non riuscito.
+404|Oggetto non trovato.
+404.0|File o directory non trovata.
+404.1|Sito Web non accessibile sulla porta richiesta.
+404.2|Richiesta non consentita dal criterio di blocco dell'estensione servizio Web.
+404.3|Richiesta non consentita dal criterio del mapping MIME.
+405|Il verbo HTTP utilizzato per l'accesso a questa pagina non è consentito (metodo non consentito.)
+406|Il tipo MIME della pagina richiesta non è accettato dal browser client.
+407|Necessaria autenticazione proxy.
+412|Condizione preliminare non riuscita.
+413|Entità richiesta troppo grande.
+414|URI richiesto troppo lungo.
+415|Tipo di supporto non supportato.
+416|Impossibile attenersi all'intervallo richiesto.
+417|Esecuzione non riuscita.
+423|Errore file bloccato.
+500|Errore interno del server.
+500.12|Riavvio dell'applicazione in corso sul server Web.
+500.13|Server Web troppo impegnato.
+500.15|Richieste dirette per Global.asa non consentite.
+500.16|Credenziali di autorizzazione UNC non corrette.
+500.18|Impossibile aprire l'archivio autorizzazioni URL.
+500.19|I dati per il file sono configurati in modo non corretto nella metabase.
+500.100|Errore ASP interno.
+501|La configurazione specificata dai valori intestazione non è implementata.
+502|Il server Web con funzioni di gateway o di proxy ha ricevuto una risposta non valida.
+502.1|Timeout dell'applicazione CGI.
+500-100.ASP|Errore ASP.
+500.12|Riavvio dell'applicazione in corso.
+500.19|Questo errore viene visualizzato quando la metabase XML contiene informazioni di configurazione non valide
+502|Gateway non valido.
+502.2|Errore nell'applicazione CGI.
+503|Servizio non disponibile.
+504|Timeout del gateway.
+505|Versione HTTP non supportata.
+999|Interrotto dopo 20 tentativi

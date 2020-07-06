@@ -1,0 +1,54 @@
+# 11/11/2019 Chiara Storti
+# id|name|url|contact|format|sets|Note
+1|depositolegale|http://tesi.depositolegale.it/cgi/oai2|chiara.storti@beniculturali.it|didl|all|
+2|imtlucca|http://e-theses.imtlucca.it/cgi/oai2|lib@imtlucca.it (Caterina Tangheroni), leonardo.mezzina@imtlucca.it|didl|74797065733D696D745F706864746865736973|Repository ad accesso ristretto: avviato scambio email
+3|liuc|http://arl.liuc.it/oai/request|lballestra@liuc.it, arefraschini@liuc.it|didl|col_2468_2|
+4|luiss|https://eprints.luiss.it/cgi/oai2|cannulli@luiss.it, eprints@luiss.it|didl|74797065733D746865736973|
+5|roma3|http://dspace-roma3.caspur.it/dspace-oai-roma3/request|staccone@uniroma3.it|didl|hdl_2307_55|
+6|unibg|https://aisberg.unibg.it/oai/request|aisberg@unibg.it|didl|com_10446_73164|
+7|unibo|http://amsdottorato.unibo.it/cgi/oai2|marialaura.vignocchi@unibo.it, roberta.lauriola@unibo.it|didl|all|
+8|unica|http://veprints.unica.it/cgi/oai2|s.astrella@unica.it|didl|74797065733D746865736973|
+9|unimc|https://u-pad.unimc.it/oai/harvest-bnc|sonia.cavirani@unicam.it,sara.morici@unimc.it,lorenzo.delvecchio@unimc.it|didl|phdThesis|
+11|unicatt|http://tesionline.unicatt.it/dspace-oai/request|sara.ricetto@unicatt.it|didl|all|Repository ad accesso ristretto: avviato scambio email
+12|unict|http://archivia.unict.it/dspace-oai/request|angelo@unict.it|didl|hdl_10761_28|
+13|unife|http://eprints.unife.it/cgi/oai2|uib@unife.it|didl|74797065733D746865736973|
+14|unimi|https://air.unimi.it/oai/request|paola.galimberti@unimi.it,air.admin@unimi.it,laura.gioppo@unimi.it,laura.santoro1@unimi.it|didl|col_2434_146884|
+15|unimib|https://boa.unimib.it/oai/request|bonaria.biancu@unimib.it, boa@unimib.it, marina.bonecchi@unimib.it, alessandro.andretto@unimib.it|didl|col_10281_9145|Errori negli scorsi harvesting: avviato scambio email
+16|unimol|https://iris.unimol.it/oai/request|mancini@unimol.it, openair@unimol.it|didl|col_11695_66211|
+17|unina|http://www.fedoa.unina.it/cgi/oai2|ronca@unina.it, nmadonna@unina.it|didl|74797065733D7468657369735F706864|
+18|uninsubria|http://insubriaspace.cineca.it/dspace-oai/request|daniela.cermesoni@uninsubria.it|didl|hdl_10277_2|
+19|unipi|https://etd.adm.unipi.it/ETD-db/NDLTD-OAI/oai.pl|g.castriotta@adm.unipi.it|didl|dtype:PhD|
+20|unipr|http://dspace-unipr.cineca.it/dspace-oai/request|fabrizia.bevilacqua@unipr.it|didl|hdl_1889_492|
+21|uniroma1|https://iris.uniroma1.it/oai/request|marco.schaerf@uniroma1.it|didl|com_11573_784460|
+22|unisa|http://elea.unisa.it/oai/request|grufino@unisa.it, mcilurzo@unisa.it, mrcalifano@unisa.it, pdemartino@unisa.it, saldef@unisa.it, msenatore@unisa.it|didl|com_10556_45|Problemi di raggiungibilità del repository
+23|uniss|http://eprints.uniss.it/cgi/oai2|flmanca@uniss.it, amelis@uniss.it|didl|74797065733D646F63746F72616C5F746865736973|
+24|unitn|http://eprints-phd.biblio.unitn.it/cgi/oai2|ePrints@unitn.it, francesca.valentini@unitn.it, filippo.moser@unitn.it, valentina.fasolino@unitn.it|didl|all|
+25|units|https://arts.units.it/oai/request|piscanc@units.it|piscanc@units.it|didl|com_11368_2907476|
+26|unive|http://dspace.unive.it/oai/request|sattin@unive.it, protocollo.pec@unive.it, archivio.tesi@unive.it|didl|hdl_10579_57|
+27|univpm|https://iris.univpm.it/oai/request|marinella.mazzieri@univpm.it, d.ripanti@univpm.it|didl|col_11566_241824|
+28|univr|https://iris.univr.it/oai/request|maria.gabaldo@univr.it, open.archive@ateneo.univr.it, giovanni.baietta@collab.univr.it|didl|col_11562_924246|
+29|unipd|http://paduaresearch.cab.unipd.it/cgi/oai2_hn|antonella.zane@unipd.it|didl|74797065733D746573695F64695F646F74746F7261746F|
+30|unimore|https://morethesis.unimore.it/ETD-db/NDLTD-OAI/oai.pl|danilo.crecchia@unimore.it|didl|dtype:PhD|
+31|uniud|https://air.uniud.it/oai/request|catalogo.air@uniud.it|didl|col_11390_1123315|
+32|unipa|https://iris.unipa.it/oai/request|marcorosolino.chifari@unipa.it, luca.conigliaro@unipa.it|didl|col_10447_71205|
+33|polimi|https://www.politesi.polimi.it/dspace-oai/bncf|michele.rubini@polimi.it, rossana.zucchinali@polimi.it|didl|hdl_10589_32801|
+34|sissa|https://iris.sissa.it/oai/request|talpo@sissa.it|didl|col_20.500.11767_64|
+35|lumsa|https://ricercascientifica.lumsa.it/ezoai/oai2|n.buonocore@lumsa.it, sistemi_informativi@lumsa.it|didl|all|
+36|unifi|https://flore.unifi.it/oai/request|valdo.pasqui@unifi.it|didl|com_2158_1001462|
+37|unisi|https://usiena-air.unisi.it/oai/harvest-bnc|cristina.mencarelli@unisi.it|didl|phdThesis|Non didl compliant
+38|unifg|https://fair.unifg.it/oai/request||didl|col_11369_320420|
+39|uniupo|https://iris.uniupo.it/oai/request|openaire@uniupo.it|didl|col_11579_68244|
+40|unibz|https://bia.unibz.it/oai/request|luigi.Siciliano@unibz.it|didl|com_10863_114|
+41|sssup|https://dta.santannapisa.it/ETD-db/NDLTD-OAI/oai.pl|giovanni.castriotta@unipi.it|didl|dtype:PhD|
+42|poliba|https://iris.poliba.it/oai/request|b.pastorelli@cineca.it|didl|col_11589_92814|
+43|unime|https://iris.unime.it/oai/request|ricerca@unime.it|didl|col_11570_3101346|
+44|polito|https://iris.polito.it/oai/request|paolo.tealdi@polito.it|didl|col_11583_2614423|
+45|iulm|https://apeiron.iulm.it/oai/request|apeiron@iulm.it, alberto.rovelli@iulm.it, elisa.golinelli@iulm.it>, emanuela.costanzo@iulm.it, augusto.brivio@iulm.it, stefano.lagroia@iulm.it|didl|col_10808_21365|In corso scambio di email sulle procedure e i casi di embargo
+46|uniba|https://ricerca.uniba.it/oai/request|onofrio.erriquez@uniba.it|didl|col_11586_220559|Non didl compliant
+47|unige|https://iris.unige.it/oai/request|IRIS@unige.it||didl|col_11567_928192|
+48|unical |http://dspace.unical.it:8080/oai/request|joseph.rogani@unical.it|didl|hdl_10955_10|Non didl compliant
+49|sns|http://dspace.sns.it:8180/oai/request?verb=ListRecords&metadataPrefix=didl|enrico.martellini@sns.it, fabrizio.rossi@sns.it|||Da verificare: problemi con l'OAI
+50|uniurb||ester.maroncini@uniurb.it, marco.cappellacci@uniurb.it donatella.travaglini@uniurb.it|||Nuova adesione: aspettiamo url oai...contattarli?
+51|unicampania|https://iris.unicampania.it/oai/request?verb=ListRecords&metadataPrefix=didl&set=col_XXXX_YYYYY|centro.sba@unicampania.it, rosaria.dimartino@unicampania.it|||Nuova adesione: aspettiamo dati precisi..contattarli?
+52|unibocconi||carla.martini@unibocconi.it|||Non didl compliant: riprendere scambio email
+53|hunimed||phd@hunimed.eu|||Nuova adesione: chiedere riferimenti
