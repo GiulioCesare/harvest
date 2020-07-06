@@ -12,3 +12,6 @@ zip/
 *.txt
 etd.csv
 e_journals.csv
+run_tesi.sh
+run_riviste.sh
+
