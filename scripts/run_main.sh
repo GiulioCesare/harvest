@@ -114,7 +114,6 @@ HARVEST_DIR=$(pwd)
 #     # declare -x $x=${sviluppo[$x]}
 #     echo $x"="${sviluppo[$x]} >> run_env.cfg
 # done
-# source run_env.cfg
 
 N_LOOKUP_JOBS=5
 
