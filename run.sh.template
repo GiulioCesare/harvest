@@ -1708,7 +1708,7 @@ print_configuration
 
 # generate_nbn_identifiers
 
-make_receipts
+# make_receipts
 
 # check_for_receipts_mismatch ### DA RIVEDERE forse sostituibile con check_match_seeds_donloaded_to_download ()
 
