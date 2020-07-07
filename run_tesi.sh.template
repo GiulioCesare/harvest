@@ -30,6 +30,6 @@
 
 #===================================================================================
 # Decommentare ambiente di lavoro
-#./run.sh --ambiente=sviluppo --materiale=tesi --jobs=3 --concurrent_warc_jobs=3"
-#./run.sh --ambiente=collaudo --materiale=tesi --jobs=3 --concurrent_warc_jobs=3"
-#./run.sh --ambiente=esercizio --materiale=tesi --jobs=3 --concurrent_warc_jobs=3"
+#./run.sh --ambiente=sviluppo --materiale=tesi --jobs=3 --concurrent_warc_jobs=3
+#./run.sh --ambiente=collaudo --materiale=tesi --jobs=3 --concurrent_warc_jobs=3
+#./run.sh --ambiente=esercizio --materiale=tesi --jobs=3 --concurrent_warc_jobs=3
