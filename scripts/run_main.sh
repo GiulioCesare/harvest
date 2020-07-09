@@ -282,6 +282,8 @@ function init_variables()
     unimarc_dir="$work_dir/09_unimarcs"
     archived_dir="$work_dir/10_archived"
     nbn_dir="$work_dir/11_nbn"
+    rights_dir="$work_dir/12_rights"
+
     report_dir=$HARVEST_DIR"/../report"
 
 
@@ -297,11 +299,11 @@ function init_variables()
         $work_dir
         $metadata_dir
         $seeds_dir
-        $check_seeds_dir
-        $bad_seeds_dir
-        $validated_seeds_dir
+        # $check_seeds_dir
+        # $bad_seeds_dir
+        # $validated_seeds_dir
         $warcs_dir
-        $redo_seeds_dir
+        # $redo_seeds_dir
 #        $warcs_work_area_dir
 #        $warcs_bad_indexing_dir
 #        $warcs_bad_warcs_dir
@@ -311,6 +313,7 @@ function init_variables()
         $unimarc_dir
         $archived_dir
         $nbn_dir
+        $rights_dir
         $report_dir
 
         $PH_DEST_COLLECTION_DIR
@@ -1275,19 +1278,21 @@ function print_configuration ()
     # echo "  MD DIR:             $MD_DIR"
     echo "  Wayback dir:        $WAYBACK_DIR"
     echo "  Harvest dir:        $HARVEST_DIR"
-    echo "  Skip repo for seeds file: $no_seeds_for_repositories_file;"
+    # echo "  Skip repo for seeds file: $no_seeds_for_repositories_file;"
     echo "  Work dir:           $work_dir"
     echo "  metadata dir:       $metadata_dir"
     echo "  seeds_dir:          $seeds_dir"
-    echo "  check seeds dir:        $check_seeds_dir"
-    echo "  bad_seeds dir:      $bad_seeds_dir"
-    echo "  validated seeds dir: $validated_seeds_dir"
+    # echo "  check seeds dir:        $check_seeds_dir"
+    # echo "  bad_seeds dir:      $bad_seeds_dir"
+    # echo "  validated seeds dir: $validated_seeds_dir"
     echo "  warcs dir:           $warcs_dir"
-    echo "  warcs work area dir: $warcs_work_area_dir"
-    echo "  redo seeds dir:     $redo_seeds_dir"
+    # echo "  warcs work area dir: $warcs_work_area_dir"
+    # echo "  redo seeds dir:     $redo_seeds_dir"
     echo "  unimarc dir:         $unimarc_dir"
     echo "  receipts dir:         $receipts_dir"
     echo "  archived dir:         $archived_dir"
+    echo "  nbn dir:         $nbn_dir"
+    echo "  rights dir:         $rights_dir"
 
     echo "  report (receipts) dir: $report_dir"
     echo "  destination warcs dir: $dest_warcs_dir"

@@ -3,7 +3,7 @@
 
 # HARVEST METADATA
 # ================
-function find_rights()
+function find_rights_unique()
 {
     echo "--> FIND RIGHTS for $repositories_file"
 
@@ -23,7 +23,7 @@ function find_rights()
 
       site=${array[1]}
       metadata_file=$metadata_dir"/"$harvest_date_materiale"_"$site".xml"
-      rights_file=$metadata_dir"/"$harvest_date_materiale"_"$site".rights"
+      rights_file=$rights_dir"/"$harvest_date_materiale"_"$site".rights.unq"
       echo "--> Working on "$metadata_file
 
       rights=`xmllint --format  $metadata_file | grep -i "<dc:rights" | sort -u`
@@ -34,7 +34,7 @@ function find_rights()
       names=($names) # split to array $names
       IFS=$SAVEIFS   # Restore IFS
 
-      echo "# Rights" > $rights_file
+      echo "# Rights unique" > $rights_file
       for (( i=0; i<${#names[@]}; i++ ))
       do
           r="${names[$i]}"
@@ -45,7 +45,7 @@ function find_rights()
 
     fi
     done < "$repositories_file"
-} # end find_rights
+} # end find_rights_unique
 
 
 function _genera_dati_di_embargo()
@@ -59,6 +59,12 @@ function _genera_dati_di_embargo()
 
 function find_embargoed()
 {
+  # LIUC <dc:rights>http://www.biblio.liuc.it/pagineita.asp?codice=247</dc:rights> Non corrisponde a niente!!!
+  # <dc:rights>info:eu-repo/semantics/closedAccess</dc:rights>  non vanno embargate
+  # unisi  non ha i pdf associati alla pagina descrittiva della tesi (09/07/2020)
+  # unive  nei rights ci sono inomi degli autori
+  # unica  ci sono tesi senza contenuti, Eg: |http://hdl.handle.net/11584/271311|THREE ESSAYS ON MENTAL DISORDERS, STRATEGIC THINKING AND TRUST
+
     echo "--> FIND EMARGOED for $repositories_file"
     # Read trough the repositories_file
     while IFS='|' read -r -a array line
@@ -81,16 +87,95 @@ function find_embargoed()
           echo "TODO embargo per e-journal"
       else
           # TESI
-          command="python ./parse_tesi_embargo.py "$metadata_dir"/"$harvest_date_materiale"_"$istituto".xml"
+          command="python ./scripts/parse_tesi_embargo.py "$metadata_dir"/"$harvest_date_materiale"_"$istituto".xml"
       fi
   # echo "Crea meta dati per ricevute in formato ASCII PSV (Pipe Separated Values) for ${array[1]}: "$command
-  	embargo_filename=$metadata_dir/$harvest_date_materiale"_"$istituto".embargo"
-   # echo "Crea documenti sotto embargo per:" $metadata_file
-   echo "Crea documenti sotto embargo in:" $embargo_filename
-      eval $command | sort > $embargo_filename
+    rights_filename=$rights_dir/$harvest_date_materiale"_"$istituto".rights.csv"
 
+   # echo "Crea documenti sotto embargo per:" $metadata_file
+   echo "Trova diritti per :" $rights_filename
+      eval $command > $rights_filename
+      # eval $command | awk 'NR == 1; NR > 1 {print $0 | "sort -n"}' > $rights_filename".srt.csv"
+
+      # Individuiamo le tesi sotto embargo
+      filterEmbargo $rights_filename;
 
     fi
     done < "$repositories_file"
 
 } # find_embargoed
+
+
+
+function filterEmbargo()
+{
+  # echo "--> filterEmbargo"
+  local rights_filename=$1
+  local embargo_filename=$rights_dir/$harvest_date_materiale"_"$istituto".embargo.csv"
+  local embargo_filename_ko=$rights_dir/$harvest_date_materiale"_"$istituto".embargo.csv.ko"
+
+
+awk_command='
+    BEGIN{FS="|"; }
+    {
+    # If line commented or empty
+    if ($1 ~ "#"  || $1 == "")
+        next
+
+    oai_id = $1
+    rights = toupper($2)
+    embargo_end_date = $3
+    url = $4
+
+
+    if (rights ~ "EMBARGO" )
+      {
+      # find different patterns
+      if (rights ~ "^EMBARGOED_[0-9]{8}$" )
+          {
+          # print rights
+          # print $0
+          print oai_id "|" url "|" substr(rights,11,4) "-" substr(rights,15,2) "-" substr(rights,17,2)
+
+          }
+#      else if (rights ~ "^INFO:EU-REPO/SEMANTICS/EMBARGOEDACCESS$" )
+      else if (rights ~ "^INFO:EU-REPO/SEMANTICS/EMBARGOEDACCESS.*$" ) # sssup (info:eu-repo/semantics/embargoedAccess;Copyright information available at source archive)
+          {
+          if(embargo_end_date=="")
+            {
+           print oai_id "|" url "|9999-12-31" # qui dobbiamo gestire i 3 anni di default
+            }
+          else
+            {
+            print oai_id "|" url "|" embargo_end_date
+           }
+ 
+          }
+      else
+        {
+          if(embargo_end_date!="") 
+            {
+            # non abbiamo intercettatto la sintassi dell embargo ma abbiamo capito che e sotto embargo ed abbiamo una data di fine embargo
+            print oai_id "|" url "|" embargo_end_date
+            }
+          else
+            {
+            print oai_id "|" $2 "|" url > unkwown_embargo
+            }
+
+        }
+
+      fi
+
+      } # end if found embargo
+
+
+
+
+    fi
+    
+    }'
+ 
+    awk -v unkwown_embargo="$embargo_filename_ko"  "$awk_command"  $rights_filename > $embargo_filename
+
+} # end filterRepositories

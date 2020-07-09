@@ -5,6 +5,7 @@
 # Mapping table Dublin core/Unimarc at:
 #   https://docs.google.com/spreadsheets/d/1EXCAiCwhG6JevRonMv62luJjL0OQ-7r6n7pnOyaDGHw/edit#gid=1153896167
 
+from lxml import etree
 from lxml.etree import parse
 from lxml.etree import tostring
 import sys
@@ -20,10 +21,23 @@ import re
 # sys.stderr.write("arg4 "+sys.argv[4]+"\n")
 # sys.stderr.write("arg5 "+sys.argv[5]+"\n")
 
+# l= len(sys.argv);
+# sys.stderr.write(str(l))
+
+if (len(sys.argv) < 2):
+    print ("parse_tesi_embargo istituto_metadata.xml")
+    sys.exit(0)
+
 
 metadati_filename = sys.argv[1]
 
 tree = parse(metadati_filename)
+
+
+# print etree.tostring(tree)
+# sys.exit(0)
+
+
 
 ns = {
     'didl': 'urn:mpeg:mpeg21:2002:02-DIDL-NS',
@@ -38,7 +52,8 @@ paths = {
 
     'status': 'header[@status]',
     'jumpoffpage': 'metadata/didl:DIDL/didl:Item/didl:Descriptor[1]/didl:Statement/dii:Identifier',
-    'statements': 'metadata/didl:DIDL/didl:Item/didl:Descriptor[2]/didl:Statement/',
+
+    'statements': 'metadata/didl:DIDL/didl:Item/didl:Descriptor[2]/didl:Statement/',    # tutti gli statements del secondo descriptor
 
     'identifiers': 'dc:identifier',
     'languages': 'dc:language',
@@ -53,6 +68,7 @@ paths = {
 
 
     'rights': 'dc:rights',
+
     'relation': 'dc:relation',
     'coverage': 'dc:coverage',
     'source': 'dc:source',
@@ -65,17 +81,23 @@ paths = {
     'components': 'metadata/didl:DIDL/didl:Item/didl:Component',
     # 'component': 'didl:Resource'
 
-     'resource': 'didl:Resource'
+    'resource': 'didl:Resource',
+
+    'component_descriptor' : 'didl:Descriptor',
+
+    'component_descriptor_rights' : 'didl:Statement/oai_dc:dc/dc:rights'
+
 }
 
 recs=int(0)
 
+sys.stdout.write("#oaiidentifier|RIGHTS|Data fine embargo|URL (pg descrittiva)|title\n") #|creators|contributors
 
 
 for record in tree.xpath('.//record'): # Selects all subelements, on all levels beneath the current element. For example, .//egg selects all egg elements in the entire tree.
     recs += 1
     if recs > 1:
-        print "" # riga di separazione tra record
+        print ("") # riga di separazione tra record
     # print "--> record # "+str(recs)
 
     status = record.find(paths['status'])
@@ -84,26 +106,61 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
     if status is None:
 
+        oaiidentifier = record.find(paths['oaiidentifier']).text
+        sys.stdout.write(oaiidentifier+"|")
 
+        tesi="";
         for statements in record.findall(paths['statements'], namespaces=ns):
 
-
             rights=statements.findall(paths['rights'], namespaces=ns)
+            R="";
             if rights is not None:
                 size=len(rights)
                 if size > 0:
-                    sys.stdout.write(rights[0].text.encode('utf-8'))
-                    i=1;
+                    i=0;
+                    written_first=0
                     while i < size:
                         if rights[i].text is None:
                             # sys.stdout.write("$adiritti: ") # empty tag
                             i+=1
                             continue
-                        sys.stdout.write(";"+rights[i].text.encode('utf-8'))
+                        if written_first > 0:
+                            r = ";"+rights[i].text.encode('utf-8');    
+                        else:
+                            r = rights[i].text.encode('utf-8');    
+                        sys.stdout.write(r)
+                        R += r
+                        written_first=1
                         i+=1
 
-            oaiidentifier = record.find(paths['oaiidentifier']).text
-            sys.stdout.write("|"+oaiidentifier)
+
+            sys.stdout.write("|")
+            embargo_end_date=""
+            dates=statements.findall(paths['dates'], namespaces=ns)
+            if dates is not None:
+                dates_len= len(dates)
+                if (dates_len > 0):
+                    i=0;
+                    while i < dates_len:
+                        if dates[i].text is None:
+                            # sys.stdout.write("$adiritti: ") # empty tag
+                            i+=1
+                            continue
+                        date=dates[i].text.encode('utf-8')
+                        u_date = date.upper()
+
+                        if (re.search('EMBARGOEND', u_date)):
+                            # if ( i > 0):
+                            #     sys.stdout.write(";")
+                            # sys.stdout.write(u_date)
+                            embargo_end_date = u_date.rsplit('/', 1)[1]; # get the date
+                            sys.stdout.write(embargo_end_date) 
+                            break
+                        i+=1
+
+
+
+
 
             jumpoffpage = record.xpath(paths['jumpoffpage'], namespaces=ns)[0].text
             if "urn" in jumpoffpage:
@@ -111,8 +168,9 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
             else:
                 jumpoffpageurl = jumpoffpage
 
-            sys.stdout.write("|"+jumpoffpageurl)
-
+            j = "|"+jumpoffpageurl
+            sys.stdout.write(j)
+            # tesi += j
 
 
 
@@ -123,52 +181,49 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                     title=titles[0].text.encode('utf-8')
                     title_r=title.replace("\n", " ")
                     sys.stdout.write("|"+title_r)
+                    tesi += title_r
 
 
-            creators=statements.findall(paths['creators'], namespaces=ns)
-            # 700 PERSONAL NAME - PRIMARY RESPONSIBILITY
-            #   $a	Entry Element
-            if creators is not None:
-                size_creators=len(creators)
-                if size_creators:
-                    sys.stdout.write("|"+creators[0].text.encode('utf-8'))
 
-                # 701 PERSONAL NAME - ALTERNATIVE RESPONSIBILITY
-                #   $a	Entry Element
-                # Ogni ripetizione crea un nuovo tag
-                i=1
-                if size_creators > i:
-                    while i < size_creators:
-                        sys.stdout.write("=701   0")
-                        creator=creators[i].text.encode('utf-8')
-                        sys.stdout.write(";"+creator)
-                        i+=1
+            # URL of resource
+            components=record.findall(paths['components'], namespaces=ns)
+            for component in components:
+                if component is not None:
 
-            # 702 PERSONAL NAME - SECONDARY RESPONSIBILITY
-            # Ogni ripetizione crea un nuovo tag
-            contributors=statements.findall(paths['contributors'], namespaces=ns)
-            if contributors is not None:
-                size=len(contributors)
-                i=0
-                if size > i:
-                    while i < size:
-                        if contributors[i].text is not None:
-                            contributor=contributors[i].text.encode('utf-8')
-                            sys.stdout.write(":"+contributor)
-                        i+=1
+                    # print etree.tostring(component)
+
+                    resource = component.find(paths['resource'], namespaces=ns)
+
+                    # print etree.tostring(resource)
+
+                    resourceurl = urllib.quote(resource.get('ref').encode('utf-8'), safe="%/:=&?~#+!$,;'@()*[]")
 
 
-            # # URL of resource
-            # components=record.findall(paths['components'], namespaces=ns)
-            # i=0;
-            # for component in components:
-            #     if component is not None:
-            #         resource = component.find(paths['resource'], namespaces=ns)
-            #         resourceurl = urllib.quote(resource.get('ref').encode('utf-8'), safe="%/:=&?~#+!$,;'@()*[]")
-            #         if i == 0:
-            #             sys.stdout.write("|"+resourceurl)
-            #         else:
-            #             sys.stdout.write(";"+resourceurl)
-            #     i+=1
+                    component_descriptor=component.find(paths['component_descriptor'], namespaces=ns)
+                    # print etree.tostring(component_descriptor)
+                    
+                    sys.stdout.write("\n")
+                    if component_descriptor is not None:
+                        # Abbiamo dei diritti nel componente?
+                        rights_comp=component_descriptor.find(paths['component_descriptor_rights'], namespaces=ns)
+                        r_cmp="";
+                        if rights_comp is not None:
+                            r_cmp = rights_comp.text.encode('utf-8')
 
-            # sys.stdout.write("\n")
+                        # sys.stdout.write("\nr_cmp='"+r_cmp+"'")
+
+
+                        if not r_cmp:
+                            # sys.stdout.write(oaiidentifier+"|" +R + tesi+"|"+resourceurl)   # diritti derivati dalla tesi nel suo insieme
+                            sys.stdout.write(oaiidentifier+"|" +R + "|" + embargo_end_date  +"|" +resourceurl + "|" + tesi)    # diritti derivati dalla tesi nel suo insieme
+
+                        else:
+                            # sys.stdout.write(oaiidentifier+"|CMP_RIGHTS-" +r_cmp + tesi+"|"+resourceurl) # diritti del componente
+                            sys.stdout.write(oaiidentifier+"|" +r_cmp  + "|" + embargo_end_date +"|"+resourceurl +"|" + tesi ) # diritti del componente
+
+                    else: 
+                        # nessun descriptor con o senza rights. Mettiamo i rights della pagina descrittiva 
+                        sys.stdout.write(oaiidentifier+"|" +R  + "|" + embargo_end_date +"|" +resourceurl + "|" + tesi  )   # diritti derivati dalla tesi nel suo insieme
+
+
+
