@@ -1,0 +1,40 @@
+#========================================================================================
+#
+# Elenco dei file da usare per popolare DB in fase di migrazione
+#
+#========================================================================================
+
+uploadDir=./tesi/12_rights/
+
+# JDBC driver
+jdbcDriver=com.mysql.cj.jdbc.Driver
+
+# SVILUPPO
+connectionUrl=jdbc:mysql://localhost:3306/MagazziniDigitali_Locale
+
+# COLLAUDO
+
+# ESERCIZIO
+
+userName=md
+userPassword=md_pwd
+
+
+fieldSeparator=|
+#fieldSeparator=�
+
+# Truncate
+#removeAllRecordsBeforeUpload=false
+
+logFileOut=./DbUpload.log
+
+# Da non usare schema per 
+#schema=
+
+# commit in hex format
+commitOgniTotRighe=FF
+
+endConfig
+
+
+embargo.upl
