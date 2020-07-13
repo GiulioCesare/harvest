@@ -17,4 +17,5 @@ run_riviste.sh
 run.sh
 # --------------
 run_env.cfg
+scripts/DbUpload_env.con
 harvest.code-workspace
