@@ -20,7 +20,8 @@ echo `${ora}` "Inizio processo di DbUpload.sh"
 tmr=$(timer)
 
 echo Caricamento DB
-/home/argentino/bin/jdk1.8.0_191/bin/java -classpath $BIN_DIR:$BIN_DIR/jdbcDrivers/mysql-connector-java-8.0.13.jar DbUpload scripts/DbUpload.cfg scripts/DbUpload.con
+# java e' configurato nella variabile di ambiente PATH
+java -classpath $BIN_DIR:$BIN_DIR/jdbcDrivers/mysql-connector-java-8.0.13.jar DbUpload scripts/DbUpload.cfg scripts/DbUpload_env.con
 
 
 

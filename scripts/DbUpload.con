@@ -4,37 +4,72 @@
 #
 #========================================================================================
 
+# --------------------
+# ambiente di sviluppo
+# --------------------
+[sviluppo]
 uploadDir=./tesi/12_rights/
-
-# JDBC driver
 jdbcDriver=com.mysql.cj.jdbc.Driver
-
-# SVILUPPO
 connectionUrl=jdbc:mysql://localhost:3306/MagazziniDigitali_Locale
-
-# COLLAUDO
-
-# ESERCIZIO
-
 userName=md
 userPassword=md_pwd
+fieldSeparator=|
+#fieldSeparator=�
 
+# Truncate
+#removeAllRecordsBeforeUpload=false
+logFileOut=./DbUpload.log
+# commit in hex format
+commitOgniTotRighe=FF
+endConfig
+
+embargo.upl
+
+
+# --------------------
+# ambiente di collaudo
+# --------------------
+[collaudo]
+uploadDir=./tesi/12_rights/
+jdbcDriver=com.mysql.cj.jdbc.Driver
+
+#connectionUrl=jdbc:mysql://localhost:3306/MagazziniDigitali_Locale
+#userName=md
+#userPassword=md_pwd
+
+fieldSeparator=|
+#fieldSeparator=�
+
+# Truncate (BE VERY CAREFUL)
+#removeAllRecordsBeforeUpload=false
+
+logFileOut=./DbUpload.log
+# commit in hex format
+commitOgniTotRighe=FF
+endConfig
+
+embargo.upl
+
+
+# --------------------
+# ambiente di esercizio
+# --------------------
+[esercizio]
+uploadDir=./tesi/12_rights/
+jdbcDriver=com.mysql.cj.jdbc.Driver
+
+#connectionUrl=jdbc:mysql://localhost:3306/MagazziniDigitali_Locale
+#userName=md
+#userPassword=md_pwd
 
 fieldSeparator=|
 #fieldSeparator=�
 
 # Truncate
 #removeAllRecordsBeforeUpload=false
-
 logFileOut=./DbUpload.log
-
-# Da non usare schema per 
-#schema=
-
 # commit in hex format
 commitOgniTotRighe=FF
-
 endConfig
-
 
 embargo.upl

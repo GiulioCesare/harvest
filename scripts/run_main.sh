@@ -21,7 +21,7 @@ parse_config(){
     [[ -f $1 ]] || { echo "$1 is not a file." >&2;return 1;}
     if [[ -n $2 ]]
     then
-        config_all=$1
+        config_all_conf=$1
         ambiente=$2
     fi
     keep=0
@@ -38,6 +38,7 @@ parse_config(){
             break
         fi
         if [[ $line =~ $ambiente ]]; then
+            echo "# ========" >> run_env.cfg
             echo "# $ambiente" >> run_env.cfg
             echo "# ========" >> run_env.cfg
             keep=1
@@ -47,50 +48,51 @@ parse_config(){
     if [[ $keep == 1 ]]; then
         echo $line >> run_env.cfg
     fi
-    done < $config_all
+    done < $config_all_conf
 }
 
 
 
-# If no default array name is given, it defaults to 'config'.
-# If there are [section] headers in file, following entries will be
-#  put in array of that name.
+# Usage: parse_config <file> [<default array name>]
+parse_upload_con(){
+    section_regex="^[[:blank:]]*\[([[:alpha:]_][[:alnum:]_]*)\][[:blank:]]*(#.*)?$"
 
-# Config arrays may exist already and will appended to or overwritten.
-# If preexisting array is not associative, function exits with error.
-# New arrays will be created as needed, and remain in the environment.
-parse_config_OLD(){
     [[ -f $1 ]] || { echo "$1 is not a file." >&2;return 1;}
     if [[ -n $2 ]]
     then
-        local -n config_array=$2
-        # local -n order_array=$2"_order"
-    else
-        local -n config_array=config
+        upload_all_con=$1
+        ambiente=$2
     fi
-# echo "config_array="$config_array
-    declare -Ag ${!config_array} || return 1
-    local line key value section_regex entry_regex
-    section_regex="^[[:blank:]]*\[([[:alpha:]_][[:alnum:]_]*)\][[:blank:]]*(#.*)?$"
-    entry_regex="^[[:blank:]]*([[:alpha:]_][[:alnum:]_]*)[[:blank:]]*=[[:blank:]]*('[^']+'|\"[^\"]+\"|[^#[:blank:]]+)[[:blank:]]*(#.*)*$"
+    keep=0
     while read -r line
     do
-# echo "line="$line
-        [[ -n $line ]] || continue
-        [[ $line =~ $section_regex ]] && {
-            local -n config_array=${BASH_REMATCH[1]}
-            declare -Ag ${!config_array} || return 1
-            continue
-        }
-        [[ $line =~ $entry_regex ]] || continue
-        key=${BASH_REMATCH[1]}
-        # value=${BASH_REMATCH[2]#[\'\"]} # strip quotes
-        # value=${value%[\'\"]}
-        value=${BASH_REMATCH[2]}
-        config_array["${key}"]="${value}"
-        order_array+=("${key}")   # 25/11/19
-    done < "$1"
+# echo "line="$line >> run_env.cfg
+
+    if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+        # echo "continue"
+          continue
+    fi
+    if [[ $line =~ $section_regex ]]; then
+        if [[ $keep == 1 ]]; then    # abbiamo incontrato l'inizio di un'altra sezione
+            break
+        fi
+        if [[ $line =~ $ambiente ]]; then
+            echo "# ========" >> scripts/DbUpload_env.con
+            echo "# $ambiente" >> scripts/DbUpload_env.con
+            echo "# ========" >> scripts/DbUpload_env.con
+            keep=1
+            continue;
+        fi
+    fi
+    if [[ $keep == 1 ]]; then
+        echo $line >> scripts/DbUpload_env.con
+    fi
+    done < $upload_all_con
 }
+
+
+
+
 
 
 
@@ -181,38 +183,22 @@ function init_variables()
 
     # echo "ambiente="$ambiente
 
-    # echo "parse run.cfg"
-    # parse_config run.cfg $ambiente
-    # echo "array di ambiente="$ambiente
+    # Prepara la configurazione di run in base all'ambiente di lavoro
     echo "#!/bin/bash" > run_env.cfg
     echo "" >> run_env.cfg
-
     parse_config run.cfg $ambiente
-
-
-    # # non riesco ad usare $ambiente in for loop
-    # if [ "$ambiente" == "sviluppo" ]; then
-    #     for x in "${!sviluppo[@]}"; do
-    #         echo $x"="${sviluppo[$x]} >> run_env.cfg
-    #     done
-    # elif [ "$ambiente" == "collaudo" ]; then
-    #     for x in "${!collaudo[@]}"; do
-    #         echo $x"="${collaudo[$x]} >> run_env.cfg
-    #     done
-    # elif [ "$ambiente" == "esercizio" ]; then
-    #     for x in "${!esercizio[@]}"; do
-    #         echo $x"="${esercizio[$x]} >> run_env.cfg
-    #     done
-    # fi
-
-
     source run_env.cfg
+
+    # Prepara la configurazione di upload in base all'ambiente di lavoro
+    echo "#!/bin/bash" > scripts/DbUpload_env.con
+    echo "" >> scripts/DbUpload_env.con
+    parse_upload_con scripts/DbUpload.con $ambiente
+    source scripts/DbUpload_env.con
 
 
 
     yesterday="$(date -d "1 days ago" +"%Y_%m_%d")"
     # echo "yesterday=$yesterday"
-
 
     if [ -z "$today_override" ]; then
         today="$(date '+%Y_%m_%d')"

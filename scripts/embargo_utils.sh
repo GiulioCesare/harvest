@@ -86,7 +86,7 @@ awk_command='
     embargo_end_date = $3
     url = $4
 
-    embargo_default_end_date=9999-12-31
+    embargo_default_end_date="9999-12-31"
 
 
     if (rights ~ "EMBARGO" )
@@ -267,11 +267,12 @@ function _prepareDbUpload ()
 function find_embargoed()
 {
 
-    _find_rights_unique
-
-    _extract_rights
-
-    _filterEmbargo
+    # _find_rights_unique
+    # _extract_rights
+    # _filterEmbargo
 
     _prepareDbUpload
+
+    # 4384 tesi+componenti sotto embargo per harvest 2019 (sino al 18/10/2018-26/01/2020 (con scarico unicatt totale))
+
 }
