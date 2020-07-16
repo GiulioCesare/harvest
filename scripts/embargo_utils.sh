@@ -74,6 +74,18 @@ function _filterEmbargoIstituto()
   # local embargo_filename_ko=$rights_dir/$harvest_date_materiale"_"$istituto".embargo.csv.ko"
 
 
+  # embargo_default_end_date="9999-12-31" # Non scade mai
+
+  # embargo scade 3 anni dop la data di Harvesting
+  declare -i year=${harvest_date:0:4}
+  let "year+=3"
+  embargo_default_end_date=$year${harvest_date:4}
+
+  # embargo scade 3 anni dopo data di discussione
+  # TODO dato ancora non disponibile nei metadati
+
+
+
 awk_command='
     BEGIN{FS="|"; }
     {
@@ -86,7 +98,8 @@ awk_command='
     embargo_end_date = $3
     url = $4
 
-    embargo_default_end_date="9999-12-31"
+
+
 
 
     if (rights ~ "EMBARGO" )
@@ -136,7 +149,7 @@ awk_command='
     
     }'
  
-    awk -v unkwown_embargo="$embargo_filename_ko"  "$awk_command"  $rights_filename > $embargo_filename
+    awk -v unkwown_embargo="$embargo_filename_ko" -v embargo_default_end_date="$embargo_default_end_date" "$awk_command"  $rights_filename > $embargo_filename
 
 } # end filterRepositories
 
@@ -234,7 +247,7 @@ function _prepareDbUpload ()
   {
 
 
-    ulpad_filename=$rights_dir/embargo.upl
+    ulpad_filename=$rights_dir/embargo.upd_ins
     echo 
     echo "-> Prepare file for DB upload: " $ulpad_filename
 
@@ -269,9 +282,14 @@ function find_embargoed()
 
     # _find_rights_unique
     # _extract_rights
-    # _filterEmbargo
+    _filterEmbargo
 
-    _prepareDbUpload
+
+
+
+
+
+    # _prepareDbUpload
 
     # 4384 tesi+componenti sotto embargo per harvest 2019 (sino al 18/10/2018-26/01/2020 (con scarico unicatt totale))
 

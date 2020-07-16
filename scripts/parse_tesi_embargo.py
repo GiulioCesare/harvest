@@ -85,7 +85,8 @@ paths = {
 
     'component_descriptor' : 'didl:Descriptor',
 
-    'component_descriptor_rights' : 'didl:Statement/oai_dc:dc/dc:rights'
+    'component_descriptor_rights' : 'didl:Statement/oai_dc:dc/dc:rights',
+    'component_descriptor_date' : 'didl:Statement/oai_dc:dc/dc:date'
 
 }
 
@@ -107,13 +108,14 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
     if status is None:
 
         oaiidentifier = record.find(paths['oaiidentifier']).text
-        sys.stdout.write(oaiidentifier+"|")
+        # sys.stdout.write(oaiidentifier+"|")
 
-        tesi="";
+        TESI="";
         for statements in record.findall(paths['statements'], namespaces=ns):
 
             rights=statements.findall(paths['rights'], namespaces=ns)
             R="";
+            global_embargo=0
             if rights is not None:
                 size=len(rights)
                 if size > 0:
@@ -124,18 +126,30 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                             # sys.stdout.write("$adiritti: ") # empty tag
                             i+=1
                             continue
-                        if written_first > 0:
-                            r = ";"+rights[i].text.encode('utf-8');    
-                        else:
-                            r = rights[i].text.encode('utf-8');    
-                        sys.stdout.write(r)
-                        R += r
-                        written_first=1
-                        i+=1
+                        # if written_first > 0:
+                        #     r = ";"+rights[i].text.encode('utf-8');    
+                        # else:
+                        #     r = rights[i].text.encode('utf-8');    
+                        # sys.stdout.write(r)
+                        # R += r
+                        # written_first=1
+                        # i+=1
+
+                        # Assume we only ha 1 dc:rights declaration
+                        R = rights[i].text.encode('utf-8');
+
+                        # controlla se sotto embargo
+                        u_R = R.upper()
+                        if (re.search('EMBARGO', u_R )):
+                            global_embargo=1
+                        # print "u_R="+u_R + "global_embargo="+str(global_embargo)
+                        break 
 
 
-            sys.stdout.write("|")
-            embargo_end_date=""
+
+
+            # sys.stdout.write("|")
+            global_embargo_end_date=""
             dates=statements.findall(paths['dates'], namespaces=ns)
             if dates is not None:
                 dates_len= len(dates)
@@ -153,8 +167,8 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                             # if ( i > 0):
                             #     sys.stdout.write(";")
                             # sys.stdout.write(u_date)
-                            embargo_end_date = u_date.rsplit('/', 1)[1]; # get the date
-                            sys.stdout.write(embargo_end_date) 
+                            global_embargo_end_date = u_date.rsplit('/', 1)[1]; # get the date
+                            # sys.stdout.write(global_embargo_end_date) 
                             break
                         i+=1
 
@@ -168,9 +182,9 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
             else:
                 jumpoffpageurl = jumpoffpage
 
-            j = "|"+jumpoffpageurl
-            sys.stdout.write(j)
-            # tesi += j
+            JOP = jumpoffpageurl
+
+            # sys.stdout.write(j)
 
 
 
@@ -180,13 +194,16 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                 if size > 0:
                     title=titles[0].text.encode('utf-8')
                     title_r=title.replace("\n", " ")
-                    sys.stdout.write("|"+title_r)
-                    tesi += title_r
+                    # sys.stdout.write("|"+title_r)
+                    TESI += title_r
+
 
 
 
             # URL of resource
             components=record.findall(paths['components'], namespaces=ns)
+            COMP=""
+            embargoed_component=0;
             for component in components:
                 if component is not None:
 
@@ -199,13 +216,21 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                     resourceurl = urllib.quote(resource.get('ref').encode('utf-8'), safe="%/:=&?~#+!$,;'@()*[]")
 
 
+                    if global_embargo == 1: 
+                        # Tesi  sotto emabargo a livello globale
+                        COMP += "\n" + oaiidentifier+"|" +R  + "|" + global_embargo_end_date +"|" +resourceurl + "|" + TESI 
+                        continue
+
                     component_descriptor=component.find(paths['component_descriptor'], namespaces=ns)
                     # print etree.tostring(component_descriptor)
-                    
-                    sys.stdout.write("\n")
+                    comp_embargo_end_date=""
                     if component_descriptor is not None:
+
+                        # Tesi NON sotto emabargo a livello globale
                         # Abbiamo dei diritti nel componente?
                         rights_comp=component_descriptor.find(paths['component_descriptor_rights'], namespaces=ns)
+                        date_comp=component_descriptor.find(paths['component_descriptor_date'], namespaces=ns)
+
                         r_cmp="";
                         if rights_comp is not None:
                             r_cmp = rights_comp.text.encode('utf-8')
@@ -214,16 +239,38 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
 
                         if not r_cmp:
-                            # sys.stdout.write(oaiidentifier+"|" +R + tesi+"|"+resourceurl)   # diritti derivati dalla tesi nel suo insieme
-                            sys.stdout.write(oaiidentifier+"|" +R + "|" + embargo_end_date  +"|" +resourceurl + "|" + tesi)    # diritti derivati dalla tesi nel suo insieme
+                            # sys.stdout.write(oaiidentifier+"|" +R + "|" + embargo_end_date  +"|" +resourceurl + "|" + tesi)    # diritti derivati dalla tesi nel suo insieme
+                            COMP += "\n" + oaiidentifier+"|" +"accesso libero" + "|" + comp_embargo_end_date  +"|" +resourceurl + "|" + TESI
 
                         else:
-                            # sys.stdout.write(oaiidentifier+"|CMP_RIGHTS-" +r_cmp + tesi+"|"+resourceurl) # diritti del componente
-                            sys.stdout.write(oaiidentifier+"|" +r_cmp  + "|" + embargo_end_date +"|"+resourceurl +"|" + tesi ) # diritti del componente
+                            # sys.stdout.write(oaiidentifier+"|" +r_cmp  + "|" + embargo_end_date +"|"+resourceurl +"|" + tesi ) # diritti del componente
+                            u_r_cmp = r_cmp.upper()
+                            if (re.search('EMBARGO', u_r_cmp)):
+                                embargoed_component=1
+                                # comp_embargo_end_date="8888"
+                                if date_comp is not None:
+                                    # comp_embargo_end_date="7777"
+                                    date=date_comp.text.encode('utf-8')
+                                    # comp_embargo_end_date=date
+                                    u_date = date.upper()
+                                    # comp_embargo_end_date=u_date
+                                    if (re.search('EMBARGOEND', u_date)):
+                                        comp_embargo_end_date = u_date.rsplit('/', 1)[1]; # get the date
+
+                                COMP += "\n" + oaiidentifier+"|" +r_cmp  + "|" + comp_embargo_end_date +"|"+resourceurl +"|" + TESI
 
                     else: 
                         # nessun descriptor con o senza rights. Mettiamo i rights della pagina descrittiva 
-                        sys.stdout.write(oaiidentifier+"|" +R  + "|" + embargo_end_date +"|" +resourceurl + "|" + tesi  )   # diritti derivati dalla tesi nel suo insieme
+                        # sys.stdout.write(oaiidentifier+"|" +R  + "|" + embargo_end_date +"|" +resourceurl + "|" + tesi  )   # diritti derivati dalla tesi nel suo insieme
+                        COMP += "\n" + oaiidentifier+"|" +"accesso libero"  + "|" + comp_embargo_end_date +"|" +resourceurl + "|" + TESI 
+
+            r = R.upper()
+            # print r
+            if ((re.search('PARTIALLY_OPEN', r) or re.search('RESTRICTEDACCESS', r))  and embargoed_component == 0): #  
+                R += " (messa sotto embargo)"
+                COMP = COMP.replace("accesso libero", R)
 
 
-
+            sys.stdout.write(oaiidentifier+"|" +R +"|" +global_embargo_end_date +"|" +JOP +"|" +TESI )
+            if COMP != "":
+                sys.stdout.write(COMP +"+")

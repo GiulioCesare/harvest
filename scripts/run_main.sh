@@ -60,7 +60,7 @@ parse_upload_con(){
     [[ -f $1 ]] || { echo "$1 is not a file." >&2;return 1;}
     if [[ -n $2 ]]
     then
-        upload_all_con=$1
+        update_insert_all_con=$1
         ambiente=$2
     fi
     keep=0
@@ -77,17 +77,17 @@ parse_upload_con(){
             break
         fi
         if [[ $line =~ $ambiente ]]; then
-            echo "# ========" >> scripts/DbUpload_env.con
-            echo "# $ambiente" >> scripts/DbUpload_env.con
-            echo "# ========" >> scripts/DbUpload_env.con
+            echo "# ========" >> scripts/DbUpdateInsert_env.con
+            echo "# $ambiente" >> scripts/DbUpdateInsert_env.con
+            echo "# ========" >> scripts/DbUpdateInsert_env.con
             keep=1
             continue;
         fi
     fi
     if [[ $keep == 1 ]]; then
-        echo $line >> scripts/DbUpload_env.con
+        echo $line >> scripts/DbUpdateInsert_env.con
     fi
-    done < $upload_all_con
+    done < $update_insert_all_con
 }
 
 
@@ -190,10 +190,10 @@ function init_variables()
     source run_env.cfg
 
     # Prepara la configurazione di upload in base all'ambiente di lavoro
-    echo "#!/bin/bash" > scripts/DbUpload_env.con
-    echo "" >> scripts/DbUpload_env.con
-    parse_upload_con scripts/DbUpload.con $ambiente
-    source scripts/DbUpload_env.con
+    echo "#!/bin/bash" > scripts/DbUpdateInsert_env.con
+    echo "" >> scripts/DbUpdateInsert_env.con
+    parse_upload_con scripts/DbUpdateInsert.con $ambiente
+    source scripts/DbUpdateInsert_env.con
 
 
 
@@ -524,9 +524,14 @@ function harvest_metadata()
 # echo "$line"
 # echo "${array[0]}"
       line=${array[0]}
+
+      # Se ignora resto del file
+      if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+        break
+      fi
+
       # se riga comentata o vuota skip
       if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];     then
-# echo skip;
         continue
       else
 
