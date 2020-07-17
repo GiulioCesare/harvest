@@ -11,6 +11,13 @@
 
 #id|name|url|contact|format|sets
 
+# TESTING
+#17|uninsubria|http://insubriaspace.cineca.it/dspace-oai/request|daniela.cermesoni@uninsubria.it|didl|hdl_10277_2
+#@ STOPS TESTING - Quit at this line (if not managed comment it). Used in embargo_utils.sh
+
+
+
+
 #1|depositolegale|http://tesi.depositolegale.it/cgi/oai2|giovanni.bergamin@depositolegale.it|didl|all
 ## Sito con tesi sotto embargo
 #2|imtlucca|http://e-theses.imtlucca.it/cgi/oai2|t.iannizzi@imtlucca.it, leonardo.mezzina@imtlucca.it|didl|74797065733D696D745F706864746865736973

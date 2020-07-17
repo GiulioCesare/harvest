@@ -62,15 +62,12 @@ print_configuration
 
 # harvest_metadata
 
-#---------------------------------
-# Troviamo rights univoci per sito
-#---------------------------------
-#find_rights
-
-#---------------------------------
 # Troviamo documenti sotto embargo
-#---------------------------------
 #find_embargoed
+
+# Carichiamo le tesi sotto embargo sul db
+# scripts/DbUpdateInsert.sh
+
 
 # createSeeds
 
@@ -82,7 +79,7 @@ print_configuration
 # fi
 
 # prepare_wget_sites_list
-# create_warcs_concurrently
+create_warcs_concurrently
 
 # make_dest_warcs_read_write
 # copy_warcs_and_logs_to_destination_dir_and_remove
@@ -92,8 +89,6 @@ print_configuration
 # index_warcs
 
 # clean_wayback_index
-
-
 
 # get_indexes_for_compression
 # compress_parziale=0
@@ -110,6 +105,7 @@ print_configuration
 # # sudo service supervisor stop
 # # sudo service supervisor start
 # # sudo service supervisor restart
+
 
 
 # get_warcked_seeds_and_not_from_logs
@@ -138,6 +134,8 @@ print_configuration
 # check_unimarc_for_no_wayback_link
 
 # generate_last_harvest_list
+
+
 
 # make_report
 
@@ -179,3 +177,8 @@ echo =================
 # http://memoria.depositolegale.it/*/URL
 # http://memoria.depositolegale.it/*/http://amsdottorato.unibo.it/480/    fino 2018
 # http://memoria.depositolegale.it/*/http://amsdottorato.unibo.it/2206/   2019 (trovato 2015) nell'harvest del 05/11/19 questa url non e' stata scaricata
+
+
+
+
+

@@ -738,15 +738,20 @@ function createSeeds()
 #      line=""
       line=${array[0]}
 #echo "'$line'"
+
+      if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+        break
+      fi
+
       if [[ ${line:0:1} == "#" ]] || [[ "$line" == "" ]];     then
         # echo skip;
         continue
       else
 
           if [ $work_dir == $E_JOURNALS_DIR ]; then
-              command="python ./parse_e_journals_seeds.py "$metadata_dir"/"$harvest_date_materiale"_"${array[1]}".xml"
+              command="python ./scripts/parse_e_journals_seeds.py "$metadata_dir"/"$harvest_date_materiale"_"${array[1]}".xml"
           else
-              command="python ./parse_tesi_seeds.py "$metadata_dir"/"$harvest_date_materiale"_"${array[1]}".xml"
+              command="python ./scripts/parse_tesi_seeds.py "$metadata_dir"/"$harvest_date_materiale"_"${array[1]}".xml"
           fi
  # echo "Executing $command"
          # 27/11/2019 Gestione seed duplicati
