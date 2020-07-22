@@ -63,7 +63,7 @@ print_configuration
 # harvest_metadata
 
 # Troviamo documenti sotto embargo
-#find_embargoed
+# find_embargoed
 
 # Carichiamo le tesi sotto embargo sul db
 # scripts/DbUpdateInsert.sh
@@ -79,13 +79,15 @@ print_configuration
 # fi
 
 # prepare_wget_sites_list
-create_warcs_concurrently
+# create_warcs_concurrently
+# check_pdf_download
+
 
 # make_dest_warcs_read_write
 # copy_warcs_and_logs_to_destination_dir_and_remove
 # make_dest_warcs_read_only
 
-
+# create_warcs_to_index_list
 # index_warcs
 
 # clean_wayback_index
@@ -106,6 +108,9 @@ create_warcs_concurrently
 # # sudo service supervisor start
 # # sudo service supervisor restart
 
+# # Per fare test della wayback machine in ambiente locale
+# cd /home/argentino/magazzini_digitali/wayback
+# wayback   (will run on port 8080)
 
 
 # get_warcked_seeds_and_not_from_logs

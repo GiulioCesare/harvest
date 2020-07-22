@@ -76,10 +76,12 @@ function _filterEmbargoIstituto()
 
   # embargo_default_end_date="9999-12-31" # Non scade mai
 
+  # In caso che non ci sia una data di embargo od una data di discussione allora aggiungiamo 36 mesi  alla data di harvesting
   # embargo scade 3 anni dop la data di Harvesting
-  declare -i year=${harvest_date:0:4}
+  dash_date=$(echo $harvest_date | sed -r "s#([0-9]{4})_([0-9]{2})_([0-9]{2})#\1-\2-\3#g" )
+  declare -i year=${dash_date:0:4}
   let "year+=3"
-  embargo_default_end_date=$year${harvest_date:4}
+  embargo_default_end_date=$year${dash_date:4}
 
   # embargo scade 3 anni dopo data di discussione
   # TODO dato ancora non disponibile nei metadati
@@ -280,16 +282,11 @@ function _prepareDbUpload ()
 function find_embargoed()
 {
 
-    # _find_rights_unique
-    # _extract_rights
+    _find_rights_unique
+    _extract_rights
     _filterEmbargo
 
-
-
-
-
-
-    # _prepareDbUpload
+    _prepareDbUpload
 
     # 4384 tesi+componenti sotto embargo per harvest 2019 (sino al 18/10/2018-26/01/2020 (con scarico unicatt totale))
 

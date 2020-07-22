@@ -269,14 +269,8 @@ function init_variables()
     archived_dir="$work_dir/10_archived"
     nbn_dir="$work_dir/11_nbn"
     rights_dir="$work_dir/12_rights"
-
     report_dir=$HARVEST_DIR"/../report"
-
-
-
     redo_ctr_file=$redo_seeds_dir"/redo_ctr.txt"
-
-
 
     # $TESI_DIR
     # $E_JOURNALS_DIR
@@ -294,7 +288,7 @@ function init_variables()
 #        $warcs_bad_indexing_dir
 #        $warcs_bad_warcs_dir
 #        $warcs_good_warcs_dir
-#        $warcs_log_dir
+        $warcs_log_dir
         $receipts_dir
         $unimarc_dir
         $archived_dir

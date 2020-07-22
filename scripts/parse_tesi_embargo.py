@@ -150,6 +150,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
             # sys.stdout.write("|")
             global_embargo_end_date=""
+            discussion_date=""
             dates=statements.findall(paths['dates'], namespaces=ns)
             if dates is not None:
                 dates_len= len(dates)
@@ -161,8 +162,11 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                             i+=1
                             continue
                         date=dates[i].text.encode('utf-8')
-                        u_date = date.upper()
+                        
+                        if discussion_date == "":
+                            discussion_date=date
 
+                        u_date = date.upper()
                         if (re.search('EMBARGOEND', u_date)):
                             # if ( i > 0):
                             #     sys.stdout.write(";")
@@ -171,9 +175,12 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                             # sys.stdout.write(global_embargo_end_date) 
                             break
                         i+=1
-
-
-
+            if global_embargo_end_date == "":
+                anno = discussion_date [0 : 4]
+                int_anno = int(anno)
+                int_anno += 3;
+                anno = str(int_anno) + discussion_date [4 : ]
+                global_embargo_end_date = anno
 
 
             jumpoffpage = record.xpath(paths['jumpoffpage'], namespaces=ns)[0].text

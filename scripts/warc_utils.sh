@@ -120,7 +120,8 @@ function check_for_harvest_mismatch()
     mismatch=0;
 
     # for seeds_to_harvest_filename in $seeds_dir/*.seeds
-    for log_filename in $warcs_dir/logs1/*.log
+    for log_filename in $warcs_log_dir/*.log
+
     do
         fname=$(basename -- "$log_filename")
         fname="${fname%.*}"
@@ -134,11 +135,11 @@ function check_for_harvest_mismatch()
         seeds_in_warc=0
         seeds_not_in_warc=0
         #  Contiamo i seed scaricati
-        siw=$warcs_dir/logs1/$fname.log.seeds_in_warc
+        siw=$warcs_log_dir/$fname.log.seeds_in_warc
         if [[ -f $siw ]]; then
             seeds_in_warc=$(cat $siw | wc -l)
         fi
-        sniw=$warcs_dir/logs1/$fname.log.seeds_not_in_warc
+        sniw=$warcs_log_dir/$fname.log.seeds_not_in_warc
         if [[ -f $sniw ]]; then
             seeds_not_in_warc=$(cat $sniw | wc -l)
         fi
@@ -165,7 +166,7 @@ function check_for_missing_seeds()
     echo "=================================="
 
     # for seeds_to_harvest_filename in $seeds_dir/*.seeds
-    for log_filename in $warcs_dir/logs1/*.log
+    for log_filename in $warcs_log_dir/*.log
     do
         fname=$(basename -- "$log_filename")
         fname="${fname%.*}"
@@ -180,16 +181,16 @@ function check_for_missing_seeds()
             continue
         fi
 
-        if [ -f $warcs_dir/logs1/$fname.seeds.missing ]; then
-            rm $warcs_dir/logs1/$fname.seeds.missing
+        if [ -f $warcs_log_dir/$fname.seeds.missing ]; then
+            rm $warcs_log_dir/$fname.seeds.missing
         fi
 
         declare -A seeds_scaricati_e_non_kv_AR
 
         # carichiamo i seed finiti nel warc
-        siw=$warcs_dir/logs1/$fname.log.seeds_in_warc
+        siw=$warcs_log_dir/$fname.log.seeds_in_warc
         if [[ -f $siw ]]; then
-# echo "reading $warcs_dir/logs1/$fname.log.seeds_in_warc"
+# echo "reading $warcs_log_dir/$fname.log.seeds_in_warc"
             while IFS='|' read -r  line
             do
                 tmp=$(sed 's\.*//\\ g' <<<"$line")
@@ -203,7 +204,7 @@ function check_for_missing_seeds()
         # mettiamo i seed non scaricati nel warc
         sniw=$warcs_dir"/logs1/"$fname".log.seeds_not_in_warc"
         if [ -s $sniw ]; then
-# echo "reading $warcs_dir/logs1/$fname.log.seeds_not_in_warc"
+# echo "reading $warcs_log_dir/$fname.log.seeds_not_in_warc"
             while IFS='|' read -r  line
             do
                 [ -z "$line" ] && continue  # test empty line
@@ -220,9 +221,9 @@ function check_for_missing_seeds()
 # return
 
         # Troviamo i seeds da scaricare non intercettati
-        if [[ -f $warcs_dir/logs1/$fname.log.seeds.missing ]]; then
-# echo "Removing $warcs_dir/logs1/$fname.log.seeds.missing"
-            rm $warcs_dir/logs1/$fname.log.seeds.missing
+        if [[ -f $warcs_log_dir/$fname.log.seeds.missing ]]; then
+# echo "Removing $warcs_log_dir/$fname.log.seeds.missing"
+            rm $warcs_log_dir/$fname.log.seeds.missing
         fi
 # echo "Troviamo i seeds da scaricare non intercettati"
         while IFS= read -r line
@@ -236,7 +237,7 @@ function check_for_missing_seeds()
     # echo "test --->url=$url"
                 if ! test "${seeds_scaricati_e_non_kv_AR[$url]+isset}"
                 then
-                    echo "$url" >> $warcs_dir/logs1/$fname.log.seeds.missing
+                    echo "$url" >> $warcs_log_dir/$fname.log.seeds.missing
                 fi
                 # break;
         done < $seeds_to_harvest_filename
@@ -279,10 +280,10 @@ function clean_wayback_index ()
 
 function get_indexes_for_compression ()
 {
-    echo "--> Prendiamo i nuovi indici (cdxj)"
+    echo "--> Prendiamo i nuovi indici (cdxj): " 
     cd $INDEX_COMPRESSION_DIR
 
-    echo "Copy index file in index directory 'cdx'"
+    echo "Copy index file in " $INDEX_COMPRESSION_DIR"/cdx"
     cp $WAYBACK_INDEX_DIR/*.cdxj "cdx/."
 
     cd $HARVEST_DIR
@@ -466,6 +467,20 @@ cd $HARVEST_DIR
 
 } # end create_warcs_sequencially
 
+
+
+
+function create_warcs_to_index_list()
+{
+
+    echo "Creiamo la lista dei warc da indicizzare: "$dest_warcs_dir"/warcs.lst"
+    ls -1rt $dest_warcs_dir/*warc.gz > $dest_warcs_dir"/warcs.lst"
+
+}
+
+
+
+
 #
 # wb-manager is a command line tool for managing common collection operations.
 #     positional arguments:
@@ -499,9 +514,6 @@ function index_warcs()
         rm $WAYBACK_INDEX_DIR"/index.cdxj"
     fi
 
-    # echo "Creiamo la lista da trattare"
-    # ls -1rt $dest_warcs_dir/*warc.gz > $dest_warcs_dir"/warcs.lst"
-# return
 
   	  cd $WAYBACK_DIR
   while IFS= read -r line
@@ -552,10 +564,10 @@ function copy_warcs_and_logs_to_destination_dir_and_remove()
         basename=$(basename -- "$warc_filename")
 # echo "basename="$basename
         fname="${basename%%.*}" # elimina .warc.gz
-echo "fname="$fname
+# echo "fname="$fname
 
         # Copiamo il warc
-# echo "Copying $basename"
+echo "Copying $warc_filename to $dest_warcs_dir"
         cp $warc_filename $dest_warcs_dir/.
 
         if [ $? -ne 0 ]; then
@@ -565,13 +577,17 @@ echo "fname="$fname
             rm $warc_filename
 
             # Copiamo il log file del warc
-# echo "Copying "$fname".log"
-            cp $warcs_dir/$fname".log" $warcs_dir"/log/."
+echo "Copying "$warcs_dir/$fname".log* to " $warcs_log_dir"/."
+            
+            cp $warcs_dir/$fname".log" $warcs_log_dir"/."
+            cp $warcs_dir/$fname".log.check_pdf" $warcs_log_dir"/."
+
             if [ $? -ne 0 ]; then
                 echo "ERROR: while copying log file"
             else
 # echo "Removing "$fname".log"
                 rm $warcs_dir/$fname".log"
+                rm $warcs_dir/$fname".log.check_pdf"
             fi
 
         fi
@@ -589,4 +605,44 @@ function make_dest_warcs_read_only()
 {
     echo "make_dest_warcs_read_only: "$dest_warcs_dir
     chmod 444 $dest_warcs_dir/*gz
+}
+
+
+
+
+function check_pdf_download()
+{
+    echo "Check pdf download"
+
+    while IFS='|' read -r -a array line
+    do
+        line=${array[0]}
+
+        if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+            break
+        fi
+
+        if [[ ${line:0:1} == "#" ]] || [[ "$line" == "" ]];     then
+            continue
+        fi
+
+
+        log_file=$warcs_dir/$harvest_date_materiale"_"${array[1]}".log"
+        echo "check " $log_file
+
+
+        grep -B 1 "^Saving to: ‘.*pdf’" $log_file |  grep -A 1 "text\/html" > $log_file".check_pdf"
+
+
+
+
+# -A NUM, --after-context=NUM
+# -B NUM, --before-context=NUM
+
+
+    done < "$repositories_file"
+
+
+
+
 }
