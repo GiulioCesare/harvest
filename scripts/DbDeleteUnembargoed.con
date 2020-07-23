@@ -18,12 +18,12 @@ fieldSeparator=|
 
 # Truncate
 #removeAllRecordsBeforeUpload=false
-logFileOut=./logs/DbUpdateInsert.log
+logFileOut=./logs/DbDeleteUnembargoed.log
 # commit in hex format
 commitOgniTotRighe=FF
 endConfig
 
-embargo.upd_ins
+embargo.del
 
 
 # --------------------
@@ -43,12 +43,12 @@ fieldSeparator=|
 # Truncate (BE VERY CAREFUL)
 #removeAllRecordsBeforeUpload=false
 
-logFileOut=./logs/DbUpdateInsert.log
+logFileOut=./logs/DbDeleteUnembargoed.log
 # commit in hex format
 commitOgniTotRighe=FF
 endConfig
 
-embargo.upd_ins
+embargo.del
 
 
 # --------------------
@@ -67,9 +67,9 @@ fieldSeparator=|
 
 # Truncate
 #removeAllRecordsBeforeUpload=false
-logFileOut=./logs/DbUpdateInsert.log
+logFileOut=./logs/DbDeleteUnembargoed.log
 # commit in hex format
 commitOgniTotRighe=FF
 endConfig
 
-embargo.upd_ins
+embargo.del

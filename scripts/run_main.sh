@@ -54,7 +54,7 @@ parse_config(){
 
 
 # Usage: parse_config <file> [<default array name>]
-parse_upload_con(){
+parse_update_insert_con(){
     section_regex="^[[:blank:]]*\[([[:alpha:]_][[:alnum:]_]*)\][[:blank:]]*(#.*)?$"
 
     [[ -f $1 ]] || { echo "$1 is not a file." >&2;return 1;}
@@ -91,6 +91,41 @@ parse_upload_con(){
 }
 
 
+parse_delete_unembargoed_con(){
+    section_regex="^[[:blank:]]*\[([[:alpha:]_][[:alnum:]_]*)\][[:blank:]]*(#.*)?$"
+
+    [[ -f $1 ]] || { echo "$1 is not a file." >&2;return 1;}
+    if [[ -n $2 ]]
+    then
+        delete_unembargoed_all_con=$1
+        ambiente=$2
+    fi
+    keep=0
+    while read -r line
+    do
+# echo "line="$line >> run_env.cfg
+
+    if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+        # echo "continue"
+          continue
+    fi
+    if [[ $line =~ $section_regex ]]; then
+        if [[ $keep == 1 ]]; then    # abbiamo incontrato l'inizio di un'altra sezione
+            break
+        fi
+        if [[ $line =~ $ambiente ]]; then
+            echo "# ========" >> scripts/DbDeleteUnembargoed_env.con
+            echo "# $ambiente" >> scripts/DbDeleteUnembargoed_env.con
+            echo "# ========" >> scripts/DbDeleteUnembargoed_env.con
+            keep=1
+            continue;
+        fi
+    fi
+    if [[ $keep == 1 ]]; then
+        echo $line >> scripts/DbDeleteUnembargoed_env.con
+    fi
+    done < $delete_unembargoed_all_con
+}
 
 
 
@@ -189,10 +224,19 @@ function init_variables()
     parse_config run.cfg $ambiente
     source run_env.cfg
 
+
+
+    # Prepara la configurazione di cancellazione delle tesi disembargate in base all'ambiente di lavoro
+    echo "#!/bin/bash" > scripts/DbDeleteUnembargoed_env.con
+    echo "" >> scripts/DbDeleteUnembargoed_env.con
+    parse_delete_unembargoed_con scripts/DbDeleteUnembargoed.con $ambiente
+    source scripts/DbDeleteUnembargoed_env.con
+
+
     # Prepara la configurazione di upload in base all'ambiente di lavoro
     echo "#!/bin/bash" > scripts/DbUpdateInsert_env.con
     echo "" >> scripts/DbUpdateInsert_env.con
-    parse_upload_con scripts/DbUpdateInsert.con $ambiente
+    parse_update_insert_con scripts/DbUpdateInsert.con $ambiente
     source scripts/DbUpdateInsert_env.con
 
 
@@ -326,14 +370,14 @@ function init_variables()
 	# Eg: ln -s /home/argentino/magazzini_digitali/wayback/volume1/collection_3/archive/harvest_AV harvest_AV
 
 	# Does a link already exist?
-	if [ -h $WAYBACK_ARCHIVE_DIR ]; then
+	if [ -h $WAYBACK_ARCHIVE_DIR ]; then 
 		echo "Link exists"
 	else
 		echo "Create link"
-		target=$PH_DEST_COLLECTION_DIR"/archive/"$WAYBACK_WARC_DIR
-		link=$WAYBACK_ARCHIVE"/"$WAYBACK_WARC_DIR
-		echo "target="$target
-		echo "link"$link
+        link=$WAYBACK_ARCHIVE"/"$WAYBACK_WARC_DIR
+        target=$PH_DEST_COLLECTION_DIR"/archive/"$WAYBACK_WARC_DIR
+  #       echo "link"$link
+		# echo "target="$target
 		ln -s $target $link
 	fi
 

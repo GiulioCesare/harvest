@@ -100,10 +100,6 @@ awk_command='
     embargo_end_date = $3
     url = $4
 
-
-
-
-
     if (rights ~ "EMBARGO" )
       {
       # find different patterns
@@ -136,24 +132,65 @@ awk_command='
             }
           else
             {
-            # print oai_id "|" $2 "|" url > unkwown_embargo
             print oai_id "|" url "|" embargo_default_end_date
-
             }
 
         }
 
       fi
-
       } # end if found embargo
-
-    fi
+    
+    # else
+    #      print oai_id "|" url  > non_embargo_filename
+    # fi
     
     }'
  
     awk -v unkwown_embargo="$embargo_filename_ko" -v embargo_default_end_date="$embargo_default_end_date" "$awk_command"  $rights_filename > $embargo_filename
 
-} # end filterRepositories
+
+
+} # end _filterEmbargoIstituto
+
+
+function _filterNonEmbargoIstituto ()
+{
+  local rights_filename=$1
+  local non_embargo_filename=$rights_dir/$harvest_date_materiale"_"$istituto".non_embargo.csv"
+
+
+awk_command='
+    BEGIN{
+      FS="|"; 
+      prev_oai_id = ""
+    }
+    
+    {
+    # If line commented or empty
+    if ($1 ~ "#"  || $1 == "")
+        next
+
+    oai_id = $1
+    if (prev_oai_id != oai_id)
+      {
+      rights = toupper($2)
+      if (rights !~ "EMBARGO" && rights !~ "PARTIALLY" && rights !~ "RESTRICTED")
+        {
+        url = $4
+        print oai_id"|"rights"|"url
+        }
+        prev_oai_id = oai_id
+      }
+
+
+    
+    }'
+    awk -v non_embargo_filename="$non_embargo_filename" -v embargo_default_end_date="$embargo_default_end_date" "$awk_command"  $rights_filename > $non_embargo_filename
+
+  # Creiamo il file do oaid_univoci per rimuovere tesi che prima erano embargate e che forse adesso non lo sono piu'
+  # sort -t\| -k 1,1 -u $non_embargo_filename > $non_embargo_filename".unq"
+
+}
 
 
 
@@ -234,6 +271,7 @@ function _filterEmbargo()
 
       echo "--> Working on: " $rights_filename
       _filterEmbargoIstituto $rights_filename;
+      _filterNonEmbargoIstituto $rights_filename;
 
       fi
     done < "$repositories_file"
@@ -242,18 +280,17 @@ function _filterEmbargo()
 
 
 
-
-
-
-function _prepareDbUpload ()
+function _prepareDbUpdateInsertDelete ()
   {
 
 
-    ulpad_filename=$rights_dir/embargo.upd_ins
+    upd_ins_filename=$rights_dir/embargo.upd_ins
+    delete_filename=$rights_dir/embargo.del
     echo 
-    echo "-> Prepare file for DB upload: " $ulpad_filename
+    echo "-> Prepare file for DB update/insert: " $upd_ins_filename
 
-    echo -n "" > $ulpad_filename
+    echo -n "" > $upd_ins_filename
+    echo -n "" > $delete_filename
 
     while IFS='|' read -r -a array line
     do
@@ -270,12 +307,19 @@ function _prepareDbUpload ()
       else
 
       istituto=${array[1]}
+      
       filename=$rights_dir/$harvest_date_materiale"_"$istituto".embargo.csv"
-      echo "--> Appending " $filename
-      cat $filename >> $ulpad_filename
+      echo "--> Appending " $filename " to " $upd_ins_filename
+      cat $filename >> $upd_ins_filename
+
+      filename=$rights_dir/$harvest_date_materiale"_"$istituto".non_embargo.csv"
+      echo "--> Appending " $filename " to " $delete_filename
+      cat $filename >> $delete_filename
+
       fi
     done < "$repositories_file"
-  } # End _prepareDbUpload
+  } # End _prepareDbUpdateInsertDelete
+
 
 
 
@@ -285,9 +329,8 @@ function find_embargoed()
     _find_rights_unique
     _extract_rights
     _filterEmbargo
+    _filterNonEmbargo
 
-    _prepareDbUpload
-
-    # 4384 tesi+componenti sotto embargo per harvest 2019 (sino al 18/10/2018-26/01/2020 (con scarico unicatt totale))
+    _prepareDbUpdateInsertDelete
 
 }

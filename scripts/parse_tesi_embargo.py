@@ -96,16 +96,18 @@ sys.stdout.write("#oaiidentifier|RIGHTS|Data fine embargo|URL (pg descrittiva)|t
 
 
 for record in tree.xpath('.//record'): # Selects all subelements, on all levels beneath the current element. For example, .//egg selects all egg elements in the entire tree.
-    recs += 1
-    if recs > 1:
-        print ("") # riga di separazione tra record
     # print "--> record # "+str(recs)
 
     status = record.find(paths['status'])
-    # print "status="+str(status)
-
-
-    if status is None:
+    if status is not None:
+        # stato=status.attrib['status']
+           # if stato == "deleted":
+        # print stato
+        pass
+    else: # status is None:
+        recs += 1
+        if recs > 1:
+            print ("") # riga di separazione tra record
 
         oaiidentifier = record.find(paths['oaiidentifier']).text
         # sys.stdout.write(oaiidentifier+"|")
@@ -175,7 +177,8 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                             # sys.stdout.write(global_embargo_end_date) 
                             break
                         i+=1
-            if global_embargo_end_date == "":
+
+            if global_embargo_end_date == "" and discussion_date != "":
                 anno = discussion_date [0 : 4]
                 int_anno = int(anno)
                 int_anno += 3;
@@ -230,7 +233,8 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
                     component_descriptor=component.find(paths['component_descriptor'], namespaces=ns)
                     # print etree.tostring(component_descriptor)
-                    comp_embargo_end_date=""
+                    # comp_embargo_end_date=""
+                    comp_embargo_end_date = global_embargo_end_date
                     if component_descriptor is not None:
 
                         # Tesi NON sotto emabargo a livello globale

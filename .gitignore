@@ -16,8 +16,9 @@ run_tesi.sh
 run_riviste.sh
 run.sh
 # --------------
-run_env.cfg
-scripts/DbUpload_env.con
-scripts/DbUpdateInsert_env.con
-scripts/DbUpdateInsert_env.dev.con
+*_env.cfg
+scripts/*_env.con
+scripts/*_env.dev.con
+
 harvest.code-workspace
+s
