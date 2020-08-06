@@ -58,12 +58,13 @@ print_configuration
 # MAIN
 # ----
 
-# clean_all
-
 # harvest_metadata
 
 # Troviamo documenti sotto embargo
 # find_embargoed
+
+# Rimuoviamo le tesi alle quali hanno tolto l'embargo
+# scripts/DbDeleteUnembargoed.sh
 
 # Carichiamo le tesi sotto embargo sul db
 # scripts/DbUpdateInsert.sh
@@ -89,8 +90,6 @@ print_configuration
 
 # create_warcs_to_index_list
 # index_warcs
-
-# clean_wayback_index
 
 # get_indexes_for_compression
 # compress_parziale=0
