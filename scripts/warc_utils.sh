@@ -641,8 +641,4 @@ function check_pdf_download()
 
 
     done < "$repositories_file"
-
-
-
-
 }

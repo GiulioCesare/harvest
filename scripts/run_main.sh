@@ -524,25 +524,24 @@ function clean_work_area
 }
 
 
-
-function clean_all()
-{
-    echo "--> CLEAN ALL"
-    rm $work_dir/*
-    rm $repositories_file_clean
-    rm $metadata_dir/*
-    rm $seeds_dir/*
-    rm $check_seeds_dir/*
-    rm $bad_seeds_dir/*
-    rm $validated_seeds_dir/*
-    clean_work_area
-    rm $warcs_dir/*
-    rm $redo_seeds_dir/*
-    rm $receipts_dir/*
-    rm $unimarc_dir/*
-    rm $archived_dir/*
-
-}
+# TROPPO PERICOLOSA (gia' cancellata home di almaviva in esercizio, poteva andare molto peggio!!!!)
+# function clean_all()
+# {
+#     echo "--> CLEAN ALL"
+#     rm $work_dir/*
+#     rm $repositories_file_clean
+#     rm $metadata_dir/*
+#     rm $seeds_dir/*
+#     rm $check_seeds_dir/*
+#     rm $bad_seeds_dir/*
+#     rm $validated_seeds_dir/*
+#     clean_work_area
+#     rm $warcs_dir/*
+#     rm $redo_seeds_dir/*
+#     rm $receipts_dir/*
+#     rm $unimarc_dir/*
+#     rm $archived_dir/*
+# }
 
 
 
@@ -602,7 +601,7 @@ function harvest_metadata()
 # echo "until_date=$until_date"
 # echo "harvest_from_override_date=$harvest_from_override_date"
 
-        command="python ~/bin/pyoaiharvester/pyoaiharvest.py  --link "$url" --filename $metadata_dir/"$harvest_date_materiale"_"${array[1]}".xml \
+        command="python scripts/pyoaiharvest.py  --link "$url" --filename $metadata_dir/"$harvest_date_materiale"_"${array[1]}".xml \
         --from "$harvest_from_override_date" --until "$until_date" --mdprefix "$metadata_format
 
         if [ "$set" != "all" ] ; then
