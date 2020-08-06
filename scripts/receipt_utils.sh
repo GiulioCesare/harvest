@@ -215,6 +215,7 @@ echo "url in warc="$url >> tmp.log
                     echo $dati_ricevuta >> $receipts_dir"/"$harvest_date_materiale"_"$istituto"_ok.csv"
             else
                 echo "MDR: NOT FOUND in meta_dati_ricevute_kv_AR '$url'" >>/dev/stderr
+                exit
                 # echo "meta_dati_ricevute_kv_AR"
                 # printarr meta_dati_ricevute_kv_AR
             fi;
@@ -308,10 +309,10 @@ function _genera_dati_per_ricevute()
 
     # Generiamo i dati per le ricevute
     if [ $work_dir == $E_JOURNALS_DIR ]; then
-        command="python ./parse_e_journals_ricevute.py "$metadata_dir"/"$harvest_date_materiale"_"$istituto".xml "$formatted_harvest_date
+        command="python ./scripts/parse_e_journals_ricevute.py "$metadata_dir"/"$harvest_date_materiale"_"$istituto".xml "$formatted_harvest_date
     else
         # TESI
-        command="python ./parse_tesi_ricevute.py "$metadata_dir"/"$harvest_date_materiale"_"$istituto".xml "$formatted_harvest_date
+        command="python ./scripts/parse_tesi_ricevute.py "$metadata_dir"/"$harvest_date_materiale"_"$istituto".xml "$formatted_harvest_date
     fi
 # echo "Crea meta dati per ricevute in formato ASCII PSV (Pipe Separated Values) for ${array[1]}: "$command
 	mdr=$receipts_dir/$harvest_date_materiale"_"$istituto".mdr"
@@ -350,7 +351,7 @@ function check_for_receipts_mismatch()
         receipts_in_warc=0
         receipts_not_in_warc=0
         #  Contiamo i seed scaricati inseriti nei warc
-        siw=$warcs_dir/logs1/$fname.log.seeds_in_warc
+        siw=$warcs_dir/log/$fname.log.seeds_in_warc
         if [[ -f $siw ]]; then
             seeds_in_warc=$(cat $siw | wc -l)
         fi
@@ -363,7 +364,7 @@ function check_for_receipts_mismatch()
 
 
         # Contiamo i seed che non sono stati inseriti nei warc
-        sniw=$warcs_dir/logs1/$fname.log.seeds_not_in_warc
+        sniw=$warcs_dir/log/$fname.log.seeds_not_in_warc
         if [[ -f $sniw ]]; then
             seeds_not_in_warc=$(cat $sniw | wc -l)
         fi
@@ -410,7 +411,7 @@ function check_for_receipts_mismatch()
 function _carica_seeds_in_warc ()
 {
     local istituto=$1
-    local siw=$warcs_dir"/logs1/"$harvest_date_materiale"_"$istituto".log.seeds_in_warc"
+    local siw=$warcs_dir"/log/"$harvest_date_materiale"_"$istituto".log.seeds_in_warc"
 
 # echo "_carica_seeds_in_warc siw="$siw
 
@@ -448,7 +449,7 @@ function _carica_seeds_not_in_warc ()
 {
 #     fname=$1
 #
-#     if [[ ! -f $warcs_dir"/logs1/"$fname".log.seeds_not_in_warc" ]]; then
+#     if [[ ! -f $warcs_dir"/log/"$fname".log.seeds_not_in_warc" ]]; then
 #         return
 #     fi
 #
@@ -466,13 +467,13 @@ function _carica_seeds_not_in_warc ()
 #         k=$(urldecode "${tmp}")
 #  # echo "k=$k" >> tmp.txt
 #         seeds_not_in_warc_kv_AR[$k]=$k
-#     done < $warcs_dir"/logs1/"$fname".log.seeds_not_in_warc"
+#     done < $warcs_dir"/log/"$fname".log.seeds_not_in_warc"
 #
 # # echo "seeds_not_in_warc_kv_AR length="${#seeds_not_in_warc_kv_AR[@]}
 #
 
 local istituto=$1
-local sniw=$warcs_dir"/logs1/"$harvest_date_materiale"_"$istituto".log.seeds_not_in_warc"
+local sniw=$warcs_dir"/log/"$harvest_date_materiale"_"$istituto".log.seeds_not_in_warc"
 
 # echo "_carica_seeds_in_warc siw="$siw
 
@@ -533,7 +534,7 @@ function _do_receipts_for_seeds_not_in_warc()
 {
 
     local istituto=$1
-    bad_seeds_fileame=$warcs_dir"/logs1/"$harvest_date_materiale"_"$istituto".log.seeds_not_in_warc"
+    bad_seeds_fileame=$warcs_dir"/log/"$harvest_date_materiale"_"$istituto".log.seeds_not_in_warc"
 
 # echo "bad_seeds_fileame=$bad_seeds_fileame"
     ko_csv=$receipts_dir"/"$harvest_date_materiale"_"$istituto"_ko.csv"
@@ -651,7 +652,7 @@ function  _convert_csv_to_xls()
         csv_list_file=$csv_list_file" "$receipts_dir"/no_resource"
     fi
 
-    missing_file=$warcs_dir"/logs1/"$harvest_date_materiale"_"$istituto".log.seeds.missing"
+    missing_file=$warcs_dir"/log/"$harvest_date_materiale"_"$istituto".log.seeds.missing"
     if [[ -f $missing_file ]]; then
         echo "\"URL con caratteri riservati\"" > $receipts_dir"/missing"
         cat $missing_file >> $receipts_dir"/missing"
@@ -696,7 +697,7 @@ function  _convert_csv_to_xls()
 function _prepara_ricevute_excel_tesi()
 {
     echo "Do excel receipts for tesi"
-            for filename in $warcs_dir/logs1/*.log; do
+            for filename in $warcs_dir/log/*.log; do
     # echo "filename: "$filename
                 fname=$(basename -- "$filename")
                 fname="${fname%.*}"
@@ -713,7 +714,7 @@ function _prepara_ricevute_excel_e_journals()
 
     declare -A istituti_ej_kv_AR
     # Raggrupiamo gli istituti in modo univoco
-    for filename in $warcs_dir/logs1/*.log; do
+    for filename in $warcs_dir/log/*.log; do
         # echo "filename: "$filename
             fname=$(basename -- "$filename")
             fname="${fname%.*}"

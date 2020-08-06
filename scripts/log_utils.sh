@@ -179,7 +179,7 @@ function get_warcked_seeds_and_not_from_logs()
     fi
 
 
-    for filename in $warcs_dir/logs1/*.log; do
+    for filename in $warcs_dir/log/*.log; do
         if [[ -f $filename$out_ext_ok ]]; then
             rm $filename$out_ext_ok
         fi
