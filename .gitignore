@@ -10,6 +10,8 @@ zip/
 *.srt
 *.ids
 *.txt
+*.save
+*.tmp
 etd.csv
 e_journals.csv
 run_tesi.sh
@@ -21,4 +23,3 @@ scripts/*_env.con
 scripts/*_env.dev.con
 
 harvest.code-workspace
-s

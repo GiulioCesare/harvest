@@ -245,12 +245,6 @@ function check_for_missing_seeds()
 } # end _check_for_missing_seeds
 
 
-
-
-
-
-
-
 # su imtlucca ho avuto un abbattimento dell'indice del 94%
 function clean_wayback_index ()
 {
@@ -470,14 +464,6 @@ cd $HARVEST_DIR
 
 
 
-function create_warcs_to_index_list()
-{
-
-    echo "Creiamo la lista dei warc da indicizzare: "$dest_warcs_dir"/warcs.lst"
-    ls -1rt $dest_warcs_dir/*warc.gz > $dest_warcs_dir"/warcs.lst"
-
-}
-
 
 
 
@@ -642,3 +628,38 @@ function check_pdf_download()
 
     done < "$repositories_file"
 }
+
+
+function create_warcs_to_index_list()
+{
+
+    # echo "Creiamo la lista dei warc da indicizzare: "$dest_warcs_dir"/warcs.lst"
+    # ls -1rt $dest_warcs_dir/*warc.gz > $dest_warcs_dir"/warcs.lst"
+
+    warc_list="$dest_warcs_dir"/warcs.lst
+    echo "Creiamo la lista dei warc da indicizzare: "$warc_list
+
+   if [[ -f $warc_list ]]; then
+        echo "Remove $warc_list"
+        rm $warc_list
+    fi 
+
+    while IFS='|' read -r -a array line
+    do
+        line=${array[0]}
+
+        if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+            break
+        fi
+
+        if [[ ${line:0:1} == "#" ]] || [[ "$line" == "" ]];     then
+            continue
+        fi
+
+        wgz=$dest_warcs_dir/$harvest_date_materiale"_"${array[1]}".warc.gz" 
+
+        echo "adding $wgz"
+        echo $wgz $log_file >> $warc_list
+    done < "$repositories_file"
+}
+

@@ -97,25 +97,6 @@ function _do_unimarc()
 } # end _do_unimarc
 
 
-# Funzione per generazione una tantum a partire da dati provenienti da DB Mysql di BNCF
-function create_unimarc_from_dublin_core()
-{
-    istituto=db
-    metadati_filename=$metadata_dir"/db/"$istituto".xml.srt.record"
-    oai_dictionary_file=$metadata_dir"/db/"$istituto"_oai_001.ids.srt"
-    new_bids_file=$unimarc_dir"/db/"$harvest_date_materiale"_"$istituto".new_bids"
-
-
-    # TESI
-    command="python ./parse_tesi_unimarc_dublin_core.py $metadati_filename $oai_dictionary_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente $new_bids_file"
-    # echo "Command:"$command
-    echo "Create unimarc in formato ASCII for $metadati_filename"
-    eval $command > $unimarc_dir"/db/"$harvest_date_materiale"_"$istituto.mrk
-
-    # Convertire da file mrk testuale a unimarc .mrc
-    cmd="marcConv "$unimarc_dir"/db/"$harvest_date_materiale"_"$istituto".mrk"
-    eval $cmd > $unimarc_dir"/db/"$harvest_date_materiale"_"$istituto.mrc
-} # end create_unimarc_from_dublin_core
 
 
 
@@ -213,6 +194,37 @@ function _do_zip()
     zip $unimarc_accessori $unimarc_dir/$harvest_date_materiale"_oai_bid_deleted.all"
 } # End _do_zip
 
+
+
+
+
+# Funzione per generazione una tantum a partire da dati provenienti da DB Mysql di BNCF
+function create_unimarc_from_dublin_core()
+{
+    echo "create_unimarc_from_dublin_core"
+
+
+    istituto=db
+    in_metadati_filename=$metadata_dir"/db/"$istituto".xml.srt.record"
+    in_oai_dictionary_file=$metadata_dir"/db/"$istituto"_oai_001.ids.srt"
+    out_new_bids_file=$unimarc_dir"/db/"$harvest_date_materiale"_"$istituto".new_bids"
+   
+
+    # TESI
+    command="python scripts/parse_tesi_unimarc_dublin_core.py $in_metadati_filename $in_oai_dictionary_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente $out_new_bids_file"
+
+    # echo "Command:"$command
+    echo "Create unimarc in formato ASCII for $metadati_filename"
+    eval $command > $unimarc_dir"/db/"$harvest_date_materiale"_"$istituto.mrk
+
+    # Convertire da file mrk testuale a unimarc .mrc
+    cmd="marcConv "$unimarc_dir"/db/"$harvest_date_materiale"_"$istituto".mrk"
+    eval $cmd > $unimarc_dir"/db/"$harvest_date_materiale"_"$istituto.mrc
+} # end create_unimarc_from_dublin_core
+
+
+
+
 # https://www.iccu.sbn.it/it/normative-standard/linee-guida-per-la-digitalizzazione-e-metadati/mappatura-dublin-core---unimarc/index.html
 # ----------
 # Link from Chiara Storti/Zeno 16/09/2019
@@ -256,6 +268,11 @@ function createUnimarc()
         IFS='|' read -r -a array line  || DONE=true
 
         line=${array[0]}
+
+        if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+            break
+        fi
+
         # se riga comentata o vuota skip
         if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
               continue
@@ -266,13 +283,6 @@ function createUnimarc()
         _do_unimarc $istituto $oai_dictionary_file $nbn_file $year2d
 
     done < "$repositories_file"
-
-
-
-
-
-
-
 
     # _do_prepara_unimarc_per_consegna
     # _do_zip

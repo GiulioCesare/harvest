@@ -72,14 +72,21 @@ function _carica_mdr_array()
                 oai_id=${array[8]}  # qui prendo l'OAI identifier
 
                 # Abbiamo un NBN?
-                if test "${oai_nbn_kv_AR[$oai_id]+isset}"; then
-                    # echo "NBN="${oai_nbn_kv_AR[$oai_id]};
-                    nbn_id=${oai_nbn_kv_AR[$oai_id]};
-                    nbn_status=${oai_nbn_status_kv_AR[$oai_id]};
+                # if (( ${#oai_nbn_kv_AR[@]} )); then
+                if [ -n "$oai_nbn_kv_AR" ]; then
+                    if test "${oai_nbn_kv_AR[$oai_id]+isset}"; then
+                        # echo "NBN="${oai_nbn_kv_AR[$oai_id]};
+                        nbn_id=${oai_nbn_kv_AR[$oai_id]};
+                        nbn_status=${oai_nbn_status_kv_AR[$oai_id]};
+                    else
+                        nbn_id=" ";
+                        nbn_status=" ";
+                    fi
                 else
                     nbn_id=" ";
                     nbn_status=" ";
-                fi;
+                fi
+
 
 
 
@@ -215,7 +222,7 @@ echo "url in warc="$url >> tmp.log
                     echo $dati_ricevuta >> $receipts_dir"/"$harvest_date_materiale"_"$istituto"_ok.csv"
             else
                 echo "MDR: NOT FOUND in meta_dati_ricevute_kv_AR '$url'" >>/dev/stderr
-                exit
+                # exit
                 # echo "meta_dati_ricevute_kv_AR"
                 # printarr meta_dati_ricevute_kv_AR
             fi;
@@ -271,7 +278,7 @@ echo "nbn_file="$nbn_file
 # Carichiamo l'associative array con la descrizione degli errori HTTP
 _load_http_error_descriptions()
 {
-    echo "_load_http_error_descriptions: " $HARVEST_DIR"/http_errors_it.csv"
+    echo "_load_http_error_descriptions: " $HARVEST_DIR"/csv/http_errors_it.csv"
     # while IFS='|' read -r -a array line
     # do
 
@@ -296,7 +303,7 @@ _load_http_error_descriptions()
 # echo "key="$key
 
       http_error_kv_AR[$key]=$value
-    done < $HARVEST_DIR"/http_errors_it.csv"
+    done < $HARVEST_DIR"/csv/http_errors_it.csv"
 
 # echo "DUMP http_error_kv_AR"
 # printf '%s\n' "${http_error_kv_AR[@]}"
@@ -694,19 +701,6 @@ function  _convert_csv_to_xls()
 
 
 
-function _prepara_ricevute_excel_tesi()
-{
-    echo "Do excel receipts for tesi"
-            for filename in $warcs_dir/log/*.log; do
-    # echo "filename: "$filename
-                fname=$(basename -- "$filename")
-                fname="${fname%.*}"
-    # echo "fname=$fname"
-                istituto=${fname##*_}   # rimuovi fino all'ultimo underscore
-    # echo "istituto TESI: $istituto"
-                _convert_csv_to_xls $istituto
-            done
-}
 
 function _prepara_ricevute_excel_e_journals()
 {
@@ -795,6 +789,22 @@ function _prepara_ricevute_excel_e_journals()
     done
 } # end _prepara_ricevute_excel_e_journals
 
+
+
+
+
+
+
+
+
+
+
+
+
+ # end _prepara_ricevute_excel
+
+
+
 function _prepara_ricevute_excel()
 {
     echo "prepara_ricevute_excel"
@@ -807,7 +817,23 @@ function _prepara_ricevute_excel()
         _prepara_ricevute_excel_e_journals
     fi
 
-} # end _prepara_ricevute_excel
+}
+
+function _prepara_ricevute_excel_tesi()
+{
+    echo "Do excel receipts for tesi"
+            for filename in $warcs_dir/log/*.log; do
+    # echo "filename: "$filename
+                fname=$(basename -- "$filename")
+                fname="${fname%.*}"
+    # echo "fname=$fname"
+                istituto=${fname##*_}   # rimuovi fino all'ultimo underscore
+    # echo "istituto TESI: $istituto"
+                _convert_csv_to_xls $istituto
+            done
+}
+
+
 
 function _prepara_ricevute_csv()
 {
@@ -817,11 +843,16 @@ function _prepara_ricevute_csv()
     # do
     # While read" doesn't work when the last line of a file doesn't end with newline char.
     # It reads the line but returns false (non-zero) value
-    DONE=false
-    until $DONE; do
-        IFS='|' read -r -a array line  || DONE=true
+    DONE1=false
+    until $DONE1; do
+        IFS='|' read -r -a array line  || DONE1=true
 
         line=${array[0]}
+
+        if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+            break
+        fi
+
         # se riga comentata o vuota skip
         if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
               continue
@@ -842,9 +873,20 @@ echo "Working on: " $istituto
         _do_receipts_for_seeds_in_warc $istituto
         _do_receipts_for_seeds_not_in_warc $istituto
 
-        # Solo per debug
-        # check_match_seeds_donloaded_to_download $istituto
+        # Facciamo le ricevute excel
+        # FU _prepara_ricevute_excel 
+        if [ $materiale == $MATERIALE_TESI ]; then
+            # Prepariamop le ricevute in formato excel per TESI
+            _convert_csv_to_xls $istituto
 
+        elif [ $materiale == $MATERIALE_EJOURNAL ]; then
+            # Prepariamop le ricevute in formato excel per E-JOURNALS
+            echo "DA RIVEDERE ....." 
+            # _prepara_ricevute_excel_e_journals
+        fi
+
+            # Solo per debug
+            # check_match_seeds_donloaded_to_download $istituto
 
     done < "$repositories_file"
 } # end _prepara_ricevute_csv
@@ -868,5 +910,5 @@ function make_receipts()
     echo "--------"
 
     _prepara_ricevute_csv
-    _prepara_ricevute_excel
+    # _prepara_ricevute_excel ancora solo per EJ. Ma da sostituire
 } # end make_receipts

@@ -135,8 +135,7 @@ for record in root.findall(paths['dc_records'], namespaces=ns):
     # if not oaiidentifier in oai_001_dict.keys():
     #     sys.stderr.write("OAI record "+oaiidentifier+" NOT IN WARC\n")
     #     continue;
-
-    # print "--> trovato "+oaiidentifier
+    # print "--> trovato "+oaiidentifier.text
 
 
     # 001 RECORD IDENTIFIER
@@ -188,10 +187,11 @@ for record in root.findall(paths['dc_records'], namespaces=ns):
 
     # 017 OTHER STANDARD IDENTIFIER
     # sys.stdout.write("=017  80$a"+oaiidentifier+"\n")
-    print "=017  "+ar[0]
+    print "=017  80$a"+ar[0]
 
 
     dates=record.findall(paths['dates'], namespaces=ns)
+    out_date = "=100    $a"+"20190501d----------k--ita-50----ba"+" "
     if dates is not None:
         dates_len= len(dates)
         if (dates_len > 0):
@@ -202,9 +202,11 @@ for record in root.findall(paths['dc_records'], namespaces=ns):
             #       Al posto di ‘xxxx’ vanno i primi 4 char di dc:data[0] se tutti e quattro sono numeri; altrimenti va ‘----'
             sub = date[ 0 : 0 + 4]
             if sub.isdigit():
-                print "=100    $a"+"20190501d"+sub+"------k--ita-50----ba"+" "
-            else:
-                print "=100    $a"+"20190501d----------k--ita-50----ba"+" "
+                # print "=100    $a"+"20190501d"+sub+"------k--ita-50----ba"+" "
+                out_date = "=100    $a"+"20190501d"+sub+"------k--ita-50----ba"+" "
+            # else:
+            #     print "=100    $a"+"20190501d----------k--ita-50----ba"+" "
+    print out_date
 
 
     # 101 LANGUAGE OF THE ITEM
@@ -482,6 +484,7 @@ for record in root.findall(paths['dc_records'], namespaces=ns):
     print "=FMT    $aTD"
 
     print "" # riga di separazione tra record
+
 
 sys.stderr.write("Elaborati " + str(recs) + " record\n")
 sys.stderr.write("Bid generati " + str(bid_generati) + " \n")
