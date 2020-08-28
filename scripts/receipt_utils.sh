@@ -102,29 +102,34 @@ fi
                     if [ $materiale == $MATERIALE_TESI ]; then
                         echo "No didl.component.resource per:'$main'"
                         if [[ ! -f $receipts_dir/$harvest_date_materiale"_"$istituto".no_didl_resource" ]]; then
-                            echo "OAI identifier|descrizione|titolo" >> $receipts_dir/$harvest_date_materiale"_"$istituto".no_didl_resource"
+                            echo "URL|descrizione|titolo" >> $receipts_dir/$harvest_date_materiale"_"$istituto".no_didl_resource"
                         fi
                         titolo=${array[2]}
                         echo "$main|no didl:resource associato|"$titolo >> $receipts_dir/$harvest_date_materiale"_"$istituto".no_didl_resource"
                     fi;
-                    component=0
+                    # component=0
+
+
+                    titolo=${array[2]}
+                    rights=${array[9]}
+                    main_url=${array[6]}
+                    echo $oai_id"|"$nbn_id"|"$nbn_status"|"$rights"|"$main_url"|"$titolo >> $ok_main_csv
+
+
                 else
 # echo "components="$components
-
                 # usati ;;; come separatori
                 # concertiti in 01 binario per lo split
                 new_sep_components=${components//;;;/} 
 # echo "new sep components=" $new_sep_components
 # echo "-----"                
                 IFS= read -ra keys_ar <<< $new_sep_components 
-
 # echo ${keys_ar[*]}
 # return
                 component=1
                 done_main=0
                 for key in ${!keys_ar[*]}; do
                     k=${keys_ar[$key]}
-
  # echo "key="$key
  # echo "k="$k
                     k1=$k
