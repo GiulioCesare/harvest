@@ -36,10 +36,14 @@ function _carica_mdr_array()
     # While read" doesn't work when the last line of a file doesn't end with newline char.
     # It reads the line but returns false (non-zero) value
     DONE=false
+    row_ctr=0
     until $DONE; do
         IFS='|' read -r -a array line  || DONE=true
 
-# echo "line=$line"
+        row_ctr=$((row_ctr+1))
+
+
+
         campo0=${array[0]}
         if [[ ${campo0:0:1} == "#" ]];     then
             continue
@@ -89,8 +93,24 @@ function _carica_mdr_array()
 
 
 
+if [[ $row_ctr == 117 ]]; then
+    echo "components="$components
+fi
 
+                if [[ "$components" == " " ]]; then
+
+                    if [ $materiale == $MATERIALE_TESI ]; then
+                        echo "No didl.component.resource per:'$main'"
+                        if [[ ! -f $receipts_dir/$harvest_date_materiale"_"$istituto".no_didl_resource" ]]; then
+                            echo "OAI identifier|descrizione|titolo" >> $receipts_dir/$harvest_date_materiale"_"$istituto".no_didl_resource"
+                        fi
+                        titolo=${array[2]}
+                        echo "$main|no didl:resource associato|"$titolo >> $receipts_dir/$harvest_date_materiale"_"$istituto".no_didl_resource"
+                    fi;
+                    component=0
+                else
 # echo "components="$components
+
                 # usati ;;; come separatori
                 # concertiti in 01 binario per lo split
                 new_sep_components=${components//;;;/} 
@@ -107,28 +127,8 @@ function _carica_mdr_array()
 
  # echo "key="$key
  # echo "k="$k
- 
-                    if [[ "$k" == " " ]]; then
-
-
-                        if [ $materiale == $MATERIALE_TESI ]; then
-                            echo "No didl.component.resource per:'$main'"
-                            if [[ ! -f $receipts_dir/$harvest_date_materiale"_"$istituto".no_didl_resource" ]]; then
-                                echo "OAI identifier|descrizione|titolo" >> $receipts_dir/$harvest_date_materiale"_"$istituto".no_didl_resource"
-                            fi
-                                titolo=${array[2]}
-                                echo "$main|no didl:resource associato|"$titolo >> $receipts_dir/$harvest_date_materiale"_"$istituto".no_didl_resource"
-                        fi;
-
-
-
-                        component=0
-                    fi
-                    # k1=${k%#*} # rimuovi cio' che segue il cancelletto
                     k1=$k
-
                     replace_octal_with_encoded_hex "$k1" # return  value in $ret_replace_octal_with_encoded_hex
-
                     tmp=$(urldecode "${ret_replace_octal_with_encoded_hex}")
                     k=$(urldecode "${tmp}")
                     data_harvest=${array[0]}
@@ -156,6 +156,8 @@ function _carica_mdr_array()
                         meta_dati_ricevute_kv_AR[$k]=$data_harvest"|"$data_tesi"|"$oai_id"|"$nbn_id"| |"$titolo"|"$autore"|"$tutor"|"$soggetto"|"$url"|"$tesi
                     fi
                 done
+
+                fi
 # break
             fi
 
