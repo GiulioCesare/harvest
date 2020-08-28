@@ -126,8 +126,6 @@ function do_wget_by_seed_block()
             # echo "wget --no-check-certificate --user-agent='bncf' --page-requisites --output-file=./$fname.log --warc-file=./$fname -i=$fname.seeds.tmp"
             wget --no-check-certificate --user-agent='bncf' --page-requisites --output-file=./$fname.log --warc-file=./$fname --input-file=$fname.seeds.tmp
 
-            echo "cancella cartella di download"
-            rm -fr $folder
 
 
             echo "remove block $seeds_block_ctr $fname.seeds.tmp"
@@ -145,8 +143,6 @@ function do_wget_by_seed_block()
         echo "wget_ting $fname.seeds.tmp"
         wget --no-check-certificate --user-agent='bncf' --page-requisites --output-file=./$fname.log --warc-file=./$fname --input-file=$fname.seeds.tmp
 
-        echo "cancella cartella di download"
-        rm -fr $folder
 
         echo "delete last block $fname.seeds.tmp"
         rm $fname.seeds.tmp

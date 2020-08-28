@@ -506,19 +506,6 @@ function timer()
     fi
 }
 
-# function clean_work_area
-# {
-#     echo "--> CLEAN WORK AREA ($warcs_work_area_dir)"
-# 
-#     # read -p "Are you sure tou want to clean the work area? [yYnN]" -n 1 -r
-#     # echo    # (optional) move to a new line
-#     # if [[ $REPLY =~ ^[Yy]$ ]]
-#     # then
-#         # CAUSED HAVOC due to missing variable !!!! rm_RM -fr $warcs_work_area_dir/*
-#     # else
-#     #     echo "Operation aborted "
-#     # fi
-# }
 
 
 # TROPPO PERICOLOSA (gia' cancellata home di almaviva in esercizio, poteva andare molto peggio!!!!)
