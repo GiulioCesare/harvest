@@ -14,6 +14,9 @@ zip/
 *.save*
 *.tmp*
 etd.csv
+etd_last_harvest_date.csv
+etd_last_harvest_date_messuti.csv
+e_journals_last_harvest_date_messuti.csv
 e_journals.csv
 run_tesi.sh
 run_riviste.sh
