@@ -112,66 +112,26 @@ function printarr()
     # echo "end printarr"
 } # End printarr
 
-function check_for_harvest_mismatch()
+
+# ++++
+
+
+
+
+function check_for_missing_seeds_istituto()
 {
-    echo "CHECK FOR HARVEST MISMATCH"
-    echo "=========================="
+    local fname=$1
+# echo "fname="$fname
 
-    mismatch=0;
-
-    # for seeds_to_harvest_filename in $seeds_dir/*.seeds
-    for log_filename in $warcs_log_dir/*.log
-
-    do
-        fname=$(basename -- "$log_filename")
-        fname="${fname%.*}"
+#     # for seeds_to_harvest_filename in $seeds_dir/*.seeds
+#     for log_filename in $warcs_log_dir/*.log
+#     do
+#         fname=$(basename -- "$log_filename")
+#         fname="${fname%.*}"
 
 # echo "fname="$fname
-        seeds_to_harvest_filename=$seeds_dir/$fname.seeds
-        # echo "seeds_to_harvest_filename="$seeds_to_harvest_filename
-# continue
-        echo "$seeds_to_harvest_filename"
-        seeds_to_harvest=$(cat $seeds_to_harvest_filename | wc -l)
-        seeds_in_warc=0
-        seeds_not_in_warc=0
-        #  Contiamo i seed scaricati
-        siw=$warcs_log_dir/$fname.log.seeds_in_warc
-        if [[ -f $siw ]]; then
-            seeds_in_warc=$(cat $siw | wc -l)
-        fi
-        sniw=$warcs_log_dir/$fname.log.seeds_not_in_warc
-        if [[ -f $sniw ]]; then
-            seeds_not_in_warc=$(cat $sniw | wc -l)
-        fi
-        tot_seeds_from_wget=$((seeds_in_warc + seeds_not_in_warc))
-        if [[ "$seeds_to_harvest" -gt "$tot_seeds_from_wget" ]]; then
-            echo "$seeds_to_harvest seeds to harvest in $seeds_to_harvest_filename"
-            echo "$tot_seeds_from_wget seed harvested in $seeds_to_harvest_filename (see .missing)"
-            let "mismatch=mismatch+1"
-        fi
-    done
+# return
 
-    if [[ $mismatch < 1 ]]; then
-        echo "GREAT!!! Nessun miscmath tra URL(seed) da scaricare e scaricate"
-    else
-        echo "CHECK!!! $mismatch siti miscmath tra URL(seed) da scaricare e scaricate"
-    fi
-} # end check_for_harvest_mismatch
-
-
-
-function check_for_missing_seeds()
-{
-    echo "CHECK FOR MISSING SEEDS (.missing)"
-    echo "=================================="
-
-    # for seeds_to_harvest_filename in $seeds_dir/*.seeds
-    for log_filename in $warcs_log_dir/*.log
-    do
-        fname=$(basename -- "$log_filename")
-        fname="${fname%.*}"
-
-# echo "fname="$fname
         seeds_to_harvest_filename=$seeds_dir/$fname.seeds
         echo "seeds_to_harvest_filename="$seeds_to_harvest_filename
 # continue
@@ -241,8 +201,49 @@ function check_for_missing_seeds()
                 fi
                 # break;
         done < $seeds_to_harvest_filename
-    done
+    # done # end ciclo sui log
+} # end _check_for_missing_seeds_istituto
+
+
+function check_for_missing_seeds()
+{
+    echo "CHECK FOR MISSING SEEDS (.missing)"
+    echo "=================================="
+
+
+
+    DONE=false
+    until $DONE; do
+        IFS='|' read -r -a array line  || DONE=true
+
+        line=${array[0]}
+
+        if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+            break
+        fi
+
+        # se riga comentata o vuota skip
+        if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+              continue
+         fi
+        local istituto=${array[1]}
+
+        echo "Working on: " $istituto
+
+        if [ $materiale == $MATERIALE_TESI ]; then
+            # Prepariamop le ricevute in formato excel per TESI
+    
+            check_for_missing_seeds_istituto $harvest_date_materiale"_"$istituto
+
+        elif [ $materiale == $MATERIALE_EJOURNAL ]; then
+            # Prepariamop le ricevute in formato excel per E-JOURNALS
+            echo "DA RIVEDERE ....." 
+            # _prepara_ricevute_excel_e_journals
+        fi
+
+    done < "$repositories_file"
 } # end _check_for_missing_seeds
+
 
 
 # su imtlucca ho avuto un abbattimento dell'indice del 94%
@@ -630,6 +631,7 @@ function check_pdf_download()
 }
 
 
+
 function create_warcs_to_index_list()
 {
 
@@ -662,4 +664,92 @@ function create_warcs_to_index_list()
         echo $wgz $log_file >> $warc_list
     done < "$repositories_file"
 }
+
+
+
+
+function check_for_harvest_mismatch_istituto()
+{
+local fname=$1
+
+    mismatch=0;
+
+    # for seeds_to_harvest_filename in $seeds_dir/*.seeds
+    # for log_filename in $warcs_log_dir/*.log
+    # do
+    #     fname=$(basename -- "$log_filename")
+    #     fname="${fname%.*}"
+
+# echo "fname="$fname
+        seeds_to_harvest_filename=$seeds_dir/$fname.seeds
+        # echo "seeds_to_harvest_filename="$seeds_to_harvest_filename
+# continue
+        echo "$seeds_to_harvest_filename"
+        seeds_to_harvest=$(cat $seeds_to_harvest_filename | wc -l)
+        seeds_in_warc=0
+        seeds_not_in_warc=0
+        #  Contiamo i seed scaricati
+        siw=$warcs_log_dir/$fname.log.seeds_in_warc
+        if [[ -f $siw ]]; then
+            seeds_in_warc=$(cat $siw | wc -l)
+        fi
+        sniw=$warcs_log_dir/$fname.log.seeds_not_in_warc
+        if [[ -f $sniw ]]; then
+            seeds_not_in_warc=$(cat $sniw | wc -l)
+        fi
+        tot_seeds_from_wget=$((seeds_in_warc + seeds_not_in_warc))
+        if [[ "$seeds_to_harvest" -gt "$tot_seeds_from_wget" ]]; then
+            echo "$seeds_to_harvest seeds to harvest in $seeds_to_harvest_filename"
+            echo "$tot_seeds_from_wget seed harvested in $seeds_to_harvest_filename (see .missing)"
+            let "mismatch=mismatch+1"
+        fi
+    # done
+
+    if [[ $mismatch < 1 ]]; then
+        echo "GREAT!!! Nessun miscmath tra URL(seed) da scaricare e scaricate"
+    else
+        echo "CHECK!!! $mismatch siti miscmath tra URL(seed) da scaricare e scaricate"
+    fi
+} # end check_for_harvest_mismatch_istituto
+
+
+
+function check_for_harvest_mismatch()
+{
+    echo "CHECK FOR HARVEST MISMATCH"
+    echo "=========================="
+
+
+    DONE=false
+    until $DONE; do
+        IFS='|' read -r -a array line  || DONE=true
+
+        line=${array[0]}
+
+        if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+            break
+        fi
+
+        # se riga comentata o vuota skip
+        if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+              continue
+         fi
+        local istituto=${array[1]}
+
+        echo "Working on: " $istituto
+
+        if [ $materiale == $MATERIALE_TESI ]; then
+            # Prepariamop le ricevute in formato excel per TESI
+    
+            check_for_harvest_mismatch_istituto $harvest_date_materiale"_"$istituto
+
+        elif [ $materiale == $MATERIALE_EJOURNAL ]; then
+            # Prepariamop le ricevute in formato excel per E-JOURNALS
+            echo "DA RIVEDERE ....." 
+            # _prepara_ricevute_excel_e_journals
+        fi
+
+    done < "$repositories_file"
+} # end check_for_harvest_mismatch
+
 

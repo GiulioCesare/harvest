@@ -15,6 +15,7 @@ from datetime import datetime
 
 filename = sys.argv[1]
 data_harvest = sys.argv[2]
+out_deleted_filename = sys.argv[3]
 tree = parse(filename)
 
 ns = {
@@ -63,8 +64,11 @@ paths = {
 }
 
 recs=int(0)
+out_deleted=open(out_deleted_filename, "w")
+
 
 print "#Data archiviazione MD|Data della tesi|Autore della tesi|Tutor della tesi|Titolo della tesi|Soggetto|Handle|URL della tesi|OAI identifier"
+out_deleted.write("OAI identifier|Data cancellazione\n")
 
 for record in tree.xpath('.//record'): # Selects all subelements, on all levels beneath the current element. For example, .//egg selects all egg elements in the entire tree.
     recs += 1
@@ -72,7 +76,21 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
     # print "--> record # "+str(recs)
 
     status = record.find(paths['status'])
-    # print "status="+str(status)
+
+    if status is not None:
+        # print "status="+str(status)
+        # sys.stderr.write("status="+str(status)+"\n")
+        attributes = status.attrib
+        # print attributes
+
+        if attributes["status"] == "deleted":
+            oaiidentifier = record.find(paths['oaiidentifier']).text
+            oaidatestamp = record.find(paths['oaidatestamp']).text
+
+            # sys.stderr.write("attributes="+str(attributes)+"\n")
+            out_deleted.write("deleted: "+oaiidentifier+"|"+oaidatestamp+"\n")
+            
+
 
     if status is None:
 
@@ -294,3 +312,5 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
 
             sys.stdout.write("\n")
+
+out_deleted.close()

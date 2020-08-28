@@ -1,3 +1,4 @@
+check_harvest_01_26-08_05*/
 tesi*/
 e_journals*/
 logs/
@@ -5,13 +6,13 @@ save*/
 tmp/
 zip/
 .vscode/
-*.old
+*.old*
 *.log
 *.srt
 *.ids
 *.txt
-*.save
-*.tmp
+*.save*
+*.tmp*
 etd.csv
 e_journals.csv
 run_tesi.sh

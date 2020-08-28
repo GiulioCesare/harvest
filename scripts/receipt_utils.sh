@@ -27,7 +27,7 @@ function _carica_mdr_array()
 # # Per la generazione degli NBN
 # in_url=$nbn_dir"/"$harvest_date_materiale"_"$istituto"_in.url"
 
-    echo "OAI identifier|NBN identifier|NBN status|Diritti|Titolo" > $ok_main_csv
+    echo "OAI identifier|NBN identifier|NBN status|Diritti|URL|Titolo" > $ok_main_csv
     # echo "#OAI identifier|URL tesi|URL memoria|URL OAI metadata |Titolo della tesi" > $in_url
 
     # while IFS='|' read -r -a array line
@@ -143,7 +143,9 @@ function _carica_mdr_array()
 
                     if [ $done_main == 0 ]; then
                         meta_dati_ricevute_kv_AR[$main]=$data_harvest"|"$data_tesi"|"$oai_id"|"$nbn_id"|"$rights"|"$titolo"|"$autore"|"$tutor"|"$soggetto"|"$main
-                        echo $oai_id"|"$nbn_id"|"$nbn_status"|"$rights"|"$titolo >> $ok_main_csv
+
+                        main_url=${array[6]}
+                        echo $oai_id"|"$nbn_id"|"$nbn_status"|"$rights"|"$main_url"|"$titolo >> $ok_main_csv
 
                         # Per NBN echo "#OAI identifier|URL tesi|URL memoria|URL OAI metadata |Titolo della tesi" > $in_url
                         # echo $oai_id"|"$url"|http://memoria.depositolegale.it/*/"$url"|"$metadata_url$oai_id"|"$titolo >> $in_url
@@ -313,18 +315,20 @@ _load_http_error_descriptions()
 function _genera_dati_per_ricevute()
 {
     local istituto=$1
+    local out_mdr=$receipts_dir/$harvest_date_materiale"_"$istituto".mdr"
+    local out_deleted=$receipts_dir/$harvest_date_materiale"_"$istituto".del"
 
     # Generiamo i dati per le ricevute
     if [ $work_dir == $E_JOURNALS_DIR ]; then
         command="python ./scripts/parse_e_journals_ricevute.py "$metadata_dir"/"$harvest_date_materiale"_"$istituto".xml "$formatted_harvest_date
     else
         # TESI
-        command="python ./scripts/parse_tesi_ricevute.py "$metadata_dir"/"$harvest_date_materiale"_"$istituto".xml "$formatted_harvest_date
+        command="python ./scripts/parse_tesi_ricevute.py "$metadata_dir"/"$harvest_date_materiale"_"$istituto".xml "$formatted_harvest_date" "$out_deleted
     fi
 # echo "Crea meta dati per ricevute in formato ASCII PSV (Pipe Separated Values) for ${array[1]}: "$command
-	mdr=$receipts_dir/$harvest_date_materiale"_"$istituto".mdr"
  # echo "Crea mdr:" $mdr
-    eval $command > $mdr
+    eval $command > $out_mdr
+
 
 } # end _genera_dati_per_ricevute
 
@@ -644,9 +648,15 @@ function  _convert_csv_to_xls()
         csv_list_file=$csv_list_file" "$receipts_dir"/"$main
     fi
 
+    if [[ -f $base_name".del" ]]; then
+        sed s/\|/\\t/g $base_name".del" | perl -pe 's/\x01/ # /g'  > $receipts_dir"/cancellate"
+        csv_list_file=$csv_list_file" "$receipts_dir"/cancellate"
+    fi
+
+
     if [[ -f $base_name"_ok.csv" ]]; then
-        sed s/\|/\\t/g $base_name"_ok.csv" | perl -pe 's/\x01/ # /g'  > $receipts_dir"/ok"
-        csv_list_file=$csv_list_file" "$receipts_dir"/ok"
+        sed s/\|/\\t/g $base_name"_ok.csv" | perl -pe 's/\x01/ # /g'  > $receipts_dir"/con_risorse"
+        csv_list_file=$csv_list_file" "$receipts_dir"/con_risorse"
     fi
 
     if [[ -f $base_name"_ko.csv" ]]; then
@@ -655,8 +665,8 @@ function  _convert_csv_to_xls()
     fi
 
     if [[ -f $base_name".no_didl_resource" ]]; then
-        sed s/\|/\\t/g $base_name".no_didl_resource" > $receipts_dir"/no_resource"
-        csv_list_file=$csv_list_file" "$receipts_dir"/no_resource"
+        sed s/\|/\\t/g $base_name".no_didl_resource" > $receipts_dir"/senza_risorse"
+        csv_list_file=$csv_list_file" "$receipts_dir"/senza_risorse"
     fi
 
     missing_file=$warcs_dir"/log/"$harvest_date_materiale"_"$istituto".log.seeds.missing"
@@ -687,6 +697,7 @@ function  _convert_csv_to_xls()
         echo "ssconvert $csv_list_file $excel_file"
         ssconvert $csv_list_file $excel_file # > /dev/null 2>&1
     fi
+
     echo "# Copy receipts to "$report_dir"/"$istituto" for the wayback machine"
     cp $excel_file $report_dir"/"$istituto"/."
 
