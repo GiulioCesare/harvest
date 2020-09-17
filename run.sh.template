@@ -81,17 +81,19 @@ print_configuration
 
 # prepare_wget_sites_list
 # create_warcs_concurrently
+# create_warcs_md5
 # check_pdf_download
 
-
-# make_dest_warcs_read_write
+# Makes destination warcs read only (to avoid deletion)
 # copy_warcs_and_logs_to_destination_dir_and_remove
-# make_dest_warcs_read_only
 
 # create_warcs_to_index_list
 # index_warcs
 
 # get_indexes_for_compression
+
+# Rinominare a mano con .embargo. i siti sotto embargo
+
 # compress_parziale=0
 # compress_completo=1
 #
@@ -118,28 +120,35 @@ print_configuration
 
 # generate_nbn_identifiers
 
+
+# Prima di fare le ricevute facciamo il salvataggio dei dati su S3
+# 	per evitare perdita dati come ad Agosto mentre si faceva l'harvesting della LUISS
+#	e non avevamo un backup.
+#	Backuup richiesto dopo aver fatto l'harvesting il 5 agosto. Ma mai avuto risposta da BNCF
+#	Prima backup richiesto a dicembre 2019 ed anche quello caduto nel vuoto
+#
+# upload_warcs_to_s3
+# dowbnload_warcs_from_s3
+
+
 # make_receipts
 
 # check_for_receipts_mismatch ### DA RIVEDERE forse sostituibile con check_match_seeds_donloaded_to_download ()
 
-# if [ "$ambiente" != "esercizio" ]; then
-# crea_wayback_index_timestamp_per_unimarc
-# fi
+
+# UNIMARC
+# --------
 
 # Ricordarsi di resettare il contatore quando si fa l'unimarc finale!! tesi/09_unimarcs/ctr_001.txt
 # Se file non esiste viene creato con ctr a 1
 # 13/02/2020 Rossana - unimarc genera comunque link a memoria
 
-
 # GESTIRE RECORD CANCELLATI
 # createUnimarc
-
 
 # check_unimarc_for_no_wayback_link
 
 # generate_last_harvest_list
-
-
 
 # make_report
 
@@ -149,6 +158,10 @@ print_configuration
 
 
 
+# ---------------
+# END TESTING
+# ---------------
+
 
 # ---------------
 # ON REQUEST: Find archived thesis per site
@@ -157,11 +170,8 @@ print_configuration
 # Procedura da farsi una tantum per generare numero NBN delle tesi archiviate in memoria (storico)
 # generate_archived_thesis_nbn
 
-
 # Procedura da farsi una tantum per recuperare il pregresso (storico) da DB MySql di BNCF
 # create_unimarc_from_dublin_core
-
-
 
 
 

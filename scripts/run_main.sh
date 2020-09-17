@@ -207,6 +207,7 @@ source scripts/archived_thesis.sh
 source scripts/embargo_utils.sh
 source scripts/report_utils.sh
 source scripts/nbn_utils.sh
+source scripts/s3_utils.sh
 
 
 # VARIABILI
@@ -1183,16 +1184,41 @@ function prepare_wget_sites_list()
 
     echo "Prepare $warcs_parallel_input_file"
 
-    shopt -s nullglob
-    # for filename in $current_seeds_dir/*$ctr$extension; do
-    for filename in $current_seeds_dir/*$extension; do
+    # shopt -s nullglob
+    # # for filename in $current_seeds_dir/*$ctr$extension; do
+    # for filename in $current_seeds_dir/*$extension; do
 
-        echo "filename=$filename"
-        fname=$(basename -- "$filename")
+    #     echo "filename=$filename"
+    #     fname=$(basename -- "$filename")
 
+    #     echo "$filename" >> $warcs_parallel_input_file
+
+    # done
+
+
+
+     while IFS='|' read -r -a array line
+     do
+           line=${array[0]}
+
+          if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+            break
+          fi
+
+           # se riga comentata o vuota skip
+           if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+                 continue
+            fi
+
+        istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
+#       echo "istituto="$istituto
+        filename=$seeds_dir"/"$harvest_date_materiale"_"$istituto".seeds"
         echo "$filename" >> $warcs_parallel_input_file
 
-    done
+     done < "$repositories_file"
+
+
+
     cd $HARVEST_DIR
 } # end prepare_wget_sites_list
 

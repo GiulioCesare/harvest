@@ -11,6 +11,7 @@ zip/
 *.srt
 *.ids
 *.txt
+*.jar
 *.save*
 *.tmp*
 etd.csv

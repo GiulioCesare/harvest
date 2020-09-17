@@ -93,9 +93,9 @@ function _carica_mdr_array()
 
 
 
-if [[ $row_ctr == 117 ]]; then
-    echo "components="$components
-fi
+# if [[ $row_ctr == 117 ]]; then
+#     echo "components="$components
+# fi
 
                 if [[ "$components" == " " ]]; then
 

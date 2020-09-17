@@ -498,19 +498,105 @@ function replace_octal_with_encoded_hex()
 #echo "ret_replace_octal_with_encoded_hex=$ret_replace_octal_with_encoded_hex"
 
 
-cd tmp
+# cd tmp
 
-echo "ACCESSO controllato a pagine dietro login di UNICATT"
+# echo "ACCESSO controllato a pagine dietro login di UNICATT"
 
-echo "Login"
-wget --save-cookies cookies.txt --keep-session-cookies --delete-after --post-data 'user=appsrv.docta.ssows&password=kMcydyT3QhqMhlQE4O1m!' https://login.unicatt.it/iam-fe/sso/login
+# echo "Login"
+# wget --save-cookies cookies.txt --keep-session-cookies --delete-after --post-data 'user=appsrv.docta.ssows&password=kMcydyT3QhqMhlQE4O1m!' https://login.unicatt.it/iam-fe/sso/login
 
-echo "Accesso a pagina di una teesi"
-#wget --load-cookies ./cookies.txt --delete-after --no-directories --warc-tempdir=. --user-agent='bncf' --page-requisites --output-file=./unicatt_access.log --warc-file=./page
-wget -qO- --load-cookies ./cookies.txt http://hdl.handle.net/10280/296 &> /dev/null
+# echo "Accesso a pagina di una teesi"
+# #wget --load-cookies ./cookies.txt --delete-after --no-directories --warc-tempdir=. --user-agent='bncf' --page-requisites --output-file=./unicatt_access.log --warc-file=./page
+# wget -qO- --load-cookies ./cookies.txt http://hdl.handle.net/10280/296 &> /dev/null
 
 
-# echo "Accesso a componenti"
-wget --load-cookies ~/Downloads/cookies.txt --no-directories --warc-tempdir=. --user-agent='bncf' --page-requisites --input-file=../tesi/02_seeds/2019_11_05_tesi_unicatt.seeds --output-file=./2019_11_05_tesi_unicatt.log --warc-file=./2019_11_05_tesi_unicatt
+# # echo "Accesso a componenti"
+# wget --load-cookies ~/Downloads/cookies.txt --no-directories --warc-tempdir=. --user-agent='bncf' --page-requisites --input-file=../tesi/02_seeds/2019_11_05_tesi_unicatt.seeds --output-file=./2019_11_05_tesi_unicatt.log --warc-file=./2019_11_05_tesi_unicatt
 
-cd ..
+# cd ..
+
+
+
+# 09/09/2020 Upload file to S3 storage
+# File must be accompanied by .md5 (in same folder)
+
+# file_to_upload=/home/argentino/magazzini_digitali/wayback/collections/collection_3/archive/harvest_AV/2020_01_26_tesi/2020_01_26_tesi_iulm.warc.gz 
+# s3_path_filename=harvest/2020_01_26_tesi_iulm.warc.gz
+# 34 mega, Tempo impiegato per il caricamento: 00:03:12.891
+
+# file_to_upload=/home/argentino/magazzini_digitali/wayback/collections/collection_3/archive/harvest_AV/2020_01_26_tesi/2020_01_26_tesi_test_unige.warc.gz
+# s3_path_filename=harvest/2020_01_26_tesi_test_unige.warc.gz
+# 194 mega, Tempo impiegato per il caricamento: 00:05:09.776
+
+file_to_upload=/home/argentino/zip/2020_03_04_harvest.tar.gz 
+s3_path_filename=harvest/2020_03_04_harvest.tar.gz
+file_to_download_to=/home/argentino/Downloads/2020_03_04_harvest.tar.gz 
+
+
+# ====================
+# UPLOAD to S3
+# Non controllare i certificati: -Dcom.amazonaws.sdk.disableCertChecking
+# error 500: use  -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 
+# java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3  -Dcom.amazonaws.sdk.disableCertChecking -cp "./bin/*" it.s3.s3clientMP.HighLevelMultipartUpload action=upload file_to_upload=$file_to_upload s3_keyname=s3_path_filename
+# ====================
+
+# ====================
+# DOWNLOAD from S3
+# Non controllare i certificati: -Dcom.amazonaws.sdk.disableCertChecking
+# error 500: use  -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 
+# action can be upload or download 
+
+# java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
+#     -cp "./bin/*" it.s3.s3clientMP.HighLevelMultipartUploadDownload \
+#     action=download action=download \
+#     file_to_upload=$file_to_upload \
+#     file_to_download_to=$file_to_download_to \
+#     s3_keyname=$s3_path_filename
+    
+
+# Genera md5 da controllare
+file_to_download_to_md5=$file_to_download_to".md5"
+file_to_download_to_md5_check=$file_to_download_to_md5".check"
+
+# md5sum $file_to_download_to > $file_to_download_to_md5_check 
+
+
+# Controllare che MD5 scaricato da S3 corrisonda ad MD5 generato dlocalmente dopo il download
+awk_command='
+    BEGIN    {
+        FS=" "; 
+    }
+ 
+    FILENAME == ARGV[1] {
+        md5_AR[$1] = $1;
+        print "->S3    md5 " $1
+        next;
+    }
+    {
+    if ($1 in md5_AR)
+        {
+        print "->CHECK md5 " $1 " matches " 
+        next
+        }
+    else
+        {
+        print "CHECK md5 " $1 " DOES NOT match"
+        }
+    }' 
+
+awk "$awk_command" $file_to_download_to_md5 $file_to_download_to_md5_check
+
+# ====================
+
+
+
+# + "action=upload|download "
+# + "file_to_upload=source_filename (must have md5 associated file),"
+# + "s3_keyname=S3_full_path_filename "
+# + "file_download_to=local_destination_full_path_f
+
+# action=download file_to_upload=/home/argentino/zip/2020_03_04_harvest.tar.gz file_to_download_to=/home/argentino/Downloads/2020_03_04_harvest.tar.gz s3_keyname=harvest/2020_03_04_harvest.tar.gz
+
+
+# 1 e0bdfc5c51cc185f2bc12e73909ce5a9  2020_03_04_harvest.tar.gz
+# 1 e0bdfc5c51cc185f2bc12e73909ce5a9  2020_03_04_harvest.tar.gz

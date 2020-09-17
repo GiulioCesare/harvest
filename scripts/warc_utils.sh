@@ -535,64 +535,150 @@ function copy_warcs_and_logs_to_destination_dir_and_remove()
 {
     # echo "copy_warcs_to_destination_dir: "$dest_warcs_dir
     echo ""
-    echo "COPY and REMOVE"
-    echo "  '.warc.gz' files"
-    echo "    from $warcs_dir"
-    echo "    to   $dest_warcs_dir"
-    echo "  '.log' files"
-    echo "    from $warcs_dir"
-    echo "    to   $warcs_dir/log"
+    # echo "COPY and REMOVE"
+    # echo "  '.warc.gz' files"
+    # echo "    from $warcs_dir"
+    # echo "    to   $dest_warcs_dir"
+    # echo "  '.log' files"
+    # echo "    from $warcs_dir"
+    # echo "    to   $warcs_dir/log"
 
 
-    shopt -s nullglob
-    for warc_filename in $warcs_dir/*.gz
-    do
-# echo "warc_filename="$warc_filename
-        basename=$(basename -- "$warc_filename")
-# echo "basename="$basename
-        fname="${basename%%.*}" # elimina .warc.gz
-# echo "fname="$fname
+#     shopt -s nullglob
+#     for warc_filename in $warcs_dir/*.gz
+#     do
+# # echo "warc_filename="$warc_filename
+#         basename=$(basename -- "$warc_filename")
+# # echo "basename="$basename
+#         fname="${basename%%.*}" # elimina .warc.gz
+# # echo "fname="$fname
 
-        # Copiamo il warc
-echo "Copying $warc_filename to $dest_warcs_dir"
-        cp $warc_filename $dest_warcs_dir/.
+#         # Copiamo il warc
+# echo "Copying $warc_filename to $dest_warcs_dir"
+#         cp -p $warc_filename $dest_warcs_dir/.
 
-        if [ $? -ne 0 ]; then
-            echo "ERROR: while copying warc file"
-        else
-# echo "Removing "$basename
-            rm $warc_filename
+#         if [ $? -ne 0 ]; then
+#             echo "ERROR: while copying warc file"
+#         else
+# # echo "Removing "$basename
+#             rm $warc_filename
 
-            # Copiamo il log file del warc
-echo "Copying "$warcs_dir/$fname".log* to " $warcs_log_dir"/."
+#             # Copiamo il log file del warc
+# echo "Copying "$warcs_dir/$fname".log* to " $warcs_log_dir"/."
             
-            cp $warcs_dir/$fname".log" $warcs_log_dir"/."
-            cp $warcs_dir/$fname".log.check_pdf" $warcs_log_dir"/."
+#             cp -p $warcs_dir/$fname".log" $warcs_log_dir"/."
+#             cp -p $warcs_dir/$fname".log.check_pdf" $warcs_log_dir"/."
 
-            if [ $? -ne 0 ]; then
-                echo "ERROR: while copying log file"
-            else
-# echo "Removing "$fname".log"
-                rm $warcs_dir/$fname".log"
-                rm $warcs_dir/$fname".log.check_pdf"
-            fi
+#             if [ $? -ne 0 ]; then
+#                 echo "ERROR: while copying log file"
+#             else
+# # echo "Removing "$fname".log"
+#                 rm $warcs_dir/$fname".log"
+#                 rm $warcs_dir/$fname".log.check_pdf"
+#             fi
 
+#         fi
+#     done
+
+     while IFS='|' read -r -a array line
+     do
+        line=${array[0]}
+
+        if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+        break
         fi
-    done
+
+        # se riga comentata o vuota skip
+        if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+             continue
+        fi
+
+        istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
+       echo "istituto="$istituto
+
+
+        # Copiamo il warc.gz
+        # ==================
+        warc_source_filename=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
+        warc_dest_filename=$dest_warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
+        copy_warc_to_destination_dir $warc_source_filename $warc_dest_filename
+        if [[ $? != 0 ]]; then 
+            # echo "Copy failed"
+            return; 
+        fi
+
+        warc_source_filename_md5=$warc_source_filename".md5"
+        warc_dest_filename_md5=$warc_dest_filename".md5"
+        copy_warc_to_destination_dir $warc_source_filename_md5 $warc_dest_filename_md5
+        if [[ $? != 0 ]]; then 
+            # echo "Copy failed"
+            return; 
+        fi
+
+
+        # Copiamo il log file del warc
+        # ============================
+        log_source_filename=$warcs_dir"/"$harvest_date_materiale"_"$istituto".log"
+        log_check_pdf_source_filename=$warcs_dir"/"$harvest_date_materiale"_"$istituto".log.check_pdf"
+
+        echo "Copying " $log_source_filename "to " $warcs_log_dir"/."
+        cp -p $log_source_filename $warcs_log_dir"/."
+        echo "Copying " $log_check_pdf_source_filename "to " $warcs_log_dir"/."
+        cp -p $log_check_pdf_source_filename $warcs_log_dir"/." 
+        if [ $? -ne 0 ]; then
+            echo "ERROR: while copying log file"
+        else
+ echo "Removing "$fname".log"
+            rm $log_source_filename
+ echo "Removing "$fname".log.check_pdf"
+            rm $log_check_pdf_source_filename
+        fi
+
+     done < "$repositories_file"
+
 } # end copy_warcs_and_logs_to_destination_dir_and_remove
 
-
-function make_dest_warcs_read_write()
+function copy_warc_to_destination_dir ()
 {
-    echo "make_dest_warcs_read_write: "$dest_warcs_dir
-    chmod 666 $dest_warcs_dir/*gz
-}
+    echo "copy_warc_to_destination_dir"
+    local source_filename=$1
+    local dest_filename=$2
 
-function make_dest_warcs_read_only()
-{
-    echo "make_dest_warcs_read_only: "$dest_warcs_dir
-    chmod 444 $dest_warcs_dir/*gz
-}
+    echo "source_filename: " $source_filename
+    echo "dest_filename: " $dest_filename
+
+    echo "Make destination file read/write (if present) " $dest_filename
+    if [ -f $dest_filename ]; then
+        chmod 666 $dest_filename
+    fi
+
+    echo "Copying $source_filename to $dest_warcs_dir"
+    cp -p $source_filename $dest_filename
+    if [ $? -ne 0 ]; then
+        echo "ERROR: while copying warc file!!! STOP COPYING"
+        return 1 
+    else
+        echo "Removing "$source_filename
+        rm $source_filename
+        echo "Make destination file read only: " $dest_filename
+        chmod 444 $dest_filename
+    fi
+    return 0 
+} # End copy_warc_to_destination_dir
+
+
+
+# function make_dest_warcs_read_write()
+# {
+#     echo "make_dest_warcs_read_write: "$dest_warcs_dir
+#     chmod 666 $dest_warcs_dir/*gz
+# }
+
+# function make_dest_warcs_read_only()
+# {
+#     echo "make_dest_warcs_read_only: "$dest_warcs_dir
+#     chmod 444 $dest_warcs_dir/*gz
+# }
 
 
 
@@ -752,4 +838,39 @@ function check_for_harvest_mismatch()
     done < "$repositories_file"
 } # end check_for_harvest_mismatch
 
+
+
+
+# CREATE WARCS MD5 fo checking when storing in S3 storage
+function create_warcs_md5()
+{
+
+    echo "CREATE WARC'S MD5"
+    echo "================="
+
+
+     while IFS='|' read -r -a array line
+     do
+           line=${array[0]}
+
+          if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+            break
+          fi
+
+           # se riga comentata o vuota skip
+           if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+                 continue
+            fi
+
+        istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
+#       echo "istituto="$istituto
+        filename=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
+        md5_filename=$filename".md5"
+
+        echo "Do md5 for " $filename 
+        md5sum $filename > $md5_filename 
+
+     done < "$repositories_file"
+
+} # end prepare_warcs_md5
 
