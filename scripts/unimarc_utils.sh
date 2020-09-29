@@ -286,4 +286,8 @@ function createUnimarc()
 
     # _do_prepara_unimarc_per_consegna
     # _do_zip
+
+    # TODO
+    # Aggiornare lista di tutti i bid aggiungendo i nuovi e rimuovendo i vecchi, lascian inalterati quelli modificati.
+
 } # end createUnimarc

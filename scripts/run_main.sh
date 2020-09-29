@@ -415,6 +415,20 @@ function init_variables()
 #             exit;
 #         fi
      fi
+
+
+
+if [[ -z "${HARVEST_UNIVE_PWD}" ]]; then
+  
+  echo "====================="  
+  echo "HARVEST_UNIVE_PWD environment variable is undefined! It must be defined!!!"
+  echo "====================="  
+
+  exit
+else
+  HARVEST_UNIVE_PWD="${HARVEST_UNIVE_PWD}"
+fi
+
 } # end init_variables
 
 

@@ -244,7 +244,7 @@ function _extract_rights()
 } # _extract_rights
 
 
-function _filterEmbargo()
+function _filterEmbargo_e_non()
 {
 
     echo 
@@ -276,7 +276,7 @@ function _filterEmbargo()
       fi
     done < "$repositories_file"
 
-}
+} #_filterEmbargo_e_non
 
 
 
@@ -328,8 +328,7 @@ function find_embargoed()
 
     _find_rights_unique
     _extract_rights
-    _filterEmbargo
-    _filterNonEmbargo
+    _filterEmbargo_e_non
 
     _prepareDbUpdateInsertDelete
 

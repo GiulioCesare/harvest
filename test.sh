@@ -584,7 +584,7 @@ awk_command='
         }
     }' 
 
-awk "$awk_command" $file_to_download_to_md5 $file_to_download_to_md5_check
+# awk "$awk_command" $file_to_download_to_md5 $file_to_download_to_md5_check
 
 # ====================
 
@@ -600,3 +600,19 @@ awk "$awk_command" $file_to_download_to_md5 $file_to_download_to_md5_check
 
 # 1 e0bdfc5c51cc185f2bc12e73909ce5a9  2020_03_04_harvest.tar.gz
 # 1 e0bdfc5c51cc185f2bc12e73909ce5a9  2020_03_04_harvest.tar.gz
+
+
+
+#=========================
+#Migrazione vecchi warcs
+
+#Crea links 
+
+# ln -s ../mods-available/solr.ini 20-solr.ini
+
+awk 'BEGIN{print "#!/bin/bash"}{print "ln -s "$3, $1}' tmp/archive.lst > tmp/create_links.sh
+# echo "#!/bin/bash" > tmp/rename.sh
+# echo "ln -s ../test.sh pippo2" >> tmp/rename.sh
+chmod +x tmp/create_links.sh
+
+
