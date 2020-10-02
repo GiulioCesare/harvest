@@ -80,7 +80,22 @@ print_configuration
 # fi
 
 # prepare_wget_sites_list
+
+
+# TODO try wget with option --warc-max-size=NUMBER   to limit file size. Eg. --warc-max-size=2G
+
+# TODO per harvest unive (mail del 22/09/2020)
+#  Ing. Stefano De Vecchi
+#  SBA - Sistema delle Biblioteche di Ateneo
+#  BDA - Biblioteca Digitale di Ateneo
+#  Università Ca' Foscari Venezia
+#  email: stefdeve@unive.it
+#    tel: +39-041-234-7319
+#  skype: stefdeve.unive.it
+
 # create_warcs_concurrently
+
+
 # create_warcs_md5
 # check_pdf_download
 
@@ -127,6 +142,8 @@ print_configuration
 #	Backuup richiesto dopo aver fatto l'harvesting il 5 agosto. Ma mai avuto risposta da BNCF
 #	Prima backup richiesto a dicembre 2019 ed anche quello caduto nel vuoto
 #
+#  Solo se non abbiamo generato gli md5 precedentemente!!!
+#  create_dest_warcs_md5
 # upload_warcs_to_s3
 # dowbnload_warcs_from_s3
 

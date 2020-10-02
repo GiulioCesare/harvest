@@ -314,6 +314,7 @@ function init_variables()
     archived_dir="$work_dir/10_archived"
     nbn_dir="$work_dir/11_nbn"
     rights_dir="$work_dir/12_rights"
+    s3_dir="$work_dir/13_s3"
     report_dir=$HARVEST_DIR"/../report"
     redo_ctr_file=$redo_seeds_dir"/redo_ctr.txt"
 
@@ -339,6 +340,7 @@ function init_variables()
         $archived_dir
         $nbn_dir
         $rights_dir
+        $s3_dir
         $report_dir
 
         $PH_DEST_COLLECTION_DIR
@@ -1350,6 +1352,7 @@ function print_configuration ()
     echo "  archived dir:         $archived_dir"
     echo "  nbn dir:         $nbn_dir"
     echo "  rights dir:         $rights_dir"
+    echo "  s3 dir:         $s3_dir"
 
     echo "  report (receipts) dir: $report_dir"
     echo "  destination warcs dir: $dest_warcs_dir"

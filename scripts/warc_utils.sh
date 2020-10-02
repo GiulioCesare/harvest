@@ -910,3 +910,38 @@ function create_warcs_md5()
 
 } # end prepare_warcs_md5
 
+
+
+# CREATE WARCS MD5 fo checking when storing in S3 storage
+function create_dest_warcs_md5()
+{
+
+    echo "CREATE WARC'S MD5"
+    echo "================="
+
+
+     while IFS='|' read -r -a array line
+     do
+           line=${array[0]}
+
+          if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+            break
+          fi
+
+           # se riga comentata o vuota skip
+           if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+                 continue
+            fi
+
+        istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
+echo "create md5 for istituto="$istituto
+        filename=$dest_warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
+        md5_filename=$filename".md5"
+
+        echo "Do md5 for " $filename 
+        md5sum $filename > $md5_filename 
+
+     done < "$repositories_file"
+
+} # end create_dest_warcs_md5
+
