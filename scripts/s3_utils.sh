@@ -83,7 +83,7 @@ echo "TODO take in input download_dir (da dichiarare nei file di config) e s3_pa
 		# 	s3_path_filename="harvest/"$harvest_date_materiale"/sviluppo_"$warc_filename
 		# elif [ $ambiente == "collaudo" ]; then 
 		# 	s3_path_filename="harvest/"$harvest_date_materiale"/collaudo_"$warc_filename
-		# elif [ $ambiente == "esercizio" ]; then
+		# elif [ $ambiente == "esercizio" ] || [ $ambiente == "nyovo_esercizio" ]; then
 		# 	# Esercizio
 		# 	s3_path_filename="harvest/"$harvest_date_materiale"/"$warc_filename
 		# else
@@ -153,7 +153,7 @@ function upload_warcs_to_s3()
 			s3_path_filename="harvest/"$harvest_date_materiale"/warcs/sviluppo_"$warc_filename
 		elif [ $ambiente == "collaudo" ]; then 
 			s3_path_filename="harvest/"$harvest_date_materiale"/warcs/collaudo_"$warc_filename
-		elif [ $ambiente == "esercizio" ]; then
+		elif [ $ambiente == "esercizio" ] || [ $ambiente == "nuovo_esercizio" ]; then
 			# Esercizio
 			s3_path_filename="harvest/"$harvest_date_materiale"/warcs/"$warc_filename
 		else

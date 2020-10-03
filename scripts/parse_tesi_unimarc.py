@@ -619,7 +619,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
             # Pagina descrittiva della tesi
             # if jumpoffpageurl in timestamp_dict.keys():
             #     # ts=timestamp_dict[jumpoffpageurl]
-            #     # if ambiente == "esercizio":
+            #     # if ambiente == "esercizio" or ambiente == "nuovo_esercizio":
             #         # print "=856  4 $u"+wayback_http_server+"/"+jumpoffpageurl+"$2"+jumpoffpageurl
             #     # else:
             #         # print "=856  4 $u"+wayback_http_server+"/"+opac_archive_name+"/"+ts+"/"+jumpoffpageurl+"$2"+jumpoffpageurl
@@ -641,7 +641,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                 componenturl = urllib.quote(component.get('ref').encode('utf-8'), safe="%/:=&?~#+!$,;'@()*[]")
                 # if componenturl in timestamp_dict.keys():
                 #     # ts=timestamp_dict[componenturl]
-                #     # if ambiente == "esercizio":
+                #     # if ambiente == "esercizio" or ambiente == "nuovo_esercizio":
                 #         # print "=856  4 $u"+wayback_http_server+"/"+componenturl+"$2"+componenturl
                 #     # else:
                 #         # print "=856  4 $u"+wayback_http_server+"/"+opac_archive_name+"/"+ts+"/"+componenturl+"$2"+componenturl
