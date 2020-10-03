@@ -1399,9 +1399,9 @@ function check_arguments()
             -a=*|--ambiente=*)
             ambiente="${arg#*=}"
             shift # Remove --materiale= from processing
-            if [ "$ambiente" != "sviluppo" ] 
-                && [ "$ambiente" != "collaudo" ] 
-                && [ "$ambiente" != "esercizio" ]
+            if [ "$ambiente" != "sviluppo" ] \
+                && [ "$ambiente" != "collaudo" ] \
+                && [ "$ambiente" != "esercizio" ] \
                 && [ "$ambiente" != "nuovo_esercizio" ]; then
                 echo "Ambiente invalido. Ambiente puo' essere: sviluppo, collaudo, esercizio o nuovo_esercizio"
                 exit
