@@ -11,7 +11,19 @@ zip/
 *.srt
 *.ids
 *.txt
-*.jar
+
+#*.jar
+bin/aws-java-sdk-1.11.856.jar
+bin/commons-codec-1.11.jar
+bin/commons-logging-1.2.jar
+bin/httpclient-4.5.9.jar
+bin/httpcore-4.4.11.jar
+bin/jackson-annotations-2.11.1.jar
+bin/jackson-core-2.11.1.jar
+bin/jackson-databind-2.11.1.jar
+bin/joda-time-2.10.6.jar
+bin/jdbcDrivers/mysql-connector-java-8.0.13.jar
+
 *.save*
 *.tmp*
 etd.csv
@@ -30,3 +42,5 @@ scripts/*_env.con
 scripts/*_env.dev.con
 
 harvest.code-workspace
+
+
