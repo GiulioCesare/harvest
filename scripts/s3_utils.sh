@@ -158,7 +158,7 @@ function upload_warcs_to_s3()
 			s3_path_filename="harvest/"$harvest_date_materiale"/warcs/"$warc_filename
 		else
 				echo "ambiente '"$ambiente"' sconosciuto. STOP'"
-				return
+				exit
 		fi
 
        	echo " s3_path_filename="$s3_path_filename
@@ -189,3 +189,80 @@ echo "s3log_filename = " $s3log_filename
 
      done < "$repositories_file"
 } # End  upload_warcs_to_s3
+
+
+
+
+
+function upload_split_warcs_to_s3()
+{
+	istituto=$1
+
+	echo "--------------------------------"
+	echo "Uploading split warcs.gz to S3 storage"
+	echo "warcs.gz must have accociated .md5 file in same folder"
+
+	echo "istituto="$istituto
+
+	split_warcs_dir=$dest_warcs_dir"/split_dir"
+
+	echo "split_warcs_dir="$split_warcs_dir
+
+    for filename in $split_warcs_dir/*.gz.??; do
+        if [ -s "$filename" ]
+        then
+# echo "filename="$filename
+            # fname= basename $filename .seeds
+            fname=$(basename -- "$filename")
+            # extension="${fname##*.}"
+            # fname="${fname%.*}"
+# echo "------>fname="$fname
+
+       	local warc_filename=$fname
+       	local file_to_upload=$filename
+       	local md5_file_to_upload=$file_to_upload".md5"
+       	local s3_path_filename=""
+
+		if [ $ambiente == "sviluppo" ]; then
+			s3_path_filename="harvest/"$harvest_date_materiale"/warcs/sviluppo_"$warc_filename
+		elif [ $ambiente == "collaudo" ]; then 
+			s3_path_filename="harvest/"$harvest_date_materiale"/warcs/collaudo_"$warc_filename
+		elif [ $ambiente == "esercizio" ] || [ $ambiente == "nuovo_esercizio" ]; then
+			# Esercizio
+			s3_path_filename="harvest/"$harvest_date_materiale"/warcs/"$warc_filename
+		else
+				echo "ambiente '"$ambiente"' sconosciuto. STOP'"
+				exit
+		fi
+
+# echo "warc_filename="$warc_filename
+# echo "file_to_upload="$file_to_upload
+# echo "md5_file_to_upload="$md5_file_to_upload
+echo " s3_path_filename="$s3_path_filename
+
+
+	    if [ ! -f $md5_file_to_upload ]; then
+	        "Missing md5 file to upload: "$md5_file_to_upload" SKIPPING ...."
+	        continue;
+	    fi
+
+	    s3log_filename=$s3_dir"/"$warc_filename".upload.log"
+echo "s3log_filename = " $s3log_filename
+
+		java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
+		    -cp "./bin/*" it.s3.s3clientMP.HighLevelMultipartUploadDownload \
+		    action=upload \
+		    file_to_upload=$file_to_upload \
+		    s3_keyname=$s3_path_filename  > $s3log_filename
+
+        else
+        	echo "$filename is empty."
+                # do something as file is empty
+        fi
+    done
+
+
+} # End  upload_split_warcs_to_s3
+
+
+

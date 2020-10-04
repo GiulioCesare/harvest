@@ -144,7 +144,14 @@ print_configuration
 #
 #  Solo se non abbiamo generato gli md5 precedentemente!!!
 #  create_dest_warcs_md5
-# upload_warcs_to_s3
+
+#upload_warcs_to_s3
+
+# Solo per file molto grandii > 20GB (split e nd5 manuale per il momento)
+#upload_split_warcs_to_s3 unipi
+
+
+
 # dowbnload_warcs_from_s3
 
 
