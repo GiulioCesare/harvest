@@ -242,12 +242,17 @@ echo " s3_path_filename="$s3_path_filename
 
 
 	    if [ ! -f $md5_file_to_upload ]; then
-	        "Missing md5 file to upload: "$md5_file_to_upload" SKIPPING ...."
-	        continue;
+	        # "Missing md5 file to upload: "$md5_file_to_upload" SKIPPING ...."
+	        # continue;
+
+	        echo "create md5 for:" $warc_filename
+	        md5sum $file_to_upload > $md5_file_to_upload
+
 	    fi
 
 	    s3log_filename=$s3_dir"/"$warc_filename".upload.log"
 echo "s3log_filename = " $s3log_filename
+
 
 		java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
 		    -cp "./bin/*" it.s3.s3clientMP.HighLevelMultipartUploadDownload \
