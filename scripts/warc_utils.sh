@@ -98,14 +98,14 @@ wget --save-cookies cookies.txt --keep-session-cookies --delete-after --post-dat
 
 
 
- wget --load-cookies cookies.txt    http://dspace.unive.it/bitstream/10579/5607/2/986552-1166862.pdf
+ # wget --load-cookies cookies.txt    http://dspace.unive.it/bitstream/10579/5607/2/986552-1166862.pdf
 # wget --load-cookies cookies.txt    http://dspace.unive.it/bitstream/handle/10579/15582/826599-1207989.pdf
 # wget --load-cookies cookies.txt    http://dspace.unive.it/bitstream/10579/14975/2/840453-1207992.pdf
-                    # if [ $materiale == $MATERIALE_EJOURNAL ]; then
-                    #     wget_options="${wget_options} --lua-script=$HARVEST_DIR/ojs.lua"
-                    # fi
-                    # echo WGET
-                    # wget $wget_options --load-cookies ./cookies.txt --input-file=$seeds_filename --output-file=./$fname.log --warc-file=$warcs_dir/$fname
+                    if [ $materiale == $MATERIALE_EJOURNAL ]; then
+                        wget_options="${wget_options} --lua-script=$HARVEST_DIR/ojs.lua"
+                    fi
+                    echo WGET
+                    wget $wget_options --load-cookies ./cookies.txt --input-file=$seeds_filename --output-file=./$fname.log --warc-file=$warcs_dir/$fname
                 else
                     # Scarico standard
 
