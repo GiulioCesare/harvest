@@ -163,7 +163,7 @@ function filter_good_and_bad_seeds_from_seeds_to_download()
 } # end filter_good_and_bad_from_seeds_to_download
 
 
-function get_warcked_seeds_and_not_from_logs()
+function get_warcked_seeds_and_not_from_logs_OLD()
 {
     echo "GET WARCKED SEEDS AND NOT FROM LOG"
 
@@ -214,4 +214,91 @@ echo "Working on $filename"
         fi
         unset seeds_to_download_kv_AR
     done
+} # end get_warcked_seeds_and_not_from_logs_OLD
+
+
+
+
+
+
+
+
+
+
+
+function get_warcked_seeds_and_not_from_logs()
+{
+    echo "GET WARCKED SEEDS AND NOT FROM LOG"
+
+    out_ext_ok=".seeds_in_warc"
+    out_ext_ko=".seeds_not_in_warc"
+    out_ext_ko_tmp=".seeds_not_in_warc.tmp"
+
+
+
+    # Read trough the repositories_file
+    while IFS='|' read -r -a array line
+    do
+# echo "$line"
+# echo "${array[0]}"
+      line=${array[0]}
+
+      # Se ignora resto del file
+      if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+        break
+      fi
+
+      # se riga comentata o vuota skip
+      if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];     then
+        continue
+      fi
+
+      istituto=${array[1]}
+      filename=$warcs_dir"/log/"$harvest_date_materiale"_"$istituto".log"
+
+
+      echo "Working on "$filename
+
+#     for filename in $warcs_dir/log/*.log; do
+
+        if [[ -f $filename$out_ext_ok ]]; then
+            rm $filename$out_ext_ok
+        fi
+        if [[ -f $filename$out_ext_ko ]]; then
+            rm $filename$out_ext_ko
+        fi
+
+        fname=$(basename -- "$filename")
+        fname="${fname%.*}"
+
+ # echo "fname = $fname"
+
+        declare -A seeds_to_download_kv_AR
+        _load_seeds_to_download $fname
+
+        # get archived and not archived urls
+        grep_args="^--[0-9]{4}| saved | salvato | ERROR |Giving up|Authorization failed| 500 "
+        egparams=^--[0-9]{4}
+        archived_urls=`grep -E "$grep_args" $filename | tac | awk -v fileout=$filename$out_ext_ko_tmp "$extract_errors" | egrep "$egparams" | cut -c 26-`
+
+        # Handle archived urls
+        # --------------------
+        urls_decoded=$(normalize_urls "$archived_urls")
+        filter_good_and_bad_seeds_from_seeds_to_download "$urls_decoded" $filename$out_ext_ok $URLS_IN_WARC
+
+        # Handle NON archived urls
+        # ------------------------
+        if [[ -f $filename$out_ext_ko_tmp ]]; then
+            non_archived_urls=$(<$filename$out_ext_ko_tmp)
+            urls_decoded=$(normalize_urls "$non_archived_urls")
+            filter_good_and_bad_seeds_from_seeds_to_download "$urls_decoded" $filename$out_ext_ko $URLS_NOT_IN_WARC
+            rm $filename$out_ext_ko_tmp
+        fi
+        unset seeds_to_download_kv_AR
+
+    done < "$repositories_file"
+
 } # end get_warcked_seeds_and_not_from_logs
+
+
+

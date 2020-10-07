@@ -104,7 +104,7 @@ wget --save-cookies cookies.txt --keep-session-cookies --delete-after --post-dat
                     if [ $materiale == $MATERIALE_EJOURNAL ]; then
                         wget_options="${wget_options} --lua-script=$HARVEST_DIR/ojs.lua"
                     fi
-                    echo WGET
+# echo WGET
                     wget $wget_options --load-cookies ./cookies.txt --input-file=$seeds_filename --output-file=./$fname.log --warc-file=$warcs_dir/$fname
                 else
                     # Scarico standard
