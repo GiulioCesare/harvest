@@ -883,6 +883,17 @@ function remove_duplicate_seeds()
         rm $file_seeds_dup
     fi
 
+    
+
+    # 07/10/2020 Controlliamo di non avere solo pagine descrittive ma anche componenti pdf 
+    componenti_trovati=`grep -m 1 "pdf.*$"  $file_seeds | wc -l`
+    # echo "componenti trovati: "$componenti_trovati
+
+    # echo -e means 'enable interpretation of backslash escapes'
+    if [ $componenti_trovati = 0 ]; then
+        echo "File seeds non contiene componenti PDF. (NON scaricare WARCS, informare istituto) Vedi " $file_seeds.no_pdf
+        echo "$file_seeds non contiene componenti PDF" > $file_seeds.no_pdf
+    fi
 
 } # end remove_duplicate_seeds
 
