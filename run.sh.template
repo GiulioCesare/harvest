@@ -60,16 +60,6 @@ print_configuration
 
 # harvest_metadata
 
-# Troviamo documenti sotto embargo
-# find_embargoed
-
-# Rimuoviamo le tesi alle quali hanno tolto l'embargo
-# scripts/DbDeleteUnembargoed.sh
-
-# Carichiamo le tesi sotto embargo sul db
-# scripts/DbUpdateInsert.sh
-
-
 # createSeeds
 
 # count_all_seeds
@@ -147,8 +137,9 @@ print_configuration
 
 #upload_warcs_to_s3
 
-# Solo per file molto grandii > 20GB (split e nd5 manuale per il momento)
-#upload_split_warcs_to_s3 unipi
+# Solo per file molto grandii > 15GB (split e nd5 manuale per il momento)
+
+# upload_split_warcs_to_s3
 
 
 
@@ -158,6 +149,21 @@ print_configuration
 # make_receipts
 
 # check_for_receipts_mismatch ### DA RIVEDERE forse sostituibile con check_match_seeds_donloaded_to_download ()
+
+
+# Troviamo documenti sotto embargo
+# find_embargoed
+
+# Rimuoviamo le tesi alle quali hanno tolto l'embargo
+# scripts/DbDeleteUnembargoed.sh
+
+# Carichiamo le tesi sotto embargo sul db
+# scripts/DbUpdateInsert.sh
+
+
+
+
+
 
 
 # UNIMARC

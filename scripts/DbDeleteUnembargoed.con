@@ -10,7 +10,7 @@
 [sviluppo]
 uploadDir=./tesi/12_rights/
 jdbcDriver=com.mysql.cj.jdbc.Driver
-connectionUrl=jdbc:mysql://localhost:3306/MagazziniDigitali_Locale
+connectionUrl=jdbc:mysql://localhost:3306/harvest
 userName=md
 userPassword=md_pwd
 fieldSeparator=|
@@ -33,7 +33,7 @@ embargo.del
 uploadDir=./tesi/12_rights/
 jdbcDriver=com.mysql.cj.jdbc.Driver
 
-#connectionUrl=jdbc:mysql://localhost:3306/MagazziniDigitali_Locale
+#connectionUrl=jdbc:mysql://localhost:3306/harvest
 #userName=md
 #userPassword=md_pwd
 
@@ -58,9 +58,33 @@ embargo.del
 uploadDir=./tesi/12_rights/
 jdbcDriver=com.mysql.cj.jdbc.Driver
 
-#connectionUrl=jdbc:mysql://localhost:3306/MagazziniDigitali_Locale
+#connectionUrl=jdbc:mysql://localhost:3306/harvest
 #userName=md
 #userPassword=md_pwd
+
+fieldSeparator=|
+#fieldSeparator=�
+
+# Truncate
+#removeAllRecordsBeforeUpload=false
+logFileOut=./logs/DbDeleteUnembargoed.log
+# commit in hex format
+commitOgniTotRighe=FF
+endConfig
+
+embargo.del
+
+
+# --------------------
+# ambiente di esercizio nuovo
+# --------------------
+[nuovo_esercizio]
+uploadDir=./tesi/12_rights/
+jdbcDriver=com.mysql.cj.jdbc.Driver
+
+connectionUrl=jdbc:mysql://localhost:3306/harvest
+userName=harvest
+userPassword=harvest_pwd_2020
 
 fieldSeparator=|
 #fieldSeparator=�

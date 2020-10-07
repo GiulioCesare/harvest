@@ -373,14 +373,22 @@ function init_variables()
 	# Eg: ln -s /home/argentino/magazzini_digitali/wayback/volume1/collection_3/archive/harvest_AV harvest_AV
 
 	# Does a link already exist?
-	if [ -h $WAYBACK_ARCHIVE_DIR ]; then 
-		echo "Link exists"
+	# if [ -h $WAYBACK_ARCHIVE_DIR ]; then 
+
+    link=$WAYBACK_ARCHIVE"/"$WAYBACK_WARC_DIR
+
+# echo "link="$link
+
+    # if [ -h $link ]; then 
+    # if [ -L "${link}" ]; then 
+    # if [ -e "${link}" ]; then 
+    if [ -f "${link}" ] || [ -d "${link}" ] || [ -e "${link}" ]; then 
+		echo "File,  folder or link exists for " $link
 	else
 		echo "Create link"
-        link=$WAYBACK_ARCHIVE"/"$WAYBACK_WARC_DIR
         target=$PH_DEST_COLLECTION_DIR"/archive/"$WAYBACK_WARC_DIR
   #       echo "link"$link
-		# echo "target="$target
+# echo "target="$target
 		ln -s $target $link
 	fi
 

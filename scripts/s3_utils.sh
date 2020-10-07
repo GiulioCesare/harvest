@@ -196,13 +196,11 @@ echo "s3log_filename = " $s3log_filename
 
 function upload_split_warcs_to_s3()
 {
-	istituto=$1
 
 	echo "--------------------------------"
 	echo "Uploading split warcs.gz to S3 storage"
 	echo "warcs.gz must have accociated .md5 file in same folder"
 
-	echo "istituto="$istituto
 
 	split_warcs_dir=$dest_warcs_dir"/split_dir"
 

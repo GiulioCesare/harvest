@@ -328,6 +328,8 @@ function find_embargoed()
 
     _find_rights_unique
     _extract_rights
+  
+# TODO controllare che tesi sotto embargo siano state acquisite!!!
     _filterEmbargo_e_non
 
     _prepareDbUpdateInsertDelete
