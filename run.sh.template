@@ -60,6 +60,8 @@ print_configuration
 
 # harvest_metadata
 
+# TODO segnalare se mancano pdf nel file, ovvero abbiamo solo pagine descrittive della 
+# 	tesi ma non le componenti .pdf o .doc etc
 # createSeeds
 
 # count_all_seeds
@@ -126,24 +128,41 @@ print_configuration
 # generate_nbn_identifiers
 
 
+# ==========================================
+# S3 warc.gz upload / download
 # Prima di fare le ricevute facciamo il salvataggio dei dati su S3
 # 	per evitare perdita dati come ad Agosto mentre si faceva l'harvesting della LUISS
 #	e non avevamo un backup.
 #	Backuup richiesto dopo aver fatto l'harvesting il 5 agosto. Ma mai avuto risposta da BNCF
 #	Prima backup richiesto a dicembre 2019 ed anche quello caduto nel vuoto
 #
-#  Solo se non abbiamo generato gli md5 precedentemente!!!
-#  create_dest_warcs_md5
-
-#upload_warcs_to_s3
-
+# Solo se non abbiamo generato gli md5 precedentemente!!!
+# create_dest_warcs_md5
+#
+# --------------------------------
+# Caricamebnto warcs da harvest Almaviva 
+# 
+# Si usa il file etd.csv per guidare il caricamento
+# upload_warcs_to_s3 
+#
 # Solo per file molto grandii > 15GB (split e nd5 manuale per il momento)
-
 # upload_split_warcs_to_s3
+#
+# -------------------------------------
+# !!!! Caricamebnto warcs da harvest precedenti fino al 10/2018
+# 
+# ONCE ONLY!!!
+# prepare_etd_warcs_list_to_upload()
+# from_line=1
+# to_line=1
+# upload_etd_warcs_to_S3	$from_line $to_line
 
 
-
+# --------------------------
 # dowbnload_warcs_from_s3
+
+# END S3 warc.gz upload / download
+
 
 
 # make_receipts
