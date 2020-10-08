@@ -351,7 +351,6 @@ echo "s3_path_filename: "$s3_path_filename
 	    if [ ! -f $md5_file_to_upload ]; then
 	        echo "create md5 :" $md5_file_to_upload
 	        md5sum $file_to_upload > $md5_file_to_upload
-	        continue;
 	    fi
 
 		# per avere il percorso completo sostituiamo lo / con _
