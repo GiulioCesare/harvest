@@ -340,6 +340,9 @@ base_name=$(basename -- "$line")
 	        "Missing file to upload: "$file_to_upload" SKIPPING ...."
 	        continue;
 	    fi
+
+
+
 	    if [ ! -f $md5_file_to_upload ]; then
 	        echo "create md5 :" $md5_file_to_upload
 	        md5sum $file_to_upload > $md5_file_to_upload
