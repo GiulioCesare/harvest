@@ -256,6 +256,7 @@ echo "s3log_filename = " $s3log_filename
 		    -cp "./bin/*" it.s3.s3clientMP.HighLevelMultipartUploadDownload \
 		    action=upload \
 		    file_to_upload=$file_to_upload \
+		    md5_file_to_upload=$md5_file_to_upload \
 		    s3_keyname=$s3_path_filename  > $s3log_filename
 
         else
