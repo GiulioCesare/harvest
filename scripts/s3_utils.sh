@@ -323,26 +323,18 @@ echo "line: "$line_ctr " --> "$line
 
 base_name=$(basename -- "$line")
 
-echo "base_name: "$base_name
+# echo "base_name: "$base_name
 
 		filename=${line/\/mnt\/volume2\/warcs\//}
 		# echo "filename="$filename
-
-
-      	# local warc_filename=/mnt/volume2/warcs/etd/
-
+     	# local warc_filename=/mnt/volume2/warcs/etd/
        	local file_to_upload=$line
        	local md5_file_to_upload="tmp/"$base_name".md5"
        	local s3_path="harvest/warcs/"
       	local s3_path_filename=$s3_path$filename
-
-echo "file_to_upload: "$file_to_upload
-echo "md5_file_to_upload: "$md5_file_to_upload
-echo "s3_path_filename: "$s3_path_filename
-
-
-
-
+# echo "file_to_upload: "$file_to_upload
+# echo "md5_file_to_upload: "$md5_file_to_upload
+# echo "s3_path_filename: "$s3_path_filename
        	# Check if files to upload exist
 	    if [ ! -f $file_to_upload ]; then
 	        "Missing file to upload: "$file_to_upload" SKIPPING ...."
@@ -357,9 +349,7 @@ echo "s3_path_filename: "$s3_path_filename
 		log_fname="${line//\//_}" 
 	    s3log_filename=$s3_dir"/"$log_fname".upload.log"
 
-echo "s3log_filename = " $s3log_filename
-
-
+# echo "s3log_filename = " $s3log_filename
 		java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
 		    -cp "./bin/*" it.s3.s3clientMP.HighLevelMultipartUploadDownload \
 		    action=upload \
