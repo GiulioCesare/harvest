@@ -269,3 +269,106 @@ echo "s3log_filename = " $s3log_filename
 
 
 
+function prepare_etd_warcs_list_to_upload()
+{
+
+find /mnt/volume2/warcs/etd/ -name *.gz > /mnt/volume2/warcs/etd_warcs.lst
+sed '/recover.gz/d' /mnt/volume2/warcs/etd_warcs.lst > /mnt/volume2/warcs/etd_warcs.lst.clean
+
+}
+
+
+function upload_etd_warcs_to_S3()
+{
+	declare -i from_line=$1
+	declare -i to_line=$2
+
+
+	echo "--------------------------------"
+	echo "Uploading etd warcs.gz to S3 storage (harvests up to 10/2018)"
+	
+
+echo "Upload to S3 from line: "$from_line
+echo "Upload to S3 to line: "$to_line
+
+     # while IFS='|' read -r -a array line
+    declare -i line_ctr=0; 
+	while IFS= read -r line
+    	do
+    	
+    	line_ctr=$((line_ctr+1))
+
+    	if [ $line_ctr -lt  $from_line ]; then
+    		continue;
+    	fi
+
+    	if [ $line_ctr -gt  $to_line ]; then
+    		break;
+    	fi
+
+
+
+
+		if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+		break
+		fi
+
+		# se riga comentata o vuota skip
+		if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+		     continue
+		fi
+
+echo "line: "$line_ctr " --> "$line
+
+base_name=$(basename -- "$line")
+
+echo "base_name: "$base_name
+
+		filename=${line/\/mnt\/volume2\/warcs\//}
+		# echo "filename="$filename
+
+
+      	# local warc_filename=/mnt/volume2/warcs/etd/
+
+       	local file_to_upload=$line
+       	local md5_file_to_upload="tmp/"$base_name".md5"
+       	local s3_path="harvest/warcs/"
+      	local s3_path_filename=$s3_path$filename
+
+echo "file_to_upload: "$file_to_upload
+echo "md5_file_to_upload: "$md5_file_to_upload
+echo "s3_path_filename: "$s3_path_filename
+
+
+
+
+       	# Check if files to upload exist
+	    if [ ! -f $file_to_upload ]; then
+	        "Missing file to upload: "$file_to_upload" SKIPPING ...."
+	        continue;
+	    fi
+	    if [ ! -f $md5_file_to_upload ]; then
+	        echo "create md5 :" $md5_file_to_upload
+	        md5sum $file_to_upload > $md5_file_to_upload
+	        continue;
+	    fi
+
+		# per avere il percorso completo sostituiamo lo / con _
+		log_fname="${line//\//_}" 
+	    s3log_filename=$s3_dir"/"$log_fname".upload.log"
+
+echo "s3log_filename = " $s3log_filename
+
+
+		java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
+		    -cp "./bin/*" it.s3.s3clientMP.HighLevelMultipartUploadDownload \
+		    action=upload \
+		    file_to_upload=$file_to_upload \
+		    md5_file_to_upload=$md5_file_to_upload \
+		    s3_keyname=$s3_path_filename  > $s3log_filename
+
+
+
+     done < /mnt/volume2/warcs/etd_warcs.lst.clean
+
+} # End upload_etd_warcs_to_S3
