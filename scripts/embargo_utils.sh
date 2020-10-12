@@ -111,9 +111,8 @@ awk_command='
           # print rights
           # print $0
           print oai_id "|" url "|" substr(rights,11,4) "-" substr(rights,15,2) "-" substr(rights,17,2)
-
           }
-#      else if (rights ~ "^INFO:EU-REPO/SEMANTICS/EMBARGOEDACCESS$" )
+
       else if (rights ~ "^INFO:EU-REPO/SEMANTICS/EMBARGOEDACCESS.*$" ) # sssup (info:eu-repo/semantics/embargoedAccess;Copyright information available at source archive)
           {
           if(embargo_end_date=="")
@@ -122,7 +121,18 @@ awk_command='
             }
           else
             {
-            print oai_id "|" url "|" embargo_end_date
+            if (length (embargo_end_date) == 4) # solo anno
+              {
+              print oai_id "|" url "|" embargo_end_date "-12-31"
+              }
+            if (length (embargo_end_date) == 7) # solo anno/mese
+              {
+              print oai_id "|" url "|" embargo_end_date "-01"
+              }
+            else
+              {
+              print oai_id "|" url "|" embargo_end_date
+              }
            }
  
           }
@@ -386,13 +396,14 @@ function _get_embargoed_only_in_warc_istituto ()
     siw=$warcs_log_dir/$istituto.log.seeds_in_warc
     if [[ -f $siw ]]; then
 # echo "reading $warcs_log_dir/$fname.log.seeds_in_warc"
-        while IFS='|' read -r  line
+        while read -r  line
         do
-            tmp=$(sed 's\.*//\\ g' <<<"$line")
-            tmp2=${tmp//\+/ }
-            url=$(urldecode "$tmp2")
-# echo "--->url = $url"
-            seeds_in_warc_kv_AR[$url]="dummy value"
+            # tmp=$(sed 's\.*//\\ g' <<<"$line")
+            # tmp2=${tmp//\+/ }
+            # url=$(urldecode "$tmp2")
+            # seeds_in_warc_kv_AR[$url]="dummy value"
+            seeds_in_warc_kv_AR[$line]="dummy value"
+
         done < $siw
     fi
 
@@ -442,10 +453,10 @@ function _get_embargoed_only_in_warc_istituto ()
 function find_embargoed()
 {
 
-    _find_rights_unique
-    _extract_rights
+    # _find_rights_unique
+    # _extract_rights
     _filterEmbargo_e_non
-    _get_embargoed_only_in_warc
-    _prepareDbUpdateInsertDelete
+    # _get_embargoed_only_in_warc
+    # _prepareDbUpdateInsertDelete
 
 }

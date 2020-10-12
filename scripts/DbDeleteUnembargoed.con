@@ -82,7 +82,8 @@ embargo.del
 uploadDir=./tesi/12_rights/
 jdbcDriver=com.mysql.cj.jdbc.Driver
 
-connectionUrl=jdbc:mysql://localhost:3306/harvest
+#connectionUrl=jdbc:mysql://localhost:3306/harvest
+connectionUrl=jdbc:mysql://localhost:3306/harvest?serverTimezone=UTC
 userName=harvest
 userPassword=harvest_pwd_2020
 
