@@ -18,6 +18,9 @@ function _find_rights_unique()
       line=${array[0]}
       # se riga comentata o vuota skip
 
+      # Remove whitespaces (empty lines)
+      line=`echo $line | xargs`
+
       # Se ignora resto del file
       if [[ ${line:0:1} == "@" ]] ; then # Ignore rest of file
         break
@@ -208,6 +211,10 @@ function _extract_rights()
     while IFS='|' read -r -a array line
     do
       line=${array[0]}
+
+      # Remove whitespaces (empty lines)
+      line=`echo $line | xargs`
+
       # se riga comentata o vuota skip
       if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
         break
@@ -253,11 +260,14 @@ function _filterEmbargo_e_non()
     while IFS='|' read -r -a array line
     do
       line=${array[0]}
+
+      # Remove whitespaces (empty lines)
+      line=`echo $line | xargs`
+
       # Se ignora resto del file
       if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
         break
       fi
-
 
       # se riga comentata o vuota skip
       if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];     then
@@ -295,7 +305,11 @@ function _prepareDbUpdateInsertDelete ()
     while IFS='|' read -r -a array line
     do
       line=${array[0]}
-      
+   
+      # Remove whitespaces (empty lines)
+      line=`echo $line | xargs`
+
+
       # Se ignora resto del file
       if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
         break
@@ -307,8 +321,11 @@ function _prepareDbUpdateInsertDelete ()
       else
 
       istituto=${array[1]}
+echo "Istituto = '$istituto'"
       
-      filename=$rights_dir/$harvest_date_materiale"_"$istituto".embargo.csv"
+      # filename=$rights_dir/$harvest_date_materiale"_"$istituto".embargo.csv"
+      filename=$rights_dir/$harvest_date_materiale"_"$istituto".embargo.csv.in_warc" # 11/10/2020
+
       echo "--> Appending " $filename " to " $upd_ins_filename
       cat $filename >> $upd_ins_filename
 
@@ -321,6 +338,105 @@ function _prepareDbUpdateInsertDelete ()
   } # End _prepareDbUpdateInsertDelete
 
 
+# 11/10/2020  controllare che tesi sotto embargo siano state acquisite!!!
+function _get_embargoed_only_in_warc()
+{
+    echo "_get_embargoed_only_in_warc"
+
+
+    while IFS='|' read -r -a array line
+    do
+      line=${array[0]}
+
+
+      # Remove whitespaces (empty lines)
+      line=`echo $line | xargs`
+
+      
+      # Se ignora resto del file
+      if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+        break
+      fi
+
+      # se riga comentata o vuota skip
+      if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];     then
+        continue
+      else
+
+      local istituto=${array[1]}
+      # echo "Istituto: '$istituto'" 
+      _get_embargoed_only_in_warc_istituto $istituto
+
+      fi
+    done < "$repositories_file"
+        
+} # End _get_embargoed_only_in_warc
+
+
+function _get_embargoed_only_in_warc_istituto ()
+{
+  echo "_get_embargoed_only_in_warc_istituto for: "$istituto
+  
+
+  local istituto=$1
+
+    # carichiamo i seed finiti nel warc
+     declare -A seeds_in_warc_kv_AR
+
+    siw=$warcs_log_dir/$istituto.log.seeds_in_warc
+    if [[ -f $siw ]]; then
+# echo "reading $warcs_log_dir/$fname.log.seeds_in_warc"
+        while IFS='|' read -r  line
+        do
+            tmp=$(sed 's\.*//\\ g' <<<"$line")
+            tmp2=${tmp//\+/ }
+            url=$(urldecode "$tmp2")
+# echo "--->url = $url"
+            seeds_in_warc_kv_AR[$url]="dummy value"
+        done < $siw
+    fi
+
+    # Leggiamo il file delle tesi embargate
+    file_emabrgo=$rights_dir/$harvest_date_materiale"_"$istituto".embargo.csv"
+    if [[ -f $file_emabrgo".in_warc" ]]; then
+      rm $file_emabrgo".in_warc"
+    fi
+    if [[ -f $file_emabrgo".not_in_warc" ]]; then
+      rm $file_emabrgo".not_in_warc"
+    fi
+
+
+
+        # while IFS='|' read -r -a array line
+        while read -r line
+        do
+        array=(${line//|/ })
+
+
+          url_in=${array[1]}
+            tmp=$(sed 's\.*//\\ g' <<<"$url_in")
+            tmp2=${tmp//\+/ }
+            url=$(urldecode "$tmp2")
+
+# echo "URL embargo='$url'"
+
+            if ! test "${seeds_in_warc_kv_AR[$url]+isset}"
+            then
+                # echo ${array[0]}"|"${array[1]}"|"${array[2]} >> $file_emabrgo".in_warc"
+                echo $line >> $file_emabrgo".in_warc"
+            else
+                # echo ${array[0]}"|"${array[1]}"|"${array[2]} >> $file_emabrgo".not_in_warc"
+                echo $line >> $file_emabrgo".not_in_warc"
+            fi
+
+
+            # seeds_in_warc_kv_AR[$url]="dummy value"
+        done < $file_emabrgo
+
+} # end _get_embargoed_only_in_warc_istituto
+
+
+
 
 
 function find_embargoed()
@@ -328,10 +444,8 @@ function find_embargoed()
 
     _find_rights_unique
     _extract_rights
-  
-# TODO controllare che tesi sotto embargo siano state acquisite!!!
     _filterEmbargo_e_non
-
+    _get_embargoed_only_in_warc
     _prepareDbUpdateInsertDelete
 
 }
