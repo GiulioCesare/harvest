@@ -121,11 +121,19 @@ awk_command='
             }
           else
             {
-            if (length (embargo_end_date) == 4) # solo anno
+            len = length (embargo_end_date)
+
+# print "len " len " per '" embargo_end_date "'"
+            if (len > 10) # anche time stamp
+              {
+              print oai_id "|" url "|" substr(embargo_end_date, 1, 10)
+              }
+
+            else if (len == 4) # solo anno
               {
               print oai_id "|" url "|" embargo_end_date "-12-31"
               }
-            if (length (embargo_end_date) == 7) # solo anno/mese
+            else if (len == 7) # solo anno/mese
               {
               print oai_id "|" url "|" embargo_end_date "-01"
               }
@@ -133,7 +141,8 @@ awk_command='
               {
               print oai_id "|" url "|" embargo_end_date
               }
-           }
+
+            }
  
           }
       else
@@ -141,7 +150,23 @@ awk_command='
           if(embargo_end_date!="") 
             {
             # non abbiamo intercettatto la sintassi dell embargo ma abbiamo capito che e sotto embargo ed abbiamo una data di fine embargo
-            print oai_id "|" url "|" embargo_end_date
+            len = length (embargo_end_date)
+            if (len > 10) # anche time stamp
+              {
+              print oai_id "|" url "|" substr(embargo_end_date, 1, 10)
+              }
+            else if (len == 4) # solo anno
+              {
+              print oai_id "|" url "|" embargo_end_date "-12-31"
+              }
+            else if (len == 7) # solo anno/mese
+              {
+              print oai_id "|" url "|" embargo_end_date "-01"
+              }
+             else
+              {
+              print oai_id "|" url "|" embargo_end_date
+              }
             }
           else
             {
@@ -159,6 +184,11 @@ awk_command='
     
     }'
  
+    if [[ -f $embargo_filename ]]; then
+      echo "remove " $embargo_filename
+      rm $embargo_filename
+    fi
+
     awk -v unkwown_embargo="$embargo_filename_ko" -v embargo_default_end_date="$embargo_default_end_date" "$awk_command"  $rights_filename > $embargo_filename
 
 
@@ -453,10 +483,10 @@ function _get_embargoed_only_in_warc_istituto ()
 function find_embargoed()
 {
 
-    # _find_rights_unique
-    # _extract_rights
+    _find_rights_unique
+    _extract_rights
     _filterEmbargo_e_non
-    # _get_embargoed_only_in_warc
-    # _prepareDbUpdateInsertDelete
+    _get_embargoed_only_in_warc
+    _prepareDbUpdateInsertDelete
 
 }

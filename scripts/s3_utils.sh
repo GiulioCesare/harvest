@@ -284,10 +284,14 @@ function upload_etd_warcs_to_S3()
 	declare -i from_line=$1
 	declare -i to_line=$2
 
+	multipart_mode=$3
+
 
 	echo "--------------------------------"
 	echo "Uploading etd warcs.gz to S3 storage (harvests up to 10/2018)"
 	
+
+
 
 echo "Upload to S3 from line: "$from_line
 echo "Upload to S3 to line: "$to_line
@@ -353,12 +357,26 @@ base_name=$(basename -- "$line")
 	    s3log_filename=$s3_dir"/"$log_fname".upload.log"
 
 # echo "s3log_filename = " $s3log_filename
+
+	if [ $multipart_mode == "true" ]; then
+		echo "Upload im multi part mode: "
 		java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
 		    -cp "./bin/*" it.s3.s3clientMP.HighLevelMultipartUploadDownload \
 		    action=upload \
 		    file_to_upload=$file_to_upload \
 		    md5_file_to_upload=$md5_file_to_upload \
 		    s3_keyname=$s3_path_filename  > $s3log_filename
+
+	else
+		echo "Upload im single part mode: "
+		java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
+		    -cp "./bin/*" it.s3.s3client.S3Client \
+		    action=upload \
+		    file_to_upload=$file_to_upload \
+		    md5_file_to_upload=$md5_file_to_upload \
+		    s3_keyname=$s3_path_filename  > $s3log_filename
+
+	fi
 
 
 

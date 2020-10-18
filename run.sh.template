@@ -60,35 +60,17 @@ print_configuration
 
 # harvest_metadata
 
-# TODO segnalare se mancano pdf nel file, ovvero abbiamo solo pagine descrittive della 
-# 	tesi ma non le componenti .pdf o .doc etc
-# createSeeds
-
 # count_all_seeds
-
-
-# if [ "$DEVELOPMENT" == "true" ]; then
-#      trim_seeds $warc_dev_seeds
-# fi
 
 # prepare_wget_sites_list
 
 
 # TODO try wget with option --warc-max-size=NUMBER   to limit file size. Eg. --warc-max-size=2G
 
-# TODO per harvest unive (mail del 22/09/2020)
-#  Ing. Stefano De Vecchi
-#  SBA - Sistema delle Biblioteche di Ateneo
-#  BDA - Biblioteca Digitale di Ateneo
-#  Università Ca' Foscari Venezia
-#  email: stefdeve@unive.it
-#    tel: +39-041-234-7319
-#  skype: stefdeve.unive.it
-
 # create_warcs_concurrently
 
-
 # create_warcs_md5
+
 # check_pdf_download
 
 # Makes destination warcs read only (to avoid deletion)
@@ -149,13 +131,14 @@ print_configuration
 # upload_split_warcs_to_s3
 #
 # -------------------------------------
-# !!!! Caricamebnto warcs da harvest precedenti fino al 10/2018
+# !!!! Caricamento warcs da harvest precedenti fino al 10/2018
 # 
 # ONCE ONLY!!!
-# prepare_etd_warcs_list_to_upload()
+# -- prepare_etd_warcs_list_to_upload()
 # from_line=1
 # to_line=1
-# upload_etd_warcs_to_S3	$from_line $to_line
+# multipart_mode=false
+# upload_etd_warcs_to_S3	$from_line $to_line $multipart_mode
 
 
 # --------------------------
@@ -164,7 +147,9 @@ print_configuration
 # END S3 warc.gz upload / download
 
 
-
+# 09/10/2020
+# NMB per il frontend devono stare sul frontend nella cartella: /var/www/index.depositolegale.it/ricevute
+# 
 # make_receipts
 
 # check_for_receipts_mismatch ### DA RIVEDERE forse sostituibile con check_match_seeds_donloaded_to_download ()
