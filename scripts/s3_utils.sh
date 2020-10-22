@@ -594,6 +594,9 @@ function prepare_harvest_record_storico()
 {
 
 # grep -E -- '^file size|^Inizio|^Finito|^Object upload started|S3 info on|^Tempo impiegato' 2020_08_05_tesi.unimib.upload.log
+	from=$1
+	to=$2
+
 
 	echo "--------------------------------"
 	echo "prepare_harvest_record_storico"
@@ -608,10 +611,22 @@ function prepare_harvest_record_storico()
 
     touch $s3_upd_ins # Create file
 
-
+    ctr=0
      while IFS='|' read -r -a array line
      do
        line=${array[0]}
+		let "ctr=ctr+1" 
+
+echo "Line ctr=" $ctr
+
+
+	    if [[ $ctr < $from ]]; then
+	    	continue
+	    fi
+	    if [[ $ctr > $to ]]; then
+	    	return
+	    fi
+
 
        # Remove whitespaces (empty lines)
 	   line=`echo $line | xargs`
@@ -625,7 +640,7 @@ function prepare_harvest_record_storico()
              continue
        fi
 
-       echo "LOG="$line
+       # echo "LOG="$line
 
 
 		# replace all / with _
