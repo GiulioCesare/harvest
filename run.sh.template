@@ -146,7 +146,8 @@ print_configuration
 
 # --------------------------
 #prepare_harvest_record_AV
-# prepare_harvest_record_storico
+# da a 
+# prepare_harvest_record_storico	1	5
 # scripts/DbUpdateInsertS3.sh
 
 

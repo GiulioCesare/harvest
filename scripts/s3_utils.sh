@@ -623,9 +623,6 @@ echo "Line ctr=" $ctr
 	    if [[ $ctr < $from ]]; then
 	    	continue
 	    fi
-	    if [[ $ctr > $to ]]; then
-	    	return
-	    fi
 
 
        # Remove whitespaces (empty lines)
@@ -651,6 +648,12 @@ echo "Line ctr=" $ctr
 	    echo "Working on "$s3log_filename
         split_warc=no
         prepare_s3_record $s3log_filename $s3_upd_ins
+
+
+	    if [[ $ctr > $to ]]; then
+	    	return
+	    fi
+
 
      done < $s3_lst_storico
 } # end prepare_harvest_record_storico
