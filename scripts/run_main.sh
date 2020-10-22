@@ -90,6 +90,44 @@ parse_update_insert_con(){
     done < $update_insert_all_con
 }
 
+# Usage: parse_config <file> [<default array name>]
+parse_update_insert_s3_con(){
+    section_regex="^[[:blank:]]*\[([[:alpha:]_][[:alnum:]_]*)\][[:blank:]]*(#.*)?$"
+
+    [[ -f $1 ]] || { echo "$1 is not a file." >&2;return 1;}
+    if [[ -n $2 ]]
+    then
+        update_insert_s3_all_con=$1
+        ambiente=$2
+    fi
+    keep=0
+    while read -r line
+    do
+# echo "line="$line >> run_env.cfg
+
+    if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+        # echo "continue"
+          continue
+    fi
+    if [[ $line =~ $section_regex ]]; then
+        if [[ $keep == 1 ]]; then    # abbiamo incontrato l'inizio di un'altra sezione
+            break
+        fi
+# echo "ENV S3 per " $line
+        if [[ $line =~ $ambiente ]]; then
+            echo "# ========" >> scripts/DbUpdateInsertS3_env.con
+            echo "# $ambiente" >> scripts/DbUpdateInsertS3_env.con
+            echo "# ========" >> scripts/DbUpdateInsertS3_env.con
+            keep=1
+            continue;
+        fi
+    fi
+    if [[ $keep == 1 ]]; then
+        echo $line >> scripts/DbUpdateInsertS3_env.con
+    fi
+    done < $update_insert_s3_all_con
+}
+
 
 parse_delete_unembargoed_con(){
     section_regex="^[[:blank:]]*\[([[:alpha:]_][[:alnum:]_]*)\][[:blank:]]*(#.*)?$"
@@ -240,6 +278,11 @@ function init_variables()
     parse_update_insert_con scripts/DbUpdateInsert.con $ambiente
     source scripts/DbUpdateInsert_env.con
 
+    # Prepara la configurazione di upload in base all'ambiente di lavoro
+    echo "#!/bin/bash" > scripts/DbUpdateInsertS3_env.con
+    echo "" >> scripts/DbUpdateInsertS3_env.con
+    parse_update_insert_s3_con scripts/DbUpdateInsertS3.con $ambiente
+    source scripts/DbUpdateInsertS3_env.con
 
 
     yesterday="$(date -d "1 days ago" +"%Y_%m_%d")"

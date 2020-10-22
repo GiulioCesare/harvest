@@ -8,29 +8,39 @@
 # ambiente di sviluppo
 # --------------------
 [sviluppo]
-uploadDir=./tesi/12_rights/
+#uploadDir=./tesi/13_s3
+uploadDir=/home/argentino/magazzini_digitali/harvest/tesi/13_s3
+
 jdbcDriver=com.mysql.cj.jdbc.Driver
 connectionUrl=jdbc:mysql://localhost:3306/harvest
-userName=md
-userPassword=md_pwd
+
+#connectionUrl=jdbc:mysql://192.168.7.83:3306/harvest?serverTimezone=UTC
+
+userName=harvest
+userPassword=harvest_pwd_2020
+
 fieldSeparator=|
 #fieldSeparator=�
 
 # Truncate
 #removeAllRecordsBeforeUpload=false
-logFileOut=./logs/DbUpdateInsert.log
+
+#logFileOut=./logs/DbUpdateInsertS3.log
+logFileOut=/home/argentino/magazzini_digitali/harvest/logs/DbUpdateInsertS3.log
+#showQuery=true
+
 # commit in hex format
 commitOgniTotRighe=FF
 endConfig
 
-embargo.upd_ins
+storageS3.upd_ins
 
 
 # --------------------
 # ambiente di collaudo
 # --------------------
 [collaudo]
-uploadDir=./tesi/12_rights/
+uploadDir=./tesi/13_s3/
 jdbcDriver=com.mysql.cj.jdbc.Driver
 
 #connectionUrl=jdbc:mysql://localhost:3306/harvest
@@ -48,14 +58,14 @@ logFileOut=./logs/DbUpdateInsert.log
 commitOgniTotRighe=FF
 endConfig
 
-embargo.upd_ins
+s3.upd_ins
 
 
 # --------------------
 # ambiente di esercizio
 # --------------------
 [esercizio]
-uploadDir=./tesi/12_rights/
+uploadDir=./tesi/13_s3/
 jdbcDriver=com.mysql.cj.jdbc.Driver
 
 #connectionUrl=jdbc:mysql://localhost:3306/harvest
@@ -72,7 +82,7 @@ logFileOut=./logs/DbUpdateInsert.log
 commitOgniTotRighe=FF
 endConfig
 
-embargo.upd_ins
+storageS3.upd_ins
 
 
 
@@ -80,10 +90,10 @@ embargo.upd_ins
 # ambiente di esercizio nuovo
 # --------------------
 [nuovo_esercizio]
-uploadDir=./tesi/12_rights/
+uploadDir=./tesi/13_s3/
 jdbcDriver=com.mysql.cj.jdbc.Driver
 
-connectionUrl=jdbc:mysql://192.168.7.83:3306/harvest?serverTimezone=UTC
+connectionUrl=jdbc:mysql://localhost:3306/harvest?serverTimezone=UTC
 userName=harvest
 userPassword=harvest_pwd_2020
 
@@ -92,9 +102,9 @@ fieldSeparator=|
 
 # Truncate
 #removeAllRecordsBeforeUpload=false
-logFileOut=./logs/DbUpdateInsert.log
+logFileOut=./logs/DbUpdateInsertS3.log
 # commit in hex format
 commitOgniTotRighe=FF
 endConfig
 
-embargo.upd_ins
+storageS3.upd_ins

@@ -378,8 +378,266 @@ base_name=$(basename -- "$line")
 
 	fi
 
-
-
      done < /mnt/volume2/warcs/etd_warcs.lst.clean
 
 } # End upload_etd_warcs_to_S3
+
+
+function prepare_s3_record()
+{
+	s3log_filename=$1
+	s3_upd_ins=$2
+
+grep -E -- '^file size|^Inizio|^Finito|^Object upload started|S3 info on|^Tempo impiegato' $s3log_filename  |  
+awk -v split_warc="$split_warc" 'BEGIN{
+    FS=" ";
+    size_bytes="ND";
+    size_mega="ND";
+    size_giga="ND";
+    data_inizio=""
+    ora_inizio=""
+    data_fine=""
+    ora_fine=""
+    nome_file=""
+    file_da_caricare=""
+    nome_file_s3=""
+    tempo_caricamento=""
+    }
+    {
+    	if ($2 == "size")
+    		{
+			size_bytes = substr($6,0,length($6)-1)
+			size_mega = substr($7,0,length($7)-1)
+			size_giga = $8
+    		}
+    	else if ($1 == "Inizio:")
+    		{
+    		gsub("/","-",$2)
+    		data_inizio = $2
+    		ora_inizio = $3
+    		}
+    	else if ($2 == "upload")
+        		{
+        		file_da_caricare = $5
+        		n=split($5,A,"/"); 
+        		nome_file = A[n]
+        		}
+    	else if ($1 == "Finito")
+    		{
+    		gsub("/","-",$3)
+    		data_fine = $3
+    		ora_fine = $4
+    		}
+    	else if ($1 == "Tempo")
+    		{
+    		tempo_caricamento = $6
+    		}
+    	else if ($1 == "S3")
+    		{
+    		nome_file_s3 = substr($4, 2, length($4) - 2)
+    		}
+    	else
+    		{
+            print $0;
+    		}
+    }
+    END{
+
+	if (nome_file_s3 == "")
+		{
+		nome_file_s3 = file_da_caricare
+		sub("/mnt/volume2/", "harvest/", nome_file_s3 )
+		}
+
+	if (size_bytes == "ND")
+		{
+			# d=system("date")
+			# print "date: " d >> "/dev/stderr" 
+
+			# c = "stat -c %s " "/home/argentino/magazzini_digitali/harvest/tmp.txt";
+			c = "stat -c %s " file_da_caricare
+	        c |getline size;
+	        # print "size=" size >> "/dev/stderr" ;
+	        close( c );
+
+	        size_bytes = size"(B)"
+
+			mega = size/(1048576)
+			size_mega=""
+			size_mega =  sprintf (size_mega "%0.3f(MB)", mega)
+
+
+			giga = size/(1073741824)
+			size_giga=""
+			size_giga =  sprintf (size_giga "%0.3f(GB)", giga)
+
+
+
+
+
+			# print "-->get file size" >> "/dev/stderr" 
+
+		}
+
+
+    	# print "nome_file="nome_file	 >> "/dev/stderr"
+    	# print "nome_file_md5="nome_file".md5"	 >> "/dev/stderr"
+    	# print "nome_file_s3="nome_file_s3	 >> "/dev/stderr"
+    	# print "nome file completo="file_da_caricare	 >> "/dev/stderr"
+    	# print "split_warc="split_warc	 >> "/dev/stderr"
+		# print "size_bytes=" size_bytes	 >> "/dev/stderr"
+		# print "size_mega=" size_mega	 >> "/dev/stderr"
+		# print "size_giga=" size_giga	 >> "/dev/stderr"
+    	# print "data_inizio=" data_inizio " " ora_inizio	 >> "/dev/stderr"
+    	# print "data_fine=" data_fine " " ora_fine	 >> "/dev/stderr"
+    	# print "tempo_caricamento="tempo_caricamento	 >> "/dev/stderr"
+
+
+
+# /mnt/volume2/warcs/etd/20131024-depositolegale/warcs/etd-20131028071735547-00000-28409~f1.depositolegale.it~8443.warc.gz
+# /harvest/warcs/etd/20131024-depositolegale/warcs/etd-20131028071735547-00000-28409~f1.depositolegale.it~8443.warc.gz
+
+print nome_file"|"nome_file".md5|"nome_file_s3"|"file_da_caricare"|"split_warc"|"size_bytes"|"size_mega"|"size_giga"|"data_inizio " " ora_inizio"|"data_fine " " ora_fine"|"tempo_caricamento
+
+
+	                }' >> $s3_upd_ins
+} # end prepare_s3_record()
+
+
+# 20/10/2020
+function prepare_harvest_record_AV()
+{
+
+# grep -E -- '^file size|^Inizio|^Finito|^Object upload started|S3 info on|^Tempo impiegato' 2020_08_05_tesi.unimib.upload.log
+
+	echo "--------------------------------"
+	echo "prepare_harvest_record_AV"
+
+	s3_upd_ins=$s3_dir"/storageS3.upd_ins" 
+
+	
+    if [ -f $s3_upd_ins ]; then
+        rm $s3_upd_ins
+    fi
+
+    touch $s3_upd_ins # Create file
+
+
+     while IFS='|' read -r -a array line
+     do
+           line=${array[0]}
+
+           # Remove whitespaces (empty lines)
+    	   line=`echo $line | xargs`
+ 
+          if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+            break
+          fi
+
+           # se riga comentata o vuota skip
+           if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+                 continue
+            fi
+
+        local istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
+
+       	# echo "istituto="$istituto
+
+	    s3log_filename=$s3_dir"/"$harvest_date_materiale"."$istituto".upload.log"
+	    s3log_split_filename_prefix=$s3_dir"/"$harvest_date_materiale"_"$istituto"*"
+		
+		# echo "s3log_filename = " $s3log_filename
+		# echo "s3log_split_filename_prefix = " $s3log_split_filename_prefix
+
+		# Cerchiamo se l'iistituto ha dei warc spl;ittati
+		
+		# declare -i log_files=$(ls -l $s3log_split_filename_prefix | wc -l )
+
+		# echo "log_files per "$s3log_split_filename_prefix" sono "$log_files
+
+		# Test if file with wildcard exists!!!
+		if ls $s3log_split_filename_prefix 1> /dev/null 2>&1; then
+			# echo "files do exist"
+	        split_warc=si
+	        
+		    # Cicliamo sui log dei warc (splittati o no)
+			for filename in $s3log_split_filename_prefix; do
+			    echo "Working on "$filename
+		        prepare_s3_record $filename $s3_upd_ins
+
+				# grep -E -- '^file size|^Inizio|^Finito|^Object upload started|S3 info on|^Tempo impiegato' $filename > $filename".1"
+			done
+
+		else
+	    	# echo "Abbiamo il log di un file non _splittato? "$s3log_filename 
+		    if [ ! -f $s3log_filename ]; then
+		        "Missing log file: "$s3log_filename" SKIPPING ...."
+		        continue;
+		    else
+			    echo "Working on "$s3log_filename
+		        split_warc=no
+
+		        prepare_s3_record $s3log_filename $s3_upd_ins
+
+		    fi
+
+		fi
+
+
+     done < "$repositories_file"
+} # end prepare_harvest_record_AV
+
+
+
+# 21/10/2020
+function prepare_harvest_record_storico()
+{
+
+# grep -E -- '^file size|^Inizio|^Finito|^Object upload started|S3 info on|^Tempo impiegato' 2020_08_05_tesi.unimib.upload.log
+
+	echo "--------------------------------"
+	echo "prepare_harvest_record_storico"
+
+	s3_lst_storico=$s3_dir"/storico/etd_warcs.lst.storico"
+	s3_upd_ins=$s3_dir"/storageS3.upd_ins" 
+
+	
+    if [ -f $s3_upd_ins ]; then
+        rm $s3_upd_ins
+    fi
+
+    touch $s3_upd_ins # Create file
+
+
+     while IFS='|' read -r -a array line
+     do
+       line=${array[0]}
+
+       # Remove whitespaces (empty lines)
+	   line=`echo $line | xargs`
+
+      if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+        break
+      fi
+
+       # se riga comentata o vuota skip
+       if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+             continue
+       fi
+
+       echo "LOG="$line
+
+
+		# replace all / with _
+		s3log_filename=$s3_dir"/storico/all/"${line//\//_}".upload.log"
+		# echo "s3log_filename="$s3log_filename
+
+
+	    echo "Working on "$s3log_filename
+        split_warc=no
+        prepare_s3_record $s3log_filename $s3_upd_ins
+
+     done < $s3_lst_storico
+} # end prepare_harvest_record_storico
+
+

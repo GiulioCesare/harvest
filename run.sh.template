@@ -60,7 +60,8 @@ print_configuration
 
 # harvest_metadata
 
-# count_all_seeds
+# createSeeds
+
 
 # prepare_wget_sites_list
 
@@ -139,10 +140,16 @@ print_configuration
 # to_line=1
 # multipart_mode=false
 # upload_etd_warcs_to_S3	$from_line $to_line $multipart_mode
-
-
+#
 # --------------------------
 # dowbnload_warcs_from_s3
+
+# --------------------------
+#prepare_harvest_record_AV
+# prepare_harvest_record_storico
+# scripts/DbUpdateInsertS3.sh
+
+
 
 # END S3 warc.gz upload / download
 
