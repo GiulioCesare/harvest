@@ -479,6 +479,14 @@ awk -v split_warc="$split_warc" 'BEGIN{
 
 		}
 
+		if (data_fine == "")
+			{
+			data_fine = data_inizio
+			ora_fine = ora_inizio	
+			}
+
+
+
 
     	# print "nome_file="nome_file	 >> "/dev/stderr"
     	# print "nome_file_md5="nome_file".md5"	 >> "/dev/stderr"
@@ -594,8 +602,8 @@ function prepare_harvest_record_storico()
 {
 
 # grep -E -- '^file size|^Inizio|^Finito|^Object upload started|S3 info on|^Tempo impiegato' 2020_08_05_tesi.unimib.upload.log
-	from=$1
-	to=$2
+	declare -i from=$1
+	declare -i to=$2
 
 
 	echo "--------------------------------"
@@ -611,17 +619,21 @@ function prepare_harvest_record_storico()
 
     touch $s3_upd_ins # Create file
 
-    ctr=0
+    declare -i ctr=0
      while IFS='|' read -r -a array line
      do
        line=${array[0]}
-		let "ctr=ctr+1" 
+    	ctr=$((ctr+1))
 
-echo "Line ctr=" $ctr
+echo -n "Line $ctr - "
 
 
 	    if [[ $ctr < $from ]]; then
 	    	continue
+	    fi
+    	if [ $ctr -gt  $to ]; then
+# echo "$ctr > $to"	    	
+	    	break
 	    fi
 
 
@@ -650,9 +662,6 @@ echo "Line ctr=" $ctr
         prepare_s3_record $s3log_filename $s3_upd_ins
 
 
-	    if [[ $ctr > $to ]]; then
-	    	return
-	    fi
 
 
      done < $s3_lst_storico
