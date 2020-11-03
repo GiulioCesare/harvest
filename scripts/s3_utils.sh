@@ -120,6 +120,9 @@ function upload_warcs_to_s3()
 	echo "Uploading warcs.gz to S3 storage"
 	echo "warcs.gz must have accociated .md5 file in same folder"
 
+	multipart_mode=$1
+
+
      while IFS='|' read -r -a array line
      do
            line=${array[0]}
@@ -179,12 +182,32 @@ function upload_warcs_to_s3()
 	    s3log_filename=$s3_dir"/"$harvest_date_materiale"."$istituto".upload.log"
 echo "s3log_filename = " $s3log_filename
 
+		# java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
+		#     -cp "./bin/*" it.s3.s3clientMP.HighLevelMultipartUploadDownload \
+		#     action=upload \
+		#     file_to_upload=$file_to_upload \
+		#     md5_file_to_upload=$md5_file_to_upload \
+		#     s3_keyname=$s3_path_filename  > $s3log_filename
+
+	if [ $multipart_mode == "true" ]; then
+		echo "Upload im multi part mode: "
 		java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
 		    -cp "./bin/*" it.s3.s3clientMP.HighLevelMultipartUploadDownload \
 		    action=upload \
 		    file_to_upload=$file_to_upload \
+		    md5_file_to_upload=$md5_file_to_upload \
 		    s3_keyname=$s3_path_filename  > $s3log_filename
 
+	else
+		echo "Upload im single part mode: "
+		java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
+		    -cp "./bin/*" it.s3.s3client.S3Client \
+		    action=upload \
+		    file_to_upload=$file_to_upload \
+		    md5_file_to_upload=$md5_file_to_upload \
+		    s3_keyname=$s3_path_filename  > $s3log_filename
+
+	fi
 
 
      done < "$repositories_file"
@@ -278,7 +301,7 @@ sed '/recover.gz/d' /mnt/volume2/warcs/etd_warcs.lst > /mnt/volume2/warcs/etd_wa
 
 }
 
-
+# Warc storici
 function upload_etd_warcs_to_S3()
 {
 	declare -i from_line=$1
@@ -625,16 +648,14 @@ function prepare_harvest_record_storico()
        line=${array[0]}
     	ctr=$((ctr+1))
 
-echo -n "Line $ctr - "
-
-
-	    if [[ $ctr < $from ]]; then
+	    if [[ $ctr -lt $from ]]; then
 	    	continue
 	    fi
     	if [ $ctr -gt  $to ]; then
-# echo "$ctr > $to"	    	
 	    	break
 	    fi
+
+		echo -n "Line $ctr - "
 
 
        # Remove whitespaces (empty lines)
@@ -666,5 +687,157 @@ echo -n "Line $ctr - "
 
      done < $s3_lst_storico
 } # end prepare_harvest_record_storico
+
+
+
+
+
+
+
+
+
+
+
+# CDX storici
+function upload_etd_cdx_to_S3()
+{
+	declare -i from_line=$1
+	declare -i to_line=$2
+
+	multipart_mode=$3
+
+
+	echo "--------------------------------"
+	echo "Uploading etd cdx.zip to S3 storage (harvests up to 10/2018)"
+	
+
+		cdx_filename="cdx.zip"
+		cdx_path_filename="/mnt/volume2/warcs/"$cdx_filename
+
+       	local file_to_upload=$cdx_path_filename
+       	local md5_file_to_upload=$file_to_upload".md5"
+       	local s3_path="harvest/warcs/"
+      	local s3_path_filename=$s3_path$cdx_filename
+
+echo "file_to_upload: "$file_to_upload
+echo "md5_file_to_upload: "$md5_file_to_upload
+echo "s3_path_filename: "$s3_path_filename
+
+       	# Check if files to upload exist
+	    if [ ! -f $file_to_upload ]; then
+	        "Missing file to upload: "$file_to_upload" STOP ...."
+	        return;
+	    fi
+
+		log_fname="${cdx_path_filename//\//_}" 
+	    s3log_filename=$s3_dir"/"$log_fname".upload.log"
+
+echo "s3log_filename = " $s3log_filename
+
+		echo "Upload im multi part mode: "
+		java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
+		    -cp "./bin/*" it.s3.s3clientMP.HighLevelMultipartUploadDownload \
+		    action=upload \
+		    file_to_upload=$file_to_upload \
+		    md5_file_to_upload=$md5_file_to_upload \
+		    s3_keyname=$s3_path_filename  > $s3log_filename
+
+
+} # End upload_etd_cdx_to_S3
+
+
+
+# 22/10/2020
+function prepare_harvest_record_cdx_storico()
+{
+	echo "--------------------------------"
+	echo "prepare_harvest_record_cdx_storico"
+
+	s3_upd_ins=$s3_dir"/storageS3.upd_ins" 
+	
+    if [ -f $s3_upd_ins ]; then
+        rm $s3_upd_ins
+    fi
+
+    touch $s3_upd_ins # Create file
+    s3log_filename=$s3_dir"/_mnt_volume2_warcs_cdx.zip.upload.log"
+    	# echo "Abbiamo il log di un file non _splittato? "$s3log_filename 
+	    if [ ! -f $s3log_filename ]; then
+	        "Missing log file: "$s3log_filename" STOP...."
+	        return;
+	    else
+		    echo "Working on "$s3log_filename
+	        split_warc=no
+
+	        prepare_s3_record $s3log_filename $s3_upd_ins
+	    fi
+} # end prepare_harvest_record_cdx_storico
+
+
+# =====================
+# SPLIT and COMBINE large files 
+
+# split -b 9G tmp/2020_08_05_tesi_unical.warc.gz split_dir/2020_08_05_tesi_unical.warc.gz.
+# split -b 14G tmp/2020_08_05_tesi_unimore.warc.gz split_dir/2020_08_05_tesi_unimore.warc.gz.
+
+# cat x* > ls.mp4
+
+
+
+function upload_file_to_s3()
+{
+	echo "--------------------------------"
+	echo "Uploading file to S3 storage"
+
+	local multipart_mode=$1
+   	local file_to_upload=$2
+   	local md5_file_to_upload=$3
+   	local s3_path_filename=$4
+   	local log_filename=$5
+
+
+
+   	# echo " harvest_date_materiale="$harvest_date_materiale
+   	echo " file_to_upload="$file_to_upload
+   	echo " md5_file_to_upload="$md5_file_to_upload
+   	echo " s3_path_filename="$s3_path_filename
+
+
+
+
+   	# Check if files to upload exist
+    if [ ! -f $file_to_upload ]; then
+        "Missing file to upload: "$file_to_upload" SKIPPING ...."
+        continue;
+    fi
+    if [ ! -f $md5_file_to_upload ]; then
+        "Missing md5 file to upload: "$md5_file_to_upload" SKIPPING ...."
+        continue;
+    fi
+
+    s3log_filename=$s3_dir"/"$log_filename
+	
+	echo " s3log_filename = " $s3log_filename
+
+
+	if [ $multipart_mode == "true" ]; then
+		echo "Upload im multi part mode: "
+		java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
+		    -cp "./bin/*" it.s3.s3clientMP.HighLevelMultipartUploadDownload \
+		    action=upload \
+		    file_to_upload=$file_to_upload \
+		    md5_file_to_upload=$md5_file_to_upload \
+		    s3_keyname=$s3_path_filename  > $s3log_filename
+
+	else
+		echo "Upload im single part mode: "
+		java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
+		    -cp "./bin/*" it.s3.s3client.S3Client \
+		    action=upload \
+		    file_to_upload=$file_to_upload \
+		    md5_file_to_upload=$md5_file_to_upload \
+		    s3_keyname=$s3_path_filename  > $s3log_filename
+	fi
+} # End  upload_file_to_s3
 
 

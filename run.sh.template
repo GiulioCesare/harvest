@@ -78,6 +78,9 @@ print_configuration
 # copy_warcs_and_logs_to_destination_dir_and_remove
 
 # create_warcs_to_index_list
+
+## 26/10/2020 TODO
+# Forse si puo' togliere il warcs,lst ed usare l'etd.csv
 # index_warcs
 
 # get_indexes_for_compression
@@ -126,7 +129,21 @@ print_configuration
 # Caricamebnto warcs da harvest Almaviva 
 # 
 # Si usa il file etd.csv per guidare il caricamento
-# upload_warcs_to_s3 
+# multipart_mode=false
+
+# upload_warcs_to_s3 $multipart_mode
+
+# upload harvest CDXJ. Preparare .zip ed md5 a mano
+# multipart_mode=false
+# file_to_upload="/mnt/volume2/wayback/tools/webarchive-indexing/tmp/cdxj.zip"
+# md5_file_to_upload=$file_to_upload".md5"
+# s3_path_filename="harvest/cdxj/2020_08_05_tesi/indexes/cdxj.zip"
+# log_filename="cdxj.upload.log"
+# upload_file_to_s3 $multipart_mode $file_to_upload $md5_file_to_upload $s3_path_filename $log_filename
+
+
+
+
 #
 # Solo per file molto grandii > 15GB (split e nd5 manuale per il momento)
 # upload_split_warcs_to_s3
@@ -145,9 +162,11 @@ print_configuration
 # dowbnload_warcs_from_s3
 
 # --------------------------
-#prepare_harvest_record_AV
-# da a 
+# prepare_harvest_record_AV
+
 # prepare_harvest_record_storico	1	5
+# prepare_harvest_record_cdx_storico
+
 # scripts/DbUpdateInsertS3.sh
 
 

@@ -504,66 +504,8 @@ cd $HARVEST_DIR
 
 
 
-#
-# wb-manager is a command line tool for managing common collection operations.
-#     positional arguments:
-#       {init,list,add,reindex,index,metadata,template,cdx-convert,autoindex}
-#         init                Init new collection, create all collection directories
-#         list                List Collections
-#         add                 Copy ARCS/WARCS to collection directory and reindex
-#         reindex             Re-Index entire collection
-#         index               Index specified ARC/WARC files in the collection
-#         metadata            Set Metadata
-#         template            Add default html template for customization
-#         cdx-convert         Convert any existing archive indexes to new json format
-#         autoindex           Automatically index any change archive files
-#
-#     optional arguments:
-#       -h, --help            show this help message and exit
-#
-#   - inizializzazione di una collezione chiamata my-web-archive
-#      - wb-manager init web-archive
-#      - wb-manager reindex collections/web-archive
-#
-#   wayback   - starts a web server that provides the access to web archives (dalla cartella dove stanno le collezioni).
-
-function index_warcs()
-{
-    echo "--> INDICIZZA WARCS IN WAYBACK $dest_warcs_dir"
-
-    # Rimozione di index.cdxj
-    printf "\n-> Rimuovo vecchio indice: "$WAYBACK_INDEX_DIR"/index.cdxj\n\n"
-    if [[ -f $WAYBACK_INDEX_DIR"/index.cdxj" ]]; then
-        rm $WAYBACK_INDEX_DIR"/index.cdxj"
-    fi
 
 
-  	  cd $WAYBACK_DIR
-  while IFS= read -r line
-    do
-        # echo "$line"
-        # se riga comentata o vuota skip
-        if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
-            continue
-        fi
- 	      tmp=${line%.*.*}
-		  istituto=$(basename -- "$tmp")
-         # echo "istituto: $istituto"
-
-        # filename=$dest_warcs_dir"/"$line
-        echo "--> indexing $line"
-# pwd
-        $WB_MANAGER_DIR"wb-manager" index $WAYBACK_COLLECTION_NAME $line
-
-	echo "Rinominiamo " $WAYBACK_INDEX_DIR"/index.cdxj in" $WAYBACK_INDEX_DIR"/"$istituto".cdxj"
-	mv $WAYBACK_INDEX_DIR"/index.cdxj" $WAYBACK_INDEX_DIR"/"$istituto".cdxj"
-
-    done < $dest_warcs_dir"/warcs.lst"
-
-
-
-    cd $HARVEST_DIR
-} # end index_warcs
 
 
 
@@ -944,4 +886,110 @@ echo "create md5 for istituto="$istituto
      done < "$repositories_file"
 
 } # end create_dest_warcs_md5
+
+
+
+
+
+#
+# wb-manager is a command line tool for managing common collection operations.
+#     positional arguments:
+#       {init,list,add,reindex,index,metadata,template,cdx-convert,autoindex}
+#         init                Init new collection, create all collection directories
+#         list                List Collections
+#         add                 Copy ARCS/WARCS to collection directory and reindex
+#         reindex             Re-Index entire collection
+#         index               Index specified ARC/WARC files in the collection
+#         metadata            Set Metadata
+#         template            Add default html template for customization
+#         cdx-convert         Convert any existing archive indexes to new json format
+#         autoindex           Automatically index any change archive files
+#
+#     optional arguments:
+#       -h, --help            show this help message and exit
+#
+#   - inizializzazione di una collezione chiamata my-web-archive
+#      - wb-manager init web-archive
+#      - wb-manager reindex collections/web-archive
+#
+#   wayback   - starts a web server that provides the access to web archives (dalla cartella dove stanno le collezioni).
+
+# function index_warcs_OLD()
+# {
+#     echo "--> INDICIZZA WARCS IN WAYBACK $dest_warcs_dir"
+
+#     # Rimozione di index.cdxj
+#     printf "\n-> Rimuovo vecchio indice: "$WAYBACK_INDEX_DIR"/index.cdxj\n\n"
+#     if [[ -f $WAYBACK_INDEX_DIR"/index.cdxj" ]]; then
+#         rm $WAYBACK_INDEX_DIR"/index.cdxj"
+#     fi
+
+
+#   cd $WAYBACK_DIR
+#   while IFS= read -r line
+#     do
+#         # echo "$line"
+#         # se riga comentata o vuota skip
+#         if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+#             continue
+#         fi
+#           tmp=${line%.*.*}
+#           istituto=$(basename -- "$tmp")
+#          # echo "istituto: $istituto"
+
+#         # filename=$dest_warcs_dir"/"$line
+#         echo "--> indexing $line"
+# # pwd
+#         $WB_MANAGER_DIR"wb-manager" index $WAYBACK_COLLECTION_NAME $line
+
+#     echo "Rinominiamo " $WAYBACK_INDEX_DIR"/index.cdxj in" $WAYBACK_INDEX_DIR"/"$istituto".cdxj"
+#     mv $WAYBACK_INDEX_DIR"/index.cdxj" $WAYBACK_INDEX_DIR"/"$istituto".cdxj"
+
+#     done < $dest_warcs_dir"/warcs.lst"
+
+#     cd $HARVEST_DIR
+# } # end index_warcs_OLD
+
+
+function index_warcs()
+{
+    echo "--> INDICIZZA WARCS IN WAYBACK $dest_warcs_dir"
+
+    # Rimozione di index.cdxj
+    printf "\n-> Rimuovo vecchio indice: "$WAYBACK_INDEX_DIR"/index.cdxj\n\n"
+    if [[ -f $WAYBACK_INDEX_DIR"/index.cdxj" ]]; then
+        rm $WAYBACK_INDEX_DIR"/index.cdxj"
+    fi
+
+
+    cd $WAYBACK_DIR
+
+     while IFS='|' read -r -a array line
+     do
+           line=${array[0]}
+
+          if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+            break
+          fi
+
+           # se riga comentata o vuota skip
+           if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+                 continue
+            fi
+
+        istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
+
+        filename=$dest_warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
+        echo "Indexing "$filename
+
+        $WB_MANAGER_DIR"wb-manager" index $WAYBACK_COLLECTION_NAME $filename
+
+        echo "Rinominiamo " $WAYBACK_INDEX_DIR"/index.cdxj in" $WAYBACK_INDEX_DIR"/"$istituto".cdxj"
+        mv $WAYBACK_INDEX_DIR"/index.cdxj" $WAYBACK_INDEX_DIR"/"$istituto".cdxj"
+
+
+     done < $HARVEST_DIR"/"$repositories_file
+
+    cd $HARVEST_DIR
+} # end index_warcs
 
