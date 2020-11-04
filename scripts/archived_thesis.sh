@@ -1,9 +1,7 @@
 #!/bin/bash
 
 
-# Controlliamo se tesi e' stata archiviata
-#   Scarichiamo i dati tramite wget
-#   In esercizio toppa. Ricordarsi di prendere gli indici da esercizio e metterli su collaudo
+# Controlliamo se tesi e' stata archiviata in warc
 # ----------------------------------------
 function _controlla_tesi_archiviate()
 {

@@ -899,7 +899,7 @@ echo "Working on: " $istituto
 
         elif [ $materiale == $MATERIALE_EJOURNAL ]; then
             # Prepariamop le ricevute in formato excel per E-JOURNALS
-            echo "DA RIVEDERE ....." 
+            echo "TODO ....." 
             # _prepara_ricevute_excel_e_journals
         fi
 
@@ -928,5 +928,5 @@ function make_receipts()
     echo "--------"
 
     _prepara_ricevute_csv
-    # _prepara_ricevute_excel ancora solo per EJ. Ma da sostituire
+    # _prepara_ricevute_excel ancora solo per EJ. TO_REDO
 } # end make_receipts

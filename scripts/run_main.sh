@@ -576,27 +576,6 @@ function timer()
 
 
 
-# TROPPO PERICOLOSA (gia' cancellata home di almaviva in esercizio, poteva andare molto peggio!!!!)
-# function clean_all()
-# {
-#     echo "--> CLEAN ALL"
-#     rm $work_dir/*
-#     rm $repositories_file_clean
-#     rm $metadata_dir/*
-#     rm $seeds_dir/*
-#     rm $check_seeds_dir/*
-#     rm $bad_seeds_dir/*
-#     rm $validated_seeds_dir/*
-#     clean_work_area
-#     rm $warcs_dir/*
-#     rm $redo_seeds_dir/*
-#     rm $receipts_dir/*
-#     rm $unimarc_dir/*
-#     rm $archived_dir/*
-# }
-
-
-
 # HARVEST METADATA
 # ================
 function harvest_metadata()

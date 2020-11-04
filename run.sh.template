@@ -63,7 +63,6 @@ print_configuration
 # createSeeds
 
 
-# prepare_wget_sites_list
 
 
 # TODO try wget with option --warc-max-size=NUMBER   to limit file size. Eg. --warc-max-size=2G
@@ -254,6 +253,8 @@ echo =================
 # http://memoria.depositolegale.it/*/http://amsdottorato.unibo.it/2206/   2019 (trovato 2015) nell'harvest del 05/11/19 questa url non e' stata scaricata
 
 
-
+# =====================
+# OBSOLETE 
+# prepare_wget_sites_list
 
 
