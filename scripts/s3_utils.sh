@@ -841,3 +841,28 @@ function upload_file_to_s3()
 } # End  upload_file_to_s3
 
 
+# 04/11/2020
+function prepare_harvest_record_cdxj()
+{
+	echo "--------------------------------"
+	echo "prepare_harvest_record_cdxj"
+
+	s3_upd_ins=$s3_dir"/storageS3.upd_ins" 
+	
+    if [ -f $s3_upd_ins ]; then
+        rm $s3_upd_ins
+    fi
+
+    touch $s3_upd_ins # Create file
+    s3log_filename=$s3_dir"/cdxj.upload.log"
+    	# echo "Abbiamo il log di un file non _splittato? "$s3log_filename 
+	    if [ ! -f $s3log_filename ]; then
+	        "Missing log file: "$s3log_filename" STOP...."
+	        return;
+	    else
+		    echo "Working on "$s3log_filename
+	        split_warc=no
+
+	        prepare_s3_record $s3log_filename $s3_upd_ins
+	    fi
+} # end prepare_harvest_record_cdxj
