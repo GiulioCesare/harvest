@@ -914,41 +914,6 @@ echo "create md5 for istituto="$istituto
 #
 #   wayback   - starts a web server that provides the access to web archives (dalla cartella dove stanno le collezioni).
 
-# function index_warcs_OLD()
-# {
-#     echo "--> INDICIZZA WARCS IN WAYBACK $dest_warcs_dir"
-
-#     # Rimozione di index.cdxj
-#     printf "\n-> Rimuovo vecchio indice: "$WAYBACK_INDEX_DIR"/index.cdxj\n\n"
-#     if [[ -f $WAYBACK_INDEX_DIR"/index.cdxj" ]]; then
-#         rm $WAYBACK_INDEX_DIR"/index.cdxj"
-#     fi
-
-
-#   cd $WAYBACK_DIR
-#   while IFS= read -r line
-#     do
-#         # echo "$line"
-#         # se riga comentata o vuota skip
-#         if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
-#             continue
-#         fi
-#           tmp=${line%.*.*}
-#           istituto=$(basename -- "$tmp")
-#          # echo "istituto: $istituto"
-
-#         # filename=$dest_warcs_dir"/"$line
-#         echo "--> indexing $line"
-# # pwd
-#         $WB_MANAGER_DIR"wb-manager" index $WAYBACK_COLLECTION_NAME $line
-
-#     echo "Rinominiamo " $WAYBACK_INDEX_DIR"/index.cdxj in" $WAYBACK_INDEX_DIR"/"$istituto".cdxj"
-#     mv $WAYBACK_INDEX_DIR"/index.cdxj" $WAYBACK_INDEX_DIR"/"$istituto".cdxj"
-
-#     done < $dest_warcs_dir"/warcs.lst"
-
-#     cd $HARVEST_DIR
-# } # end index_warcs_OLD
 
 
 function index_warcs()
