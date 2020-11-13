@@ -27,7 +27,42 @@ function create_warcs_concurrently()
     echo "Physical destination warcs dir: "$dest_warcs_dir
     echo "Running $concurrent_warc_jobs CONCURRENT warc jobs for $warcs_parallel_input_file"
 
-        while IFS= read -r seeds_filename
+
+    #  Non riesco a lavorare direttamente con $repositories_file (non gestisce break quando incontro "@")
+    if [ -f $warcs_parallel_input_file ]; then
+        echo "Remove old "$warcs_parallel_input_file
+        rm $warcs_parallel_input_file
+    fi
+    echo "Prepariamo $warcs_parallel_input_file"
+    while IFS='|' read -r -a array line
+    do
+           line=${array[0]}
+
+        # Remove whitespaces (empty lines)
+        line=`echo $line | xargs`
+
+        if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+            break
+        fi
+
+           # se riga comentata o vuota skip
+           if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+                 continue
+            fi
+
+        local istituto=${array[1]}
+        local seeds_filename=$seeds_dir"/"$harvest_date_materiale"_"$istituto".seeds"
+
+        echo $seeds_filename >> $warcs_parallel_input_file
+
+    done < $HARVEST_DIR/$repositories_file
+
+
+
+
+
+        # while IFS= read -r seeds_filename
+        while IFS= read -r string
             do
             (
                 ((line_ctr++))
@@ -36,7 +71,6 @@ function create_warcs_concurrently()
                     # echo "continue"
                       continue
                 fi
-
 
                # echo "line_ctr= $line_ctr"
                check_free_disk
@@ -53,9 +87,9 @@ function create_warcs_concurrently()
                    local fname="${fname%.*}"
                # fi
 
-echo "fname=$fname"
+                echo "fname=$fname"
 
-echo "wget_ting $seeds_filename"
+                echo "wget_ting $seeds_filename"
 
                # Option --delete-after instructs wget to delete each downloaded file immediately after its download is complete.
                # Option --no-directories prevents wget from leaving behind a useless tree of empty directories.
@@ -92,13 +126,13 @@ echo "wget_ting $seeds_filename"
                     echo "ACCESSO controllato a pagine dietro login di UNIVE"
                     # Ing. Stefano De Vecchi
                     echo "Login. Per prendere la sessione utente"
-#wget --save-cookies cookies.txt --keep-session-cookies --delete-after --post-data 'username=depositolegale&ldap_password=!W3qmt7SWYA!@pV5' http://dspace.unive.it/ldap-login
-# echo "HARVEST_UNIVE_PWD="$HARVEST_UNIVE_PWD
-wget --save-cookies cookies.txt --keep-session-cookies --delete-after --post-data 'username=depositolegale&ldap_password='$HARVEST_UNIVE_PWD http://dspace.unive.it/ldap-login
+                    #wget --save-cookies cookies.txt --keep-session-cookies --delete-after --post-data 'username=depositolegale&ldap_password=!W3qmt7SWYA!@pV5' http://dspace.unive.it/ldap-login
+                    # echo "HARVEST_UNIVE_PWD="$HARVEST_UNIVE_PWD
+                    wget --save-cookies cookies.txt --keep-session-cookies --delete-after --post-data 'username=depositolegale&ldap_password='$HARVEST_UNIVE_PWD http://dspace.unive.it/ldap-login
 
 
 
- # wget --load-cookies cookies.txt    http://dspace.unive.it/bitstream/10579/5607/2/986552-1166862.pdf
+# wget --load-cookies cookies.txt    http://dspace.unive.it/bitstream/10579/5607/2/986552-1166862.pdf
 # wget --load-cookies cookies.txt    http://dspace.unive.it/bitstream/handle/10579/15582/826599-1207989.pdf
 # wget --load-cookies cookies.txt    http://dspace.unive.it/bitstream/10579/14975/2/840453-1207992.pdf
                     if [ $materiale == $MATERIALE_EJOURNAL ]; then
@@ -149,7 +183,6 @@ function printarr()
 } # End printarr
 
 
-# ++++
 
 
 

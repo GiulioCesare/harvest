@@ -75,14 +75,14 @@ function _do_unimarc()
     if [ $work_dir == $E_JOURNALS_DIR ]; then
         # ts=$WAYBACK_INDEX_DIR"/tmp/"$harvest_date"_tesi_"$istituto".cdxj.clean.ts"
         # echo "ts: "$ts
-        command="python ./parse_e_journals_unimarc.py $metadati_filename $nbn_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente"
+        command="python scripts/parse_e_journals_unimarc.py $metadati_filename $nbn_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente"
         echo "Create unimarc in formato ASCII for $filename"
         eval $command > $unimarc_dir/$harvest_date_materiale"_"$istituto".mrk"
     else
       # TESI
         # ts=$WAYBACK_INDEX_DIR"/tmp/"$harvest_date"_tesi_"$istituto".cdxj.clean.ts"
         # echo "ts: "$ts
-        command="python ./parse_tesi_unimarc.py $metadati_filename $oai_dictionary_file $nbn_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente $ctr_file $tesi_aggiornate_file $tesi_nuove_file $tesi_cancellate_file $year2d"
+        command="python scripts/parse_tesi_unimarc.py $metadati_filename $oai_dictionary_file $nbn_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente $ctr_file $tesi_aggiornate_file $tesi_nuove_file $tesi_cancellate_file $year2d"
 
         echo "Create unimarc in formato ASCII for $metadati_filename"
 # echo "command=$command"
