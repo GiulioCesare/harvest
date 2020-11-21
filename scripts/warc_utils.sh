@@ -217,7 +217,7 @@ function check_for_missing_seeds_istituto()
         declare -A seeds_scaricati_e_non_kv_AR
 
         # carichiamo i seed finiti nel warc
-        siw=$warcs_log_dir/$fname.log.seeds_in_warc
+        siw=$warcs_log_dir"/"$fname.log.seeds_in_warc
         if [[ -f $siw ]]; then
 # echo "reading $warcs_log_dir/$fname.log.seeds_in_warc"
             while IFS='|' read -r  line
@@ -231,7 +231,7 @@ function check_for_missing_seeds_istituto()
         fi
 # return
         # mettiamo i seed non scaricati nel warc
-        sniw=$warcs_dir"/logs1/"$fname".log.seeds_not_in_warc"
+        sniw=$warcs_log_dir"/"$fname".log.seeds_not_in_warc"
         if [ -s $sniw ]; then
 # echo "reading $warcs_log_dir/$fname.log.seeds_not_in_warc"
             while IFS='|' read -r  line

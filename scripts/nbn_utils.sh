@@ -17,13 +17,13 @@ function _prepare_todo_list()
     # harvest_date_trattini=$(echo $harvest_date | sed -r "s#([0-9]{4})_([0-9]{2})_([0-9]{2})#\1-\2-\3#g" )
     # formatted_harvest_date=$(echo $harvest_date | sed -r "s#([0-9]{4})_([0-9]{2})_([0-9]{2})#\3/\2/\1#g" )
 
-    local siw=$warcs_dir"/logs1/"$harvest_date_materiale"_"$istituto".log.seeds_in_warc"
+    local siw=$warcs_dir"/log/"$harvest_date_materiale"_"$istituto".log.seeds_in_warc"
     local metadati=$metadata_dir"/"$harvest_date_materiale"_"$istituto".xml"
     if [ $work_dir == $E_JOURNALS_DIR ]; then
-        command="python ./parse_e_journals_nbn.py "$metadati" "$siw" "$metadata_url_base
+        command="python scripts/parse_e_journals_nbn.py "$metadati" "$siw" "$metadata_url_base
     else
         # TESI
-        command="python ./parse_tesi_nbn.py "$metadati" "$siw" "$metadata_url_base
+        command="python scripts/parse_tesi_nbn.py "$metadati" "$siw" "$metadata_url_base
 #
     fi
 # command="ls -l"
@@ -138,11 +138,23 @@ echo "repositories_file=".$repositories_file
     do
         # echo "$line"
         # echo "${array[0]}"
-          line=${array[0]}
-          # se riga comentata o vuota skip
-          if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
-                continue
-           fi
+        line=${array[0]}
+
+
+        # Remove whitespaces (empty lines)
+        line=`echo $line | xargs`
+
+        if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+            break
+        fi
+
+           # se riga comentata o vuota skip
+           if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+                 continue
+            fi
+
+# stampa array
+# ( IFS=$'\n'; echo "${array[*]}" )
 
         local istituto=${array[1]}
         local OAI_repository=${array[2]}
@@ -150,7 +162,7 @@ echo "repositories_file=".$repositories_file
         local opera_per_baseurl=${array[6]}
         local metadata_url_base=$OAI_repository"?verb=GetRecord\&metadataPrefix="$metadata_prefix"\&identifier="
 
-        echo "Working on: " $istituto
+        echo "Istituto: " $istituto
         # echo "OAI Repository: " $OAI_repository
         # echo "metadata_prefix: " $metadata_prefix
         echo "opera_per_baseurl: " $opera_per_baseurl
@@ -185,10 +197,12 @@ echo "repositories_file=".$repositories_file
         url_in=$url_out_file
         nbn_out=$url_out_file".nbn"
         rows_todo=0; # 0 = all
-        # ambiente_db_nbn=$ambiente
-        ambiente_db_nbn=collaudo
+        ambiente_db_nbn=$ambiente
+        # ambiente_db_nbn=collaudo
         echo "Generiamo gli NBN dal db di '" $ambiente_db_nbn "'"
-        ./genera_nbn.pl $url_in $ambiente_db_nbn harvest harvest_pwd $opera_per_baseurl $rows_todo > $nbn_out
+
+
+        # ./genera_nbn.pl $url_in $ambiente_db_nbn harvest harvest_pwd $opera_per_baseurl $rows_todo > $nbn_out
 
         # # Gli nbn generati vengono riportati nelle ricevute dell'harvesting!!! Per ora.
 

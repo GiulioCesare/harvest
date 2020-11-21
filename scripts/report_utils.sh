@@ -27,12 +27,12 @@ echo "Documenti non acquisiti|URL per le quali non e' stato possibile scaricare"
 echo "Documenti acquisiti|URL scaricate (+ file accessori eg. .jpg)" >> $fileCsv
 echo "" >> $fileCsv
 
-siti_harvestati=$(ls -l $warcs_dir/logs1/*".log" | wc -l)
+siti_harvestati=$(ls -l $warcs_dir/log/*".log" | wc -l)
 echo "Numero di siti da trattare|"$siti_harvestati >> $fileCsv
 
 siti_con_seed=0
 siti_senza_seed=0
-for filename in $warcs_dir/logs1/*.log; do
+for filename in $warcs_dir/log/*.log; do
     fname=$(basename -- "$filename")
     fname="${fname%.*}"
     if [[ -s $seeds_dir/$fname".seeds" ]]; then
@@ -45,10 +45,10 @@ echo "Numero di siti con risorse didl|"$siti_con_seed >> $fileCsv
 echo "Numero di siti senza alcuna risorsa didl|"$siti_senza_seed >> $fileCsv
 
 
-siti_senza_seed=$(ls $warcs_dir/logs1/*".log.seeds_not_in_warc" 2> /dev/null | wc -l)
+siti_senza_seed=$(ls $warcs_dir/log/*".log.seeds_not_in_warc" 2> /dev/null | wc -l)
 echo "Numero di siti con URL non acquisite|"$siti_senza_seed >> $fileCsv
 
-siti_missing=$(ls $warcs_dir/logs1/*.missing 2> /dev/null | wc -l)
+siti_missing=$(ls $warcs_dir/log/*.missing 2> /dev/null | wc -l)
 echo "Numero di siti con URL non conformi |"$siti_missing >> $fileCsv
 
 siti_con_doppioni=$(ls $seeds_dir/*".seeds_dup.csv" 2> /dev/null | wc -l)
@@ -74,7 +74,7 @@ echo "SITO|Tesi|Tesi senza documenti|Documenti da acquisire|Documenti acquisiti|
     tot_url_missing=0
     tot_risorse_da_controllare=0
 
-    for filename in $warcs_dir/logs1/*.log; do
+    for filename in $warcs_dir/log/*.log; do
         fname=$(basename -- "$filename")
         fname="${fname%.*}"
         istituto=${fname##*_}
@@ -110,7 +110,7 @@ echo "SITO|Tesi|Tesi senza documenti|Documenti da acquisire|Documenti acquisiti|
         fi
 
         didl_resources_non_in_warc=0 #Didl resource non in warc
-        if [[ -f $warcs_dir/logs1/$fname".log.seeds_not_in_warc" ]]; then
+        if [[ -f $warcs_dir/log/$fname".log.seeds_not_in_warc" ]]; then
           didl_resources_non_in_warc=$(cat $receipts_dir/$fname"_ko.csv" | wc -l)
           let didl_resources_non_in_warc=didl_resources_non_in_warc-1
           let tot_didl_resources_non_in_warc=tot_didl_resources_non_in_warc+didl_resources_non_in_warc
@@ -153,7 +153,7 @@ echo "SITO|Tesi|Tesi senza documenti|Documenti da acquisire|Documenti acquisiti|
 
 
         # url_missing=0
-        # if [[ -f $warcs_dir/logs1/$fname".log.seeds.missing" ]]; then
+        # if [[ -f $warcs_dir/log/$fname".log.seeds.missing" ]]; then
         #     url_missing=$(cat $warcs_dir/$fname".log.seeds.missing" | wc -l)
         #     let tot_url_missing=tot_url_missing+url_missing
         # fi
