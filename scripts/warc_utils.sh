@@ -61,8 +61,8 @@ function create_warcs_concurrently()
 
 
 
-        # while IFS= read -r seeds_filename
-        while IFS= read -r string
+        while IFS= read -r seeds_filename
+        # while IFS= read -r string
             do
             (
                 ((line_ctr++))
@@ -98,6 +98,7 @@ function create_warcs_concurrently()
 
 # --warc-max-size=100M
 # --warc-max-size=2G
+# wget_options="${wget_options} --warc-max-size=8G"
 
                 # DEBUG
                # wget_options="--warc-tempdir=. --no-warc-keep-log --no-check-certificate --user-agent='bncf' --page-requisites"

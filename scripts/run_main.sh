@@ -223,6 +223,7 @@ E_JOURNALS_LAST_HARVEST_DATE="./csv/e_journals_last_harvest_date.csv"
 E_JOURNALS_NEW_HARVEST_DATE_LIST="./csv/e_journals_new_harvest_date.csv"
 
 declare -A last_harvest_ar     # Explicitly declare
+declare -A anagrafe_ar
 
 # Defaults
 repositories_file=""
@@ -246,6 +247,7 @@ source scripts/embargo_utils.sh
 source scripts/report_utils.sh
 source scripts/nbn_utils.sh
 source scripts/s3_utils.sh
+source scripts/harvest_dates_utils.sh
 
 
 # VARIABILI
@@ -1699,10 +1701,20 @@ function check_directories_existance()
          # echo "$line"
          # echo "${array[0]}"
            line=${array[0]}
-           # se riga comentata o vuota skip
-           if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
-                 continue
-            fi
+
+        # Remove whitespaces (empty lines)
+        line=`echo $line | xargs`
+
+        if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+            break
+        fi
+
+
+       # se riga comentata o vuota skip
+       if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+             continue
+        fi
+
          # site=${array[1]}
         site=$(echo "${array[1]}" | cut -f 1 -d '.')
 # echo "site="$site
@@ -1714,4 +1726,8 @@ function check_directories_existance()
 
      done < "$repositories_file"
 } # end checkDirectoriesExistance
+
+
+
+
 

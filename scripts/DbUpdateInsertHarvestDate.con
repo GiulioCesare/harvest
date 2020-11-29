@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# ========
+# sviluppo
+# ========
+uploadDir=./csv/
+jdbcDriver=com.mysql.cj.jdbc.Driver
+connectionUrl=jdbc:mysql://localhost:3306/harvest
+userName=md
+userPassword=md_pwd
+fieldSeparator=|
+logFileOut=./logs/DbUpdateInsertHarvestDate.log
+commitOgniTotRighe=FF
+endConfig
+
+date.upd_ins

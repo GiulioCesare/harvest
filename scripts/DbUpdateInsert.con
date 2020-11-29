@@ -83,7 +83,7 @@ embargo.upd_ins
 uploadDir=./tesi/12_rights/
 jdbcDriver=com.mysql.cj.jdbc.Driver
 
-connectionUrl=jdbc:mysql://192.168.7.83:3306/harvest?serverTimezone=UTC
+connectionUrl=jdbc:mysql://localhost:3306/harvest?serverTimezone=UTC
 userName=harvest
 userPassword=harvest_pwd_2020
 

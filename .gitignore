@@ -11,6 +11,9 @@ zip/
 *.srt
 *.ids
 *.txt
+*.out
+*.save
+*upd_ins
 
 #*.jar
 bin/aws-java-sdk-1.11.856.jar

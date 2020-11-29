@@ -64,7 +64,7 @@ print_configuration
 
 # TODO try wget with option --warc-max-size=NUMBER   to limit file size. Eg. --warc-max-size=2G
 
-create_warcs_concurrently
+# create_warcs_concurrently
 
 # create_warcs_md5
 
@@ -73,7 +73,7 @@ create_warcs_concurrently
 # Makes destination warcs read only (to avoid deletion)
 # copy_warcs_and_logs_to_destination_dir_and_remove
 
-# create_warcs_to_index_list
+# NO create_warcs_to_index_list
 
 ## 26/10/2020 TODO
 # Forse si puo' togliere il warcs,lst ed usare l'etd.csv
@@ -161,8 +161,6 @@ create_warcs_concurrently
 
 # scripts/DbUpdateInsertS3.sh
 
-
-
 # END S3 warc.gz upload / download
 
 
@@ -205,6 +203,20 @@ create_warcs_concurrently
 # generate_last_harvest_list
 
 # make_report
+
+# ===================================
+# 27/11/2020 - Creazione file con range di date per l'harvest corrente
+# scripts/DbDownload.sh 	# Da schema harvest prendi l'nanagrafe e date (messi in csv)
+
+# generate_harvest_dates_from_metadata_logs
+
+# scripts/DbUpdateInsertHarvestDate.sh 	# Carichiamo range di date per l'ultimo harvest
+
+# generate_last_harvest_dates
+# ===================================
+
+
+
 
 # ---------------
 # TESTING
