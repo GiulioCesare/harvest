@@ -238,6 +238,7 @@ today_override=""
 new_harvest_date_list=""
 
 # Include scripts
+source scripts/misc_utils.sh
 source scripts/log_utils.sh
 source scripts/warc_utils.sh
 source scripts/receipt_utils.sh
@@ -248,6 +249,7 @@ source scripts/report_utils.sh
 source scripts/nbn_utils.sh
 source scripts/s3_utils.sh
 source scripts/harvest_dates_utils.sh
+source scripts/md_utils.sh
 
 
 # VARIABILI
@@ -360,6 +362,7 @@ function init_variables()
     nbn_dir="$work_dir/11_nbn"
     rights_dir="$work_dir/12_rights"
     s3_dir="$work_dir/13_s3"
+    md_dir="$work_dir/14_md"
     report_dir=$HARVEST_DIR"/../report"
     redo_ctr_file=$redo_seeds_dir"/redo_ctr.txt"
 
@@ -386,6 +389,7 @@ function init_variables()
         $nbn_dir
         $rights_dir
         $s3_dir
+        $md_dir
         $report_dir
 
         $PH_DEST_COLLECTION_DIR
@@ -909,15 +913,20 @@ function remove_duplicate_seeds()
 
     
 
-    # 07/10/2020 Controlliamo di non avere solo pagine descrittive ma anche componenti pdf 
-    componenti_trovati=`grep -m 1 "pdf.*$"  $file_seeds | wc -l`
-    # echo "componenti trovati: "$componenti_trovati
 
-    # echo -e means 'enable interpretation of backslash escapes'
-    if [ $componenti_trovati = 0 ]; then
-        echo "File seeds non contiene componenti PDF. (NON scaricare WARCS, informare istituto) Vedi " $file_seeds.no_pdf
-        echo "$file_seeds non contiene componenti PDF" > $file_seeds.no_pdf
+    if [ $materiale == $MATERIALE_TESI ]; then
+        # 07/10/2020 Controlliamo di non avere solo pagine descrittive ma anche componenti pdf 
+        componenti_trovati=`grep -m 1 "pdf.*$"  $file_seeds | wc -l`
+        # echo "componenti trovati: "$componenti_trovati
+
+        # echo -e means 'enable interpretation of backslash escapes'
+        if [ $componenti_trovati = 0 ]; then
+            echo "File seeds non contiene componenti PDF. (NON scaricare WARCS, informare istituto) Vedi " $file_seeds.no_pdf
+            echo "$file_seeds non contiene componenti PDF" > $file_seeds.no_pdf
+        fi
     fi
+
+
 
 } # end remove_duplicate_seeds
 
@@ -1396,6 +1405,7 @@ function print_configuration ()
     echo "  nbn dir:         $nbn_dir"
     echo "  rights dir:         $rights_dir"
     echo "  s3 dir:         $s3_dir"
+    echo "  md dir:         $md_dir"
 
     echo "  report (receipts) dir: $report_dir"
     echo "  destination warcs dir: $dest_warcs_dir"

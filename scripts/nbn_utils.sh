@@ -202,7 +202,7 @@ echo "repositories_file=".$repositories_file
         echo "Generiamo gli NBN dal db di '" $ambiente_db_nbn "'"
 
 
-        # ./genera_nbn.pl $url_in $ambiente_db_nbn harvest harvest_pwd $opera_per_baseurl $rows_todo > $nbn_out
+./genera_nbn.pl $url_in $ambiente_db_nbn harvest harvest_pwd $opera_per_baseurl $rows_todo > $nbn_out
 
         # # Gli nbn generati vengono riportati nelle ricevute dell'harvesting!!! Per ora.
 

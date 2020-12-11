@@ -15,6 +15,8 @@ zip/
 *.save
 *upd_ins
 
+csv/sw_login.csv
+
 #*.jar
 bin/aws-java-sdk-1.11.856.jar
 bin/commons-codec-1.11.jar

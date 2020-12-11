@@ -136,9 +136,12 @@ function create_warcs_concurrently()
 # wget --load-cookies cookies.txt    http://dspace.unive.it/bitstream/10579/5607/2/986552-1166862.pdf
 # wget --load-cookies cookies.txt    http://dspace.unive.it/bitstream/handle/10579/15582/826599-1207989.pdf
 # wget --load-cookies cookies.txt    http://dspace.unive.it/bitstream/10579/14975/2/840453-1207992.pdf
-                    if [ $materiale == $MATERIALE_EJOURNAL ]; then
-                        wget_options="${wget_options} --lua-script=$HARVEST_DIR/ojs.lua"
-                    fi
+
+# gestito in fase di estrazione seeds
+                    # if [ $materiale == $MATERIALE_EJOURNAL ]; then
+                    #     wget_options="${wget_options} --lua-script=$HARVEST_DIR/scripts/ojs.lua"
+                    # fi
+
 # echo WGET
                     wget $wget_options --load-cookies ./cookies.txt --input-file=$seeds_filename --output-file=./$fname.log --warc-file=$warcs_dir/$fname
                 else
@@ -147,9 +150,11 @@ function create_warcs_concurrently()
                     # 20/02/2020 Depositiamo direttamente il warc file nella cartella dei warc della wayback machine
                     # wget $wget_options --input-file=$seeds_filename --output-file=./$fname.log --warc-file=$dest_warcs_dir/$fname
 
-                    if [ $materiale == $MATERIALE_EJOURNAL ]; then
-                        wget_options="${wget_options} --lua-script=$HARVEST_DIR/ojs.lua"
-                    fi
+# gestito in fase di estrazione seeds
+                    # if [ $materiale == $MATERIALE_EJOURNAL ]; then
+                    #     wget_options="${wget_options} --lua-script=$HARVEST_DIR/scripts/ojs.lua"
+                    # fi
+
                     wget $wget_options --input-file=$seeds_filename --output-file=./$fname.log --warc-file=$warcs_dir/$fname
 
 
@@ -287,6 +292,8 @@ function check_for_missing_seeds()
         IFS='|' read -r -a array line  || DONE=true
 
         line=${array[0]}
+        # Remove whitespaces (empty lines)
+        line=`echo $line | xargs`
 
         if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
             break
@@ -547,54 +554,12 @@ function copy_warcs_and_logs_to_destination_dir_and_remove()
 {
     # echo "copy_warcs_to_destination_dir: "$dest_warcs_dir
     echo ""
-    # echo "COPY and REMOVE"
-    # echo "  '.warc.gz' files"
-    # echo "    from $warcs_dir"
-    # echo "    to   $dest_warcs_dir"
-    # echo "  '.log' files"
-    # echo "    from $warcs_dir"
-    # echo "    to   $warcs_dir/log"
-
-
-#     shopt -s nullglob
-#     for warc_filename in $warcs_dir/*.gz
-#     do
-# # echo "warc_filename="$warc_filename
-#         basename=$(basename -- "$warc_filename")
-# # echo "basename="$basename
-#         fname="${basename%%.*}" # elimina .warc.gz
-# # echo "fname="$fname
-
-#         # Copiamo il warc
-# echo "Copying $warc_filename to $dest_warcs_dir"
-#         cp -p $warc_filename $dest_warcs_dir/.
-
-#         if [ $? -ne 0 ]; then
-#             echo "ERROR: while copying warc file"
-#         else
-# # echo "Removing "$basename
-#             rm $warc_filename
-
-#             # Copiamo il log file del warc
-# echo "Copying "$warcs_dir/$fname".log* to " $warcs_log_dir"/."
-            
-#             cp -p $warcs_dir/$fname".log" $warcs_log_dir"/."
-#             cp -p $warcs_dir/$fname".log.check_pdf" $warcs_log_dir"/."
-
-#             if [ $? -ne 0 ]; then
-#                 echo "ERROR: while copying log file"
-#             else
-# # echo "Removing "$fname".log"
-#                 rm $warcs_dir/$fname".log"
-#                 rm $warcs_dir/$fname".log.check_pdf"
-#             fi
-
-#         fi
-#     done
 
      while IFS='|' read -r -a array line
      do
         line=${array[0]}
+        # Remove whitespaces (empty lines)
+        line=`echo $line | xargs`
 
         if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
         break
@@ -605,8 +570,9 @@ function copy_warcs_and_logs_to_destination_dir_and_remove()
              continue
         fi
 
-        istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
-       echo "istituto="$istituto
+        # istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
+        istituto=${array[1]}
+        echo "istituto="$istituto
 
 
         # Copiamo il warc.gz
@@ -703,6 +669,9 @@ function check_pdf_download()
     do
         line=${array[0]}
 
+        # Remove whitespaces (empty lines)
+        line=`echo $line | xargs`
+
         if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
             break
         fi
@@ -747,6 +716,9 @@ function create_warcs_to_index_list()
     while IFS='|' read -r -a array line
     do
         line=${array[0]}
+
+        # Remove whitespaces (empty lines)
+        line=`echo $line | xargs`
 
         if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
             break
@@ -824,6 +796,9 @@ function check_for_harvest_mismatch()
 
         line=${array[0]}
 
+        # Remove whitespaces (empty lines)
+        line=`echo $line | xargs`
+
         if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
             break
         fi
@@ -865,6 +840,9 @@ function create_warcs_md5()
      do
            line=${array[0]}
 
+        # Remove whitespaces (empty lines)
+        line=`echo $line | xargs`
+
           if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
             break
           fi
@@ -874,7 +852,9 @@ function create_warcs_md5()
                  continue
             fi
 
-        istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
+        # istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
+        istituto=${array[1]}
+
 #       echo "istituto="$istituto
         filename=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
         md5_filename=$filename".md5"
@@ -899,6 +879,9 @@ function create_dest_warcs_md5()
      while IFS='|' read -r -a array line
      do
            line=${array[0]}
+
+        # Remove whitespaces (empty lines)
+        line=`echo $line | xargs`
 
           if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
             break
@@ -967,6 +950,9 @@ function index_warcs()
      do
            line=${array[0]}
 
+        # Remove whitespaces (empty lines)
+        line=`echo $line | xargs`
+
           if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
             break
           fi
@@ -976,7 +962,8 @@ function index_warcs()
                  continue
             fi
 
-        istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
+        # istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
+       istituto=${array[1]}
 
         filename=$dest_warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
         echo "Indexing "$filename
@@ -985,6 +972,7 @@ function index_warcs()
 
         echo "Rinominiamo " $WAYBACK_INDEX_DIR"/index.cdxj in" $WAYBACK_INDEX_DIR"/"$istituto".cdxj"
         mv $WAYBACK_INDEX_DIR"/index.cdxj" $WAYBACK_INDEX_DIR"/"$istituto".cdxj"
+
 
 
      done < $HARVEST_DIR"/"$repositories_file
