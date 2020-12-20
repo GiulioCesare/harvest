@@ -186,22 +186,39 @@ function copy_warcs_to_temporary_area ()
 
 
         # Copiamo il warc.gz in area temporanea
-        fn=$harvest_date_materiale"_"$istituto".warc.gz"
-        warc_source_filename=$dest_warcs_dir"/"$fn
-        warc_dest_filename=$root_area_temporanea"/"$p_iva"/"$fn
-        # copy_warc_to_destination_dir $warc_source_filename $warc_dest_filename
-        # if [[ $? != 0 ]]; then 
-        #     echo "Copy failed for: "$warc_source_filename
-        #     continue; 
-        # fi
+        filename=$harvest_date_materiale"_"$istituto".warc.gz"
+        warc_source_filename=$dest_warcs_dir"/"$filename
+        # warc_dest_filename=$root_area_temporanea"/"$p_iva"/"$filename
+        area_temporanea=$root_area_temporanea"/"$p_iva
+
+# echo "warc_source_filename: "$warc_source_filename
+# echo "area_temporanea: "$area_temporanea
+# echo "filename: "$filename
+
+echo "creaiamo il link al file da caricare nella'area temporanea"
+# Il file linkato viene rimosso dalla procedura di MD una volta archiviato il documento
+ln -s $warc_source_filename $area_temporanea"/"$filename
+# ls -l $area_temporanea
+
+ret=$?
+
+if [ $ret -gt 0 ]
+then
+   echo "$ret: failed to create link " $warc_source_filename $area_temporanea"/"$filename
+   # Probably already present
+   # continue
+fi
+
 
         # Informo MD of file put in temporary area
         sw_login=${fields[2]}
         sw_pwd=${fields[3]}
 
         # Output di invio dati a MD in file di log
-        echo "Informo MD che "$sw_login" ha messo "$fn" in "$root_area_temporanea"/"$p_iva
-        php scripts/md_soap_client.php $sw_login $sw_pwd $warc_dest_filename $webServicesServer > $md_dir"/"$fn".md_log"
+        echo "Informo MD che "$sw_login" ha messo "$filename" in "$root_area_temporanea"/"$p_iva
+
+php scripts/md_soap_client.php $sw_login $sw_pwd $area_temporanea $filename $webServicesServer > $md_dir"/"$filename".md_log"
+echo "Source: $warc_source_filename" >> $md_dir"/"$filename".md_log"
 
       
         # Prepariamo il record da archiviare in DB harvest.storageMD
@@ -215,7 +232,6 @@ function copy_warcs_to_temporary_area ()
 #       - dimensione file B/MB/GB
 #       - data file
 #       - timestamp (creazione record) automatico
-
 
 
 

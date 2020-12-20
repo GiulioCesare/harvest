@@ -157,7 +157,7 @@
  } // End webServiceAuthenticateSoftware
  
  
-function sendFile($login, $password, $filename, $webServicesServer)
+function sendFile($login, $password, $area_temporanea, $filename, $webServicesServer)
 {
     $authentication = array( // it.depositolegale.www.loginUtenti.AuthenticationUtentiAuthentication authentication
         // "login" => "GS_MD",
@@ -168,25 +168,26 @@ function sendFile($login, $password, $filename, $webServicesServer)
     
     $software = webServiceAuthenticateSoftware ($authentication, $webServicesServer);
     if (isset($software->errorMsg->msgError))
-{
-    echo "\nERRORE: " . $software->errorMsg->msgError;
-    return;
-}
+    {
+        echo "\nERRORE: " . $software->errorMsg->msgError;
+        return;
+    }
     if (! isset($software)) {
         echo "<BR>Invalid Software authentication";
         return;
     }
 // var_dump($software);    
+    $fullFilename=$area_temporanea."/".$filename;
 
-    $fTime = filemtime($filename);
+    $fTime = filemtime($fullFilename);
     //     echo "fTime: " . $fTime;
     
-    $md5 = md5_file($filename);
+    $md5 = md5_file($fullFilename);
     $md5_base64 = base64_encode($md5);
     //     echo "<br>MD5: ".$md5;
     //     echo "<br>MD5 base64: " . $md5_base64;
     
-    $sha1 = sha1_file($filename);
+    $sha1 = sha1_file($fullFilename);
     $sha1_base64 = base64_encode($sha1);
     
     
@@ -257,15 +258,34 @@ function sendFile($login, $password, $filename, $webServicesServer)
     }
 } // End sendFile
     
+function test()
+{
+    $filename="/mnt/areaTemporanea/Ingest/80232070583/2020_08_05_tesi_unive.warc.gz";
+    $md5 = md5_file($filename);
+    $md5_base64 = base64_encode($md5);
+    echo "\nMD5: ".$md5;
+    echo "\nMD5 base64: " . $md5_base64;
+    
+    $sha1 = sha1_file($filename);
+    $sha1_base64 = base64_encode($sha1);
+    echo "\nsha1: ".$sha1;
+    echo "\nsha1_base64: " . $sha1_base64;
+    
+} // End test
+
 
 // phpinfo();
 // echo "hello arge";
 
 // echo "argc=$argc";
 
-if ($argc < 4)
+// test();
+
+
+
+if ($argc < 5)
 {
-    echo "ERROR, syntax: md_soap_client.php sw_login, sw_password, file_to_upload";
+    echo "ERROR, syntax: md_soap_client.php sw_login, sw_password, area_temporanea, file_to_upload, webServicesServer";
     return 1;
 }
 // var_dump($argv);
@@ -284,9 +304,9 @@ $sw_login = $argv[1];       // GS_MD
 // $sw_password_sha256 = hash('sha256', $sw_password);
 $sw_password_sha256 = $argv[2]; // pwd gia' in sha256
 
-
-$filename = $argv[3];
-$webServicesServer = $argv[4];
+$area_temporanea = $argv[3];
+$filename = $argv[4];
+$webServicesServer = $argv[5];
 
 
 // echo "\nsw_password: " . $sw_password;
@@ -296,7 +316,9 @@ echo "\nUtente: " . $sw_login;
 // echo "\nwebServicesServer: ". $webServicesServer;
 
 
-sendFile($sw_login, $sw_password_sha256, $filename, $webServicesServer);
+sendFile($sw_login, $sw_password_sha256, $area_temporanea, $filename, $webServicesServer);
+
+
 echo "\n";
 return 0;
 
