@@ -248,8 +248,11 @@ function prepare_docs_for_MD()
 {
 # download_sites_software_login
 
-    echo "copying: /home/argentino/workspace/pdt/cli_app/md_soap_client.php scripts/."  
-    cp /home/argentino/workspace/pdt/cli_app/md_soap_client.php scripts/.
+    if [ $ambiente == "sviluppo" ]; then
+        echo "copying: /home/argentino/workspace/pdt/cli_app/md_soap_client.php scripts/."  
+        cp /home/argentino/workspace/pdt/cli_app/md_soap_client.php scripts/.
+    fi
+
 
     echo "webServicesServer: "$webServicesServer
 

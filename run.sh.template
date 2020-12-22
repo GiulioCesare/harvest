@@ -68,15 +68,12 @@ print_configuration
 
 # create_warcs_md5
 
+# Solo per TESI. Controllo non possibile per gli eJournal
 # check_pdf_download
 
 # Makes destination warcs read only (to avoid deletion)
 # copy_warcs_and_logs_to_destination_dir_and_remove
 
-# NO create_warcs_to_index_list
-
-## 26/10/2020 TODO
-# Forse si puo' togliere il warcs,lst ed usare l'etd.csv
 # index_warcs
 
 # get_indexes_for_compression
@@ -217,6 +214,12 @@ print_configuration
 
 
 
+# ===================================
+# 07/12/2020
+# Archiviazione documenti in Magazzini Digitali
+# ===================================
+# prepare_docs_for_MD
+
 
 # ---------------
 # TESTING
@@ -269,6 +272,11 @@ echo =================
 
 # Procedura da farsi una tantum per recuperare il pregresso (storico) da DB MySql di BNCF
 # create_unimarc_from_dublin_core
+
+# 22/12/2020
+# Procedura da farsi una tantum per splittare warc.gz troppo grandi da caricare unzippati su S3
+# Warc coinvolti solo alcuni dell'harvest del 05/08/2020
+# split_warcs
 
 # END PROCEDURE UNA TANTUM 
 # =====================
