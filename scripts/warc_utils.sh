@@ -1079,7 +1079,7 @@ function split_warcs()
         blocks_file=$members_dir"/"$harvest_date_materiale"_"$istituto".warc.gz.blocks"
         block_size=1000000
 
-        python3 scripts/split_warc.py $warc_file $members_dir $block_size > $blocks_file
+        python3 scripts/find_warc_offsets.py $warc_file $members_dir $block_size > $blocks_file
 
         echo "Vedi $blocks_file"
         # !!!!! CONTROLLARE nella cartella dei membri con mc che il singolo record ad inizio di un blocco sia corretto (valido .gz)
