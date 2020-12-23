@@ -178,7 +178,7 @@ start_from_offset = block_size
 extract_n_members = 1
 block_start=0
 block_len=0
-block_ctr=1
+block_ctr=0
 block_total_len=0
 
 print ("# warc_filenmae_in=%s, split_dir=%s, block_size=%d" % (warc_filenmae_in, split_dir, block_size))

@@ -1108,7 +1108,7 @@ function split_warcs()
             block_size=${array[7]}
 
             # sprintf
-            warc_block_out=$(printf '%s/%s_%s_%02d.warc.gz' $members_dir $harvest_date_materiale $istituto $block_num) 
+            warc_block_out=$(printf '%s/%s_%s-%04d.warc.gz' $members_dir $harvest_date_materiale $istituto $block_num) 
             # echo "Extract block: $block_num from offset $from_pos, length $block_size to $warc_block_out"
 
             python3 scripts/extract_binary.py $warc_file $warc_block_out $from_pos $block_size
