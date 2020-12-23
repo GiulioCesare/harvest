@@ -955,7 +955,7 @@ function index_warcs()
            line=${array[0]}
 
         # Remove whitespaces (empty lines)
-        line=`echo $line | xargs`
+        line=`echo $line | xargs -0`
 
           if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
             break
@@ -967,15 +967,35 @@ function index_warcs()
             fi
 
         # istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
-       istituto=${array[1]}
+        istituto=${array[1]}
 
-        filename=$dest_warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
-        echo "Indexing "$filename
+        # filename=$dest_warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
+        
+        root_filename=$harvest_date_materiale"_"$istituto*".warc.gz"
 
-        $WB_MANAGER_DIR"wb-manager" index $WAYBACK_COLLECTION_NAME $filename
+        # 22/12/2020 Gstione indexing compresi warcs splittati
+        for filename in $dest_warcs_dir"/"$root_filename; do
+            echo "Indexing "$filename
+            $WB_MANAGER_DIR"wb-manager" index $WAYBACK_COLLECTION_NAME $filename
 
-        echo "Rinominiamo " $WAYBACK_INDEX_DIR"/index.cdxj in" $WAYBACK_INDEX_DIR"/"$istituto".cdxj"
-        mv $WAYBACK_INDEX_DIR"/index.cdxj" $WAYBACK_INDEX_DIR"/"$istituto".cdxj"
+            local fname=$(basename -- "$filename")
+
+           # local fname="${fname%.*}"
+            cdxj_name="${fname%.*.*}.cdxj"
+
+            echo "cdxj_name= "$cdxj_name
+            echo "Rinominiamo " $WAYBACK_INDEX_DIR"/index.cdxj in" $WAYBACK_INDEX_DIR"/"$cdxj_name
+            mv $WAYBACK_INDEX_DIR"/index.cdxj" $WAYBACK_INDEX_DIR"/"$cdxj_name
+            
+        done
+
+        # Insex senza segmentazione
+        # echo "Indexing "$filename
+        # $WB_MANAGER_DIR"wb-manager" index $WAYBACK_COLLECTION_NAME $filename
+
+        # echo "Rinominiamo " $WAYBACK_INDEX_DIR"/index.cdxj in" $WAYBACK_INDEX_DIR"/"$istituto".cdxj"
+        # mv $WAYBACK_INDEX_DIR"/index.cdxj" $WAYBACK_INDEX_DIR"/"$istituto".cdxj"
+
      done < $HARVEST_DIR"/"$repositories_file
     cd $HARVEST_DIR
 } # end index_warcs
@@ -1029,15 +1049,103 @@ function split_warcs_test()
 } # end split_warcs_test
 
 
+
+
+function find_warc_offsets()
+{
+    local istituto=$1
+    local members_dir=$2
+    local warc_file=$3
+    
+    echo "Find offsets for: " $istituto
+
+        echo "SPLIT warc.gz for "$istituto
+
+
+
+        if [ ! -d $members_dir ]; then
+            echo "---> Create directory "$members_dir
+            mkdir $members_dir
+            if [[ $? != 0 ]]; then 
+                # echo "Create dir failed"
+                return; 
+            fi
+        fi
+
+        if [ $ambiente == "sviluppo" ]; then
+            echo "Copiamo i .py in scripts/."
+            cp ~/python_venvs/s3_venv/workspace/*py scripts/.
+        fi
+
+
+        echo "Find splittable position (start of new .gz record within warc.gz)"
+   
+
+        # blocks_file="/home/argentino/tmp/warcs/members/2020_11_11_tesi_lumsa.warc.gz.blocks"
+        blocks_file=$members_dir"/"$harvest_date_materiale"_"$istituto".warc.gz.blocks"
+
+        python3 scripts/find_warc_offsets.py $warc_file $members_dir $block_size > $blocks_file
+
+        echo "Vedi $blocks_file"
+        # !!!!! CONTROLLARE nella cartella dei membri con mc che il singolo record ad inizio di un blocco sia corretto (valido .gz)
+
+} # end find_warc_offsets()
+ 
+
+
+function extract_warc_blocks()
+{
+    local istituto=$1
+    local members_dir=$2
+    local warc_file=$3
+
+    blocks_file=$members_dir"/"$harvest_date_materiale"_"$istituto".warc.gz.blocks"
+
+    echo "Do the blocks extraction"
+     while IFS=' ' read -r -a array line
+     do
+        line=${array[0]}
+
+        # Remove whitespaces (empty lines)
+        line=`echo $line | xargs`
+
+          if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+            break
+          fi
+
+           # se riga comentata o vuota skip
+           if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+                 continue
+            fi
+        
+        block_num=${array[1]}
+        from_pos=${array[3]}
+        block_size=${array[7]}
+
+        # sprintf
+        warc_block_out=$(printf '%s/%s_%s-%04d.warc.gz' $members_dir $harvest_date_materiale $istituto $block_num) 
+        # echo "Extract block: $block_num from offset $from_pos, length $block_size to $warc_block_out"
+
+        python3 scripts/extract_binary.py $warc_file $warc_block_out $from_pos $block_size
+
+        
+        # !!!!! CONTROLLARE nella cartella dei membri se i warc gz sono ok)
+
+     done < $blocks_file
+
+} # End extract_warc_blocks
+
+
 # Split huge warcx.gz in smaller ones
 function split_warcs()
 {
     echo "SPLIT WARC"
     echo "=========="
 
+    block_size=1000000
 
-     while IFS='|' read -r -a array line
-     do
+    while IFS='|' read -r -a array line
+    do
         line=${array[0]}
 
         # Remove whitespaces (empty lines)
@@ -1054,66 +1162,27 @@ function split_warcs()
 
         istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
 
-        echo "SPLIT warc.gz for "$istituto
+        warc_file=$dest_warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
 
         # Create members_dir if not present
         members_dir=$dest_warcs_dir"/"$harvest_date_materiale"_"$istituto"_members"
 
+        find_warc_offsets $istituto $members_dir $warc_file
 
-        if [ ! -d $members_dir ]; then
-          echo "---> Create directory "$members_dir
-          mkdir $members_dir
-        fi
+        extract_warc_blocks $istituto $members_dir $warc_file
 
-        if [ $ambiente == "sviluppo" ]; then
-            echo "Copiamo i .py in scripts/."
-            cp ~/python_venvs/s3_venv/workspace/*py scripts/.
-        fi
+        # Create md5 checksum on downloaded file
+        for filename in $members_dir/*warc.gz; do
+            echo "do md5 for: " $filename
+            md5sum $filename > $filename.md5
+        done
+     
+        # SWAP dei warcs
+        echo "Sposto warc splittati nella cartella dei warc"
+        mv $members_dir/*warc.gz* $members_dir/../.
 
-
-        echo "Find splittable position (start of new .gz record within warc.gz)"
-   
-        warc_file=$dest_warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
-
-        # blocks_file="/home/argentino/tmp/warcs/members/2020_11_11_tesi_lumsa.warc.gz.blocks"
-        blocks_file=$members_dir"/"$harvest_date_materiale"_"$istituto".warc.gz.blocks"
-        block_size=1000000
-
-        python3 scripts/find_warc_offsets.py $warc_file $members_dir $block_size > $blocks_file
-
-        echo "Vedi $blocks_file"
-        # !!!!! CONTROLLARE nella cartella dei membri con mc che il singolo record ad inizio di un blocco sia corretto (valido .gz)
-
-
-
-        echo "Do the blocks extraction"
-         while IFS=' ' read -r -a array line
-         do
-            line=${array[0]}
-
-            # Remove whitespaces (empty lines)
-            line=`echo $line | xargs`
-
-              if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
-                break
-              fi
-
-               # se riga comentata o vuota skip
-               if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
-                     continue
-                fi
-            
-            block_num=${array[1]}
-            from_pos=${array[3]}
-            block_size=${array[7]}
-
-            # sprintf
-            warc_block_out=$(printf '%s/%s_%s-%04d.warc.gz' $members_dir $harvest_date_materiale $istituto $block_num) 
-            # echo "Extract block: $block_num from offset $from_pos, length $block_size to $warc_block_out"
-
-            python3 scripts/extract_binary.py $warc_file $warc_block_out $from_pos $block_size
-
-         done < $blocks_file
+        echo "Sposto il warc.gz originale nella cartella dei membri (da cancellare a mano)"
+        mv $warc_file $members_dir/.
 
     done < "$repositories_file"
 } # end split_warcs
