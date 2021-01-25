@@ -114,104 +114,10 @@ echo "TODO take in input download_dir (da dichiarare nei file di config) e s3_pa
 } # End dowbnload_warcs_from_s3
 
 
-function upload_warcs_to_s3()
-{
-	echo "--------------------------------"
-	echo "Uploading warcs.gz to S3 storage"
-	echo "warcs.gz must have accociated .md5 file in same folder"
-
-	multipart_mode=$1
-
-
-     while IFS='|' read -r -a array line
-     do
-           line=${array[0]}
-
-          if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
-            break
-          fi
-
-           # se riga comentata o vuota skip
-           if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
-                 continue
-            fi
-
-        local istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
-
-       	# file_to_upload=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
-       	local warc_filename=$harvest_date_materiale"_"$istituto".warc.gz"
-       	local file_to_upload=$dest_warcs_dir"/"$warc_filename
-       	local md5_file_to_upload=$file_to_upload".md5"
-       	local s3_path_filename=""
-
-       	echo "istituto="$istituto
-       	echo "ambiente="$ambiente
-       	echo " warc_filename="$warc_filename
-       	echo " harvest_date_materiale="$harvest_date_materiale
-       	echo " file_to_upload="$file_to_upload
-       	echo " md5_file_to_upload="$md5_file_to_upload
-
-
-		if [ $ambiente == "sviluppo" ]; then
-			s3_path_filename="harvest/"$harvest_date_materiale"/warcs/sviluppo_"$warc_filename
-		elif [ $ambiente == "collaudo" ]; then 
-			s3_path_filename="harvest/"$harvest_date_materiale"/warcs/collaudo_"$warc_filename
-		elif [ $ambiente == "esercizio" ] || [ $ambiente == "nuovo_esercizio" ]; then
-			# Esercizio
-			s3_path_filename="harvest/"$harvest_date_materiale"/warcs/"$warc_filename
-		else
-				echo "ambiente '"$ambiente"' sconosciuto. STOP'"
-				exit
-		fi
-
-       	echo " s3_path_filename="$s3_path_filename
 
 
 
 
-       	# Check if files to upload exist
-	    if [ ! -f $file_to_upload ]; then
-	        "Missing file to upload: "$file_to_upload" SKIPPING ...."
-	        continue;
-	    fi
-	    if [ ! -f $md5_file_to_upload ]; then
-	        "Missing md5 file to upload: "$md5_file_to_upload" SKIPPING ...."
-	        continue;
-	    fi
-
-	    s3log_filename=$s3_dir"/"$harvest_date_materiale"."$istituto".upload.log"
-echo "s3log_filename = " $s3log_filename
-
-		# java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
-		#     -cp "./bin/*" it.s3.s3clientMP.HighLevelMultipartUploadDownload \
-		#     action=upload \
-		#     file_to_upload=$file_to_upload \
-		#     md5_file_to_upload=$md5_file_to_upload \
-		#     s3_keyname=$s3_path_filename  > $s3log_filename
-
-	if [ $multipart_mode == "true" ]; then
-		echo "Upload im multi part mode: "
-		java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
-		    -cp "./bin/*" it.s3.s3clientMP.HighLevelMultipartUploadDownload \
-		    action=upload \
-		    file_to_upload=$file_to_upload \
-		    md5_file_to_upload=$md5_file_to_upload \
-		    s3_keyname=$s3_path_filename  > $s3log_filename
-
-	else
-		echo "Upload im single part mode: "
-		java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
-		    -cp "./bin/*" it.s3.s3client.S3Client \
-		    action=upload \
-		    file_to_upload=$file_to_upload \
-		    md5_file_to_upload=$md5_file_to_upload \
-		    s3_keyname=$s3_path_filename  > $s3log_filename
-
-	fi
-
-
-     done < "$repositories_file"
-} # End  upload_warcs_to_s3
 
 
 
@@ -782,65 +688,6 @@ function prepare_harvest_record_cdx_storico()
 
 # cat x* > ls.mp4
 
-
-
-function upload_file_to_s3()
-{
-	echo "--------------------------------"
-	echo "Uploading file to S3 storage"
-
-	local multipart_mode=$1
-   	local file_to_upload=$2
-   	local md5_file_to_upload=$3
-   	local s3_path_filename=$4
-   	local log_filename=$5
-
-
-
-   	# echo " harvest_date_materiale="$harvest_date_materiale
-   	echo " file_to_upload="$file_to_upload
-   	echo " md5_file_to_upload="$md5_file_to_upload
-   	echo " s3_path_filename="$s3_path_filename
-
-
-
-
-   	# Check if files to upload exist
-    if [ ! -f $file_to_upload ]; then
-        "Missing file to upload: "$file_to_upload" SKIPPING ...."
-        continue;
-    fi
-    if [ ! -f $md5_file_to_upload ]; then
-        "Missing md5 file to upload: "$md5_file_to_upload" SKIPPING ...."
-        continue;
-    fi
-
-    s3log_filename=$s3_dir"/"$log_filename
-	
-	echo " s3log_filename = " $s3log_filename
-
-
-	if [ $multipart_mode == "true" ]; then
-		echo "Upload im multi part mode: "
-		java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
-		    -cp "./bin/*" it.s3.s3clientMP.HighLevelMultipartUploadDownload \
-		    action=upload \
-		    file_to_upload=$file_to_upload \
-		    md5_file_to_upload=$md5_file_to_upload \
-		    s3_keyname=$s3_path_filename  > $s3log_filename
-
-	else
-		echo "Upload im single part mode: "
-		java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
-		    -cp "./bin/*" it.s3.s3client.S3Client \
-		    action=upload \
-		    file_to_upload=$file_to_upload \
-		    md5_file_to_upload=$md5_file_to_upload \
-		    s3_keyname=$s3_path_filename  > $s3log_filename
-	fi
-} # End  upload_file_to_s3
-
-
 # 04/11/2020
 function prepare_harvest_record_cdxj()
 {
@@ -866,3 +713,181 @@ function prepare_harvest_record_cdxj()
 	        prepare_s3_record $s3log_filename $s3_upd_ins
 	    fi
 } # end prepare_harvest_record_cdxj
+
+
+function upload_file_to_s3()
+{
+	echo "--------------------------------"
+	echo "Uploading file to S3 storage. Multipart_mode="$1
+
+	local multipart_mode=$1
+   	local file_to_upload=$2
+   	local md5_file_to_upload=$3
+   	local s3_path_filename=$4
+   	local log_filename=$5
+
+
+   	# echo " harvest_date_materiale="$harvest_date_materiale
+   	echo " file_to_upload="$file_to_upload
+   	echo " md5_file_to_upload="$md5_file_to_upload
+   	echo " s3_path_filename="$s3_path_filename
+    s3log_filename=$s3_dir"/"$log_filename
+	echo " s3log_filename = " $s3log_filename
+
+   	# Check if files to upload exist
+    if [ ! -f $file_to_upload ]; then
+        "Missing file to upload: "$file_to_upload" SKIPPING ...."
+        return;
+    fi
+    if [ ! -f $md5_file_to_upload ]; then
+        "Missing md5 file to upload: "$md5_file_to_upload" SKIPPING ...."
+        return;
+    fi
+
+
+
+	# if [ $multipart_mode == "true" ]; then
+	# 	echo "Upload im multi part mode: "
+	# 	java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
+	# 	    -cp "./bin/*" it.s3.s3clientMP.HighLevelMultipartUploadDownload \
+	# 	    action=upload \
+	# 	    file_to_upload=$file_to_upload \
+	# 	    md5_file_to_upload=$md5_file_to_upload \
+	# 	    s3_keyname=$s3_path_filename  > $s3log_filename
+
+	# else
+	# 	echo "Upload im single part mode: "
+	# 	java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
+	# 	    -cp "./bin/*" it.s3.s3client.S3Client \
+	# 	    action=upload \
+	# 	    file_to_upload=$file_to_upload \
+	# 	    md5_file_to_upload=$md5_file_to_upload \
+	# 	    s3_keyname=$s3_path_filename  > $s3log_filename
+	# fi
+} # End  upload_file_to_s3
+
+
+
+
+
+
+_upload_segmented_warc_to_s3()
+{
+	local istituto=$1
+	echo "multifile_to_upload: " $istituto
+
+	for filename in $dest_warcs_dir"/"$harvest_date_materiale"_"$istituto-????".warc.gz"; do
+		echo ""
+	    echo "Process $filename"
+		fname=$(basename -- "$filename")
+
+# echo "--->fname="$fname
+
+		file_to_upload=$filename
+		md5_file_to_upload=$file_to_upload".md5"
+		s3_path_filename="harvest/2020_08_05_tesi/indexes/cdxj.zip"
+
+		if [ $ambiente == "sviluppo" ]; then
+			s3_path_filename="harvest/"$harvest_date_materiale"/warcs/sviluppo_"$fname
+		elif [ $ambiente == "collaudo" ]; then 
+			s3_path_filename="harvest/"$harvest_date_materiale"/warcs/collaudo_"$fname
+		elif [ $ambiente == "esercizio" ] || [ $ambiente == "nuovo_esercizio" ]; then
+			# Esercizio
+			s3_path_filename="harvest/"$harvest_date_materiale"/warcs/"$fname
+		else
+				echo "ambiente '"$ambiente"' sconosciuto. STOP'"
+				exit
+		fi
+		s3log_filename=$fname".upload.log"
+
+
+# s3log_filename=$s3_dir"/"$warc_filename".upload.log"
+# echo "--->s3log_filename = " $s3log_filename
+
+
+		upload_file_to_s3 $multipart_mode $file_to_upload $md5_file_to_upload $s3_path_filename $s3log_filename
+	done
+}
+
+
+
+function upload_warcs_to_s3()
+{
+	echo "--------------------------------"
+	echo "Uploading warcs.gz to S3 storage"
+	echo "warcs.gz must have associated .md5 file in same folder"
+
+	multipart_mode=$1
+
+
+     while IFS='|' read -r -a array line
+     do
+           line=${array[0]}
+
+          if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+            break
+          fi
+
+           # se riga comentata o vuota skip
+           if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+                 continue
+            fi
+
+        local istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
+
+       	# file_to_upload=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
+       	local warc_filename=$harvest_date_materiale"_"$istituto".warc.gz"
+       	local file_to_upload=$dest_warcs_dir"/"$warc_filename
+
+
+
+       	# Check if whole file to upload exist
+	    if [ ! -f $file_to_upload ]; then
+	    	# Whole file does not exist. Could be a segmented file
+
+			if ls $dest_warcs_dir"/"$harvest_date_materiale"_"$istituto-????".warc.gz" 1> /dev/null 2>&1; then
+			    # UPLOADING SEGMENTED WARC
+			    # ========================
+		    	_upload_segmented_warc_to_s3 $istituto
+		    	continue
+		    fi
+
+	        "Missing file to upload: "$file_to_upload" SKIPPING ...."
+	        continue;
+	    fi
+	    if [ ! -f $md5_file_to_upload ]; then
+	        "Missing md5 file to upload: "$md5_file_to_upload" SKIPPING ...."
+	        continue;
+	    fi
+
+	    # UPLOADING SINGLE WHOLE WARC
+	    # ===========================
+
+       	local md5_file_to_upload=$file_to_upload".md5"
+       	# local s3_path_filename=""
+
+       	# echo "istituto="$istituto
+       	# echo "ambiente="$ambiente
+       	# echo " warc_filename="$warc_filename
+       	# echo " harvest_date_materiale="$harvest_date_materiale
+       	# echo " file_to_upload="$file_to_upload
+       	# echo " md5_file_to_upload="$md5_file_to_upload
+
+		if [ $ambiente == "sviluppo" ]; then
+			s3_path_filename="harvest/"$harvest_date_materiale"/warcs/sviluppo_"$warc_filename
+		elif [ $ambiente == "collaudo" ]; then 
+			s3_path_filename="harvest/"$harvest_date_materiale"/warcs/collaudo_"$warc_filename
+		elif [ $ambiente == "esercizio" ] || [ $ambiente == "nuovo_esercizio" ]; then
+			# Esercizio
+			s3_path_filename="harvest/"$harvest_date_materiale"/warcs/"$warc_filename
+		else
+				echo "ambiente '"$ambiente"' sconosciuto. STOP'"
+				exit
+		fi
+       	# echo " s3_path_filename="$s3_path_filename
+		# s3log_filename=$s3_dir"/"$harvest_date_materiale"."$istituto".upload.log"
+		s3log_filename=$warc_filename".upload.log"
+		upload_file_to_s3 $multipart_mode $file_to_upload $md5_file_to_upload $s3_path_filename $s3log_filename
+
+     done < "$repositories_file"
+} # End  upload_warcs_to_s3

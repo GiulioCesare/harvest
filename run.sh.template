@@ -116,15 +116,14 @@ print_configuration
 # Caricamebnto warcs da harvest Almaviva 
 # 
 # Si usa il file etd.csv per guidare il caricamento
-# multipart_mode=false
-
+# multipart_mode=true
 # upload_warcs_to_s3 $multipart_mode
 
 # upload harvest CDXJ. Preparare .zip ed md5 a mano
 # multipart_mode=true
 # file_to_upload="/mnt/volume2/wayback/tools/webarchive-indexing/tmp/cdxj.zip"
 # md5_file_to_upload=$file_to_upload".md5"
-# s3_path_filename="harvest/cdxj/2020_08_05_tesi/indexes/cdxj.zip"
+# s3_path_filename="harvest/2020_08_05_tesi/indexes/cdxj.zip"
 # log_filename="cdxj.upload.log"
 # upload_file_to_s3 $multipart_mode $file_to_upload $md5_file_to_upload $s3_path_filename $log_filename
 
@@ -150,16 +149,16 @@ print_configuration
 
 # --------------------------
 # prepare_harvest_record_AV
+# scripts/DbUpdateInsertS3.sh
 # prepare_harvest_record_cdxj
+# scripts/DbUpdateInsertS3.sh
 
 # prepare_harvest_record_storico	1	5
 # prepare_harvest_record_cdx_storico
-
-
 # scripts/DbUpdateInsertS3.sh
 
 # END S3 warc.gz upload / download
-
+# ---------------------------------
 
 # 09/10/2020
 # NMB per il frontend devono stare sul frontend nella cartella: /var/www/index.depositolegale.it/ricevute
@@ -169,7 +168,7 @@ print_configuration
 # check_for_receipts_mismatch ### DA RIVEDERE forse sostituibile con check_match_seeds_donloaded_to_download ()
 
 
-# Troviamo documenti sotto embargo
+# Troviamo documenti sotto embargo (SOLO per Tesi)
 # find_embargoed
 
 # Rimuoviamo le tesi alle quali hanno tolto l'embargo
@@ -177,11 +176,6 @@ print_configuration
 
 # Carichiamo le tesi sotto embargo sul db
 # scripts/DbUpdateInsert.sh
-
-
-
-
-
 
 
 # UNIMARC

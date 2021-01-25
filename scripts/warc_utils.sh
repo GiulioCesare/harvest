@@ -131,18 +131,21 @@ function create_warcs_concurrently()
                     # echo "HARVEST_UNIVE_PWD="$HARVEST_UNIVE_PWD
                     wget --save-cookies cookies.txt --keep-session-cookies --delete-after --post-data 'username=depositolegale&ldap_password='$HARVEST_UNIVE_PWD http://dspace.unive.it/ldap-login
 
-
-
 # wget --load-cookies cookies.txt    http://dspace.unive.it/bitstream/10579/5607/2/986552-1166862.pdf
 # wget --load-cookies cookies.txt    http://dspace.unive.it/bitstream/handle/10579/15582/826599-1207989.pdf
 # wget --load-cookies cookies.txt    http://dspace.unive.it/bitstream/10579/14975/2/840453-1207992.pdf
 
-# gestito in fase di estrazione seeds
-                    # if [ $materiale == $MATERIALE_EJOURNAL ]; then
-                    #     wget_options="${wget_options} --lua-script=$HARVEST_DIR/scripts/ojs.lua"
-                    # fi
+                    if [ $materiale == $MATERIALE_EJOURNAL ]; then
+                        # 25/01/2021 Cerchiamo di scaricare worker.js et al (Call con Storti)
+                        # ‘-r’
+                        # ‘--recursive’ Turn on recursive retrieving. See Recursive Download, for more details. The default maximum depth is 5.
+                            
+                        # ‘-l depth’
+                        # ‘--level=depth’                        
 
-# echo WGET
+                        wget_options="${wget_options} --recursive --level=5"
+                    fi
+
                     wget $wget_options --load-cookies ./cookies.txt --input-file=$seeds_filename --output-file=./$fname.log --warc-file=$warcs_dir/$fname
                 else
                     # Scarico standard
@@ -319,7 +322,7 @@ function check_for_missing_seeds()
         fi
 
     done < "$repositories_file"
-} # end _check_for_missing_seeds
+} # end check_for_missing_seeds
 
 
 
@@ -1142,6 +1145,7 @@ function split_warcs()
     echo "SPLIT WARC"
     echo "=========="
 
+    # Prova con un file piccolo
     block_size=1000000
 
     while IFS='|' read -r -a array line
@@ -1171,7 +1175,7 @@ function split_warcs()
 
         extract_warc_blocks $istituto $members_dir $warc_file
 
-        # Create md5 checksum on downloaded file
+        echo "Create md5 checksum on member files"
         for filename in $members_dir/*warc.gz; do
             echo "do md5 for: " $filename
             md5sum $filename > $filename.md5
@@ -1179,7 +1183,8 @@ function split_warcs()
      
         # SWAP dei warcs
         echo "Sposto warc splittati nella cartella dei warc"
-        mv $members_dir/*warc.gz* $members_dir/../.
+        mv $members_dir/*warc.gz $members_dir/../.
+        mv $members_dir/*.md5 $members_dir/../.
 
         echo "Sposto il warc.gz originale nella cartella dei membri (da cancellare a mano)"
         mv $warc_file $members_dir/.
