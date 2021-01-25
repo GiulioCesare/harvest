@@ -135,16 +135,16 @@ function create_warcs_concurrently()
 # wget --load-cookies cookies.txt    http://dspace.unive.it/bitstream/handle/10579/15582/826599-1207989.pdf
 # wget --load-cookies cookies.txt    http://dspace.unive.it/bitstream/10579/14975/2/840453-1207992.pdf
 
-                    if [ $materiale == $MATERIALE_EJOURNAL ]; then
-                        # 25/01/2021 Cerchiamo di scaricare worker.js et al (Call con Storti)
-                        # ‘-r’
-                        # ‘--recursive’ Turn on recursive retrieving. See Recursive Download, for more details. The default maximum depth is 5.
+                    # if [ $materiale == $MATERIALE_EJOURNAL ]; then
+                    #     # 25/01/2021 Cerchiamo di scaricare worker.js et al (Call con Storti)
+                    #     # ‘-r’
+                    #     # ‘--recursive’ Turn on recursive retrieving. See Recursive Download, for more details. The default maximum depth is 5.
                             
-                        # ‘-l depth’
-                        # ‘--level=depth’                        
+                    #     # ‘-l depth’
+                    #     # ‘--level=depth’                        
 
-                        wget_options="${wget_options} --recursive --level=5"
-                    fi
+                    #     wget_options="${wget_options} --recursive --level=5"
+                    # fi
 
                     wget $wget_options --load-cookies ./cookies.txt --input-file=$seeds_filename --output-file=./$fname.log --warc-file=$warcs_dir/$fname
                 else
