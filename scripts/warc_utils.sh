@@ -146,6 +146,7 @@ function create_warcs_concurrently()
                     #     wget_options="${wget_options} --recursive --level=5"
                     # fi
 
+
                     wget $wget_options --load-cookies ./cookies.txt --input-file=$seeds_filename --output-file=./$fname.log --warc-file=$warcs_dir/$fname
                 else
                     # Scarico standard

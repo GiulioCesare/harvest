@@ -746,24 +746,24 @@ function upload_file_to_s3()
 
 
 
-	# if [ $multipart_mode == "true" ]; then
-	# 	echo "Upload im multi part mode: "
-	# 	java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
-	# 	    -cp "./bin/*" it.s3.s3clientMP.HighLevelMultipartUploadDownload \
-	# 	    action=upload \
-	# 	    file_to_upload=$file_to_upload \
-	# 	    md5_file_to_upload=$md5_file_to_upload \
-	# 	    s3_keyname=$s3_path_filename  > $s3log_filename
+	if [ $multipart_mode == "true" ]; then
+		echo "Upload im multi part mode: "
+		java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
+		    -cp "./bin/*" it.s3.s3clientMP.HighLevelMultipartUploadDownload \
+		    action=upload \
+		    file_to_upload=$file_to_upload \
+		    md5_file_to_upload=$md5_file_to_upload \
+		    s3_keyname=$s3_path_filename  > $s3log_filename
 
-	# else
-	# 	echo "Upload im single part mode: "
-	# 	java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
-	# 	    -cp "./bin/*" it.s3.s3client.S3Client \
-	# 	    action=upload \
-	# 	    file_to_upload=$file_to_upload \
-	# 	    md5_file_to_upload=$md5_file_to_upload \
-	# 	    s3_keyname=$s3_path_filename  > $s3log_filename
-	# fi
+	else
+		echo "Upload im single part mode: "
+		java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
+		    -cp "./bin/*" it.s3.s3client.S3Client \
+		    action=upload \
+		    file_to_upload=$file_to_upload \
+		    md5_file_to_upload=$md5_file_to_upload \
+		    s3_keyname=$s3_path_filename  > $s3log_filename
+	fi
 } # End  upload_file_to_s3
 
 
