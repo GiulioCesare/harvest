@@ -39,8 +39,8 @@ echo " dottorato o riviste (eJournals)"
 
 # echo " Versione 2019_12_09.1"   # Rifatto index_warcs per gestire + volumi usando i symbolic links
                                 # Pulizia indici tramite liste seed da scaricare
-echo " Versione 2020_23_01.1" # Generazione lista delle tesi in ricevuta
-# echo " Versione 2019_12_08.1"
+# echo " Versione 2020_23_01.1" # Generazione lista delle tesi in ricevuta
+echo " Versione 2021_01_25.1"	# Prove con wget recursive
 # echo " Versione 2019_12_08.1"
 # echo " Versione 2019_12_08.1"
 
@@ -145,7 +145,7 @@ print_configuration
 # upload_etd_warcs_to_S3	$from_line $to_line $multipart_mode
 #
 # --------------------------
-# dowbnload_warcs_from_s3
+# download_warcs_from_s3
 
 # --------------------------
 # prepare_harvest_record_AV
