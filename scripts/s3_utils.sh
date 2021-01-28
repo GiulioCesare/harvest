@@ -51,7 +51,7 @@ function check_download_integrity()
 
 
 
-function dowbnload_warcs_from_s3()
+function download_warcs_from_s3()
 {
 	echo "--------------------------------"
 	echo "Downloading warcs.gz from S3 storage"
@@ -60,56 +60,56 @@ function dowbnload_warcs_from_s3()
 echo "TODO take in input download_dir (da dichiarare nei file di config) e s3_path_filename )"	
 
 
-  #    while IFS='|' read -r -a array line
-  #    do
-  #          line=${array[0]}
+     while IFS='|' read -r -a array line
+     do
+           line=${array[0]}
 
-  #         if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
-  #           break
-  #         fi
+          if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+            break
+          fi
 
-  #          # se riga comentata o vuota skip
-  #          if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
-  #                continue
-  #           fi
+           # se riga comentata o vuota skip
+           if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+                 continue
+            fi
 
-  #       local istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
-  #      	local warc_filename=$harvest_date_materiale"_"$istituto".warc.gz"
-  #      	local file_to_download_to="/home/argentino/Downloads/"$warc_filename
-  #      	local md5_file_to_download_to=$file_to_download_to".md5"
-  #      	local s3_path_filename=""
+        local istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
+       	local warc_filename=$harvest_date_materiale"_"$istituto".warc.gz"
+       	local file_to_download_to="/home/argentino/Downloads/"$warc_filename
+       	local md5_file_to_download_to=$file_to_download_to".md5"
+       	local s3_path_filename=""
 
-		# if [ $ambiente == "sviluppo" ]; then
-		# 	s3_path_filename="harvest/"$harvest_date_materiale"/sviluppo_"$warc_filename
-		# elif [ $ambiente == "collaudo" ]; then 
-		# 	s3_path_filename="harvest/"$harvest_date_materiale"/collaudo_"$warc_filename
-		# elif [ $ambiente == "esercizio" ] || [ $ambiente == "nyovo_esercizio" ]; then
-		# 	# Esercizio
-		# 	s3_path_filename="harvest/"$harvest_date_materiale"/"$warc_filename
-		# else
-		# 		echo "ambiente '"$ambiente"' sconosciuto. STOP'"
-		# 		return
-		# fi
+		if [ $ambiente == "sviluppo" ]; then
+			s3_path_filename="harvest/"$harvest_date_materiale"/sviluppo_"$warc_filename
+		elif [ $ambiente == "collaudo" ]; then 
+			s3_path_filename="harvest/"$harvest_date_materiale"/collaudo_"$warc_filename
+		elif [ $ambiente == "esercizio" ] || [ $ambiente == "nuovo_esercizio" ]; then
+			# Esercizio
+			s3_path_filename="harvest/"$harvest_date_materiale"/"$warc_filename
+		else
+				echo "ambiente '"$ambiente"' sconosciuto. STOP'"
+				return
+		fi
 
-  #      	echo "istituto="$istituto
-  #      	echo "ambiente="$ambiente
-  #      	echo " warc_filename="$warc_filename
-  #      	echo " harvest_date_materiale="$harvest_date_materiale
-  #      	echo " file_to_download_to="$file_to_download_to
-  #      	echo " md5_file_to_download_to="$md5_file_to_download_to
-  #      	echo " s3_path_filename="$s3_path_filename
-
-
-		# java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
-		#     -cp "./bin/*" it.s3.s3clientMP.HighLevelMultipartUploadDownload \
-		#     action=download \
-		#     s3_keyname=$s3_path_filename \
-		#     file_to_download_to=$file_to_download_to \
+       	echo "istituto="$istituto
+       	echo "ambiente="$ambiente
+       	echo " warc_filename="$warc_filename
+       	echo " harvest_date_materiale="$harvest_date_materiale
+       	echo " file_to_download_to="$file_to_download_to
+       	echo " md5_file_to_download_to="$md5_file_to_download_to
+       	echo " s3_path_filename="$s3_path_filename
 
 
-		# check_download_integrity $file_to_download_to $md5_file_to_download_to
+		java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
+		    -cp "./bin/*" it.s3.s3clientMP.HighLevelMultipartUploadDownload \
+		    action=download \
+		    s3_keyname=$s3_path_filename \
+		    file_to_download_to=$file_to_download_to \
 
-  #    done < "$repositories_file"
+
+		check_download_integrity $file_to_download_to $md5_file_to_download_to
+
+     done < "$repositories_file"
 
 } # End dowbnload_warcs_from_s3
 
