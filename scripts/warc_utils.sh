@@ -1194,3 +1194,59 @@ function split_warcs()
 } # end split_warcs
 
 
+
+function change_pdf_viewer_url()
+    {
+    echo "CHANGE PODF VIEWER URL FOR E_JOURNALS"
+    echo "====================================="
+
+
+     while IFS='|' read -r -a array line
+     do
+           line=${array[0]}
+
+        # Remove whitespaces (empty lines)
+        line=`echo $line | xargs`
+
+          if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+            break
+          fi
+
+           # se riga comentata o vuota skip
+           if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+                 continue
+            fi
+
+        # istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
+        local istituto=${array[1]}
+
+echo "istituto="$istituto
+
+        warc_gz_in=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
+        warc_gz_out=$warc_gz_in".out"
+# echo "warc_gz_in="$warc_gz_in
+
+
+        if [ ! -f $warc_gz_in ]; then
+            echo "Warc sorgente mancante: " $warc_gz_in
+            continue
+        else
+            echo "Change viewer url for "$warc_gz_in
+            python3 -m warcat ejviewer $warc_gz_in --output $warc_gz_out --gzip 
+        fi
+
+        # -s FILE - True if the FILE exists and has nonzero size.
+        if [[ ! -s $warc_gz_out ]]; then
+            echo "No valid warcat file. DO NOT rename"
+            continue
+        else
+           echo "Rename $warc_gz_in to "$warc_gz_in".org"
+            mv $warc_gz_in $warc_gz_in".org"
+           echo "Rename $warc_gz_out to $warc_gz_in"
+            mv $warc_gz_out $warc_gz_in
+        fi
+
+
+     done < "$repositories_file"
+
+ } # end change_pdf_viewer_url

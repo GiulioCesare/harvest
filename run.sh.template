@@ -66,6 +66,11 @@ print_configuration
 
 # create_warcs_concurrently
 
+# if [ $materiale == $MATERIALE_EJOURNAL ]; then
+#     change_pdf_viewer_url
+# fi
+
+
 # create_warcs_md5
 
 # Solo per TESI. Controllo non possibile per gli eJournal
