@@ -51,6 +51,12 @@ for record in tree.xpath('//record'):
                     print ("%s" % (view_url))
                     url_dict[view_url]="dummy value"
 
+                    view_file_url = url.replace("download", "viewFile")
+                    print ("%s" % (view_file_url))
+                    url_dict[view_url]="dummy value"
+
+
+
         for dc_relation in record.findall(paths['dc_relation'], namespaces=ns):
             rel_url=dc_relation.text
             if re.match("^https?://.+$", rel_url) and rel_url not in url_dict:
@@ -60,9 +66,15 @@ for record in tree.xpath('//record'):
                 # if url di view genera anche il corrispettivo download
                 if "article/view" in rel_url:
                     rel_download_url = rel_url.replace("view", "download")
-
                     if rel_download_url not in url_dict:
                         print ("%s" % (rel_download_url))
                         url_dict[rel_download_url]="dummy value"
+
+                    rel_viewfile_url = rel_url.replace("view", "viewFile")
+                    if rel_download_url not in url_dict:
+                        print ("%s" % (rel_viewfile_url))
+                        url_dict[rel_download_url]="dummy value"
+
+
 
         # print(url_dict)
