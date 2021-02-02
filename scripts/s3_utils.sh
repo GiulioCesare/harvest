@@ -892,3 +892,97 @@ function upload_warcs_to_s3()
 
      done < "$repositories_file"
 } # End  upload_warcs_to_s3
+
+
+function upload_unimarc_to_s3
+{
+echo "upload_unimarc_to_s3"
+	# Preparare zip file
+	zip_filename="tmp/$harvest_date_materiale.09_unimarcs.zip"
+
+	files_to_zip=tesi/09_unimarcs"/*.mrc"
+    if [ ! -f $files_to_zip ]; then
+        echo "Non ci sono file unimarc per "$harvest_date_materiale
+        return
+    fi
+
+	zip -pr $zip_filename tesi/09_unimarcs
+
+	multipart_mode=true
+	file_to_upload=$zip_filename
+
+	md5_file_to_upload=$file_to_upload".md5"
+
+	md5sum $file_to_upload > $md5_file_to_upload
+
+
+
+	s3_path_filename="harvest/"$harvest_date_materiale"/unimarc/09_unimarcs.zip"
+	log_filename="unimarc.upload.log"
+
+	echo "file_to_upload: $file_to_upload"
+	echo "s3_path_filename: $s3_path_filename"
+
+	upload_file_to_s3 $multipart_mode $file_to_upload $md5_file_to_upload $s3_path_filename $log_filename
+} # end upload_unimarc_to_s3
+
+function upload_metadati_to_s3
+{
+	echo "upload_metadati_to_s3"
+
+	# Preparare zip file
+	zip_filename="tmp/$harvest_date_materiale.01_metadata.zip"
+
+	files_to_zip=tesi/01_metadata"/*.xml"
+    if [ ! -f $files_to_zip ]; then
+        echo "Non ci sono file xml per "$harvest_date_materiale
+        return
+    fi
+
+	zip -pr $zip_filename tesi/01_metadata
+
+	multipart_mode=true
+	file_to_upload=$zip_filename
+	md5_file_to_upload=$file_to_upload".md5"
+	md5sum $file_to_upload > $md5_file_to_upload
+
+	s3_path_filename="harvest/"$harvest_date_materiale"/metadati/01_metadata.zip"
+	log_filename="metadati.upload.log"
+
+	echo "file_to_upload: $file_to_upload"
+	echo "s3_path_filename: $s3_path_filename"
+
+	upload_file_to_s3 $multipart_mode $file_to_upload $md5_file_to_upload $s3_path_filename $log_filename
+
+} # end upload_metadati_to_s3
+
+
+function upload_indici_warcs_to_s3
+{
+	echo "upload_indici_warcs_to_s3"
+
+	# Preparare zip file
+	zip_filename="tmp/$harvest_date_materiale.cdxj.zip"
+
+	files_to_zip=../wayback/tools/webarchive-indexing/cdx/$harvest_date_materiale"*.cdxj"
+    if [ ! -f $files_to_zip ]; then
+        echo "Non ci sono indici per "$harvest_date_materiale
+        return
+    fi
+	zip -pr $zip_filename $files_to_zip
+
+	multipart_mode=true
+	file_to_upload=$zip_filename
+	md5_file_to_upload=$file_to_upload".md5"
+	md5sum $file_to_upload > $md5_file_to_upload
+
+	s3_path_filename="harvest/"$harvest_date_materiale"/indexes/cdxj.zip"
+	log_filename="metadati.upload.log"
+
+	echo "file_to_upload: $file_to_upload"
+	echo "s3_path_filename: $s3_path_filename"
+
+	upload_file_to_s3 $multipart_mode $file_to_upload $md5_file_to_upload $s3_path_filename $log_filename
+
+} # end upload_indici_warcs_to_s3
+

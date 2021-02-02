@@ -116,32 +116,15 @@ print_configuration
 # S3 warc.gz upload / download
 # Prima di fare le ricevute facciamo il salvataggio dei dati su S3
 #
-#
-# --------------------------------
-# Caricamebnto warcs da harvest Almaviva 
+# # --------------------------------
+# Caricamebnto dati su S3 da harvest Almaviva 
 # 
 # Si usa il file etd.csv per guidare il caricamento
 # multipart_mode=true
+# upload_metadati_to_s3
 # upload_warcs_to_s3 $multipart_mode
-
-# upload harvest CDXJ. Preparare .zip ed md5 a mano
-# multipart_mode=true
-# file_to_upload="/mnt/volume2/wayback/tools/webarchive-indexing/tmp/cdxj.zip"
-# md5_file_to_upload=$file_to_upload".md5"
-# s3_path_filename="harvest/2020_08_05_tesi/indexes/cdxj.zip"
-# log_filename="cdxj.upload.log"
-# upload_file_to_s3 $multipart_mode $file_to_upload $md5_file_to_upload $s3_path_filename $log_filename
-
-
-
-
-## upload harvest METADATA. Preparare .zip ed md5 a mano
-# multipart_mode=true
-# file_to_upload="/mnt/volume2/harvest/tmp/2020_08_05.01_metadata.zip"
-# md5_file_to_upload=$file_to_upload".md5"
-# s3_path_filename="harvest/2020_08_05_tesi/metadati/01_metadata.zip"
-# log_filename="/mnt/volume2/harvest/tesi/13_s3/metadati.upload.log"
-# upload_file_to_s3 $multipart_mode $file_to_upload $md5_file_to_upload $s3_path_filename $log_filename
+# upload_indici_warcs_to_s3
+# upload_unimarc_to_s3
 
 
 
