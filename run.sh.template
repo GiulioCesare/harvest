@@ -91,7 +91,7 @@ print_configuration
 # compress_warc_indexes $compress_completo
 # replace_warc_indexes_with_compressed_ones_in_index
 #
-# compress_warc_indexes $compress_parziale
+# compress_warc_indexes $compress_completo
 # replace_warc_indexes_with_compressed_ones_in_memoria
 
 
@@ -132,6 +132,16 @@ print_configuration
 # log_filename="cdxj.upload.log"
 # upload_file_to_s3 $multipart_mode $file_to_upload $md5_file_to_upload $s3_path_filename $log_filename
 
+
+
+
+## upload harvest METADATA. Preparare .zip ed md5 a mano
+# multipart_mode=true
+# file_to_upload="/mnt/volume2/harvest/tmp/2020_08_05.01_metadata.zip"
+# md5_file_to_upload=$file_to_upload".md5"
+# s3_path_filename="harvest/2020_08_05_tesi/metadati/01_metadata.zip"
+# log_filename="/mnt/volume2/harvest/tesi/13_s3/metadati.upload.log"
+# upload_file_to_s3 $multipart_mode $file_to_upload $md5_file_to_upload $s3_path_filename $log_filename
 
 
 

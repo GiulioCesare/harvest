@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash -e
 
 
 
@@ -18,7 +18,6 @@ function crea_wayback_index_timestamp_per_unimarc()
     done
     cd $HARVEST_DIR
 }
-
 
 
 
@@ -82,6 +81,18 @@ function _do_unimarc()
       # TESI
         # ts=$WAYBACK_INDEX_DIR"/tmp/"$harvest_date"_tesi_"$istituto".cdxj.clean.ts"
         # echo "ts: "$ts
+
+
+        if [ ! -f $nbn_file ]; then
+            # Create empty file in order not to block procedure
+            echo "File NBN non presente. Generato file vuoto: " $nbn_file
+            touch $nbn_file
+        fi
+        if [ ! -s $nbn_file ]; then
+            echo "File NBN vuoto." $nbn_file
+        fi
+
+
         command="python scripts/parse_tesi_unimarc.py $metadati_filename $oai_dictionary_file $nbn_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente $ctr_file $tesi_aggiornate_file $tesi_nuove_file $tesi_cancellate_file $year2d"
 
         echo "Create unimarc in formato ASCII for $metadati_filename"
