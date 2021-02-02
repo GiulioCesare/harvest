@@ -977,7 +977,7 @@ function upload_indici_warcs_to_s3
 	md5sum $file_to_upload > $md5_file_to_upload
 
 	s3_path_filename="harvest/"$harvest_date_materiale"/indexes/cdxj.zip"
-	log_filename="metadati.upload.log"
+	log_filename="indici_warcs.upload.log"
 
 	echo "file_to_upload: $file_to_upload"
 	echo "s3_path_filename: $s3_path_filename"
