@@ -6,7 +6,39 @@ declare -A seeds_in_warc_kv_AR
 declare -A seeds_not_in_warc_kv_AR
 declare -A oai_nbn_kv_AR
 declare -A oai_nbn_status_kv_AR
+declare -A ej_istituto_kv_AR
 
+
+function _carica_ej_istituto_array()
+{
+    ej_itituto_file="./csv/e_journals.istituto.csv"
+
+    if [ ! -f $ej_itituto_file ]; then
+        echo "Non trovo "$ej_itituto_file
+        return;
+    fi
+
+    # echo "ej_itituto_file="$ej_itituto_file
+
+    DONE=false
+    until $DONE; do
+        IFS='|' read -r -a array line  || DONE=true
+        # Remove whitespaces (empty lines)
+        local ej=${array[0]}
+        ej=`echo $ej | xargs`
+        if [[ ${ej:0:1} == "#" ]] || [[ ${ej} == "" ]];  then
+              continue
+        fi
+        local istituto=${array[1]}
+# echo "ej: "$ej
+# echo "istituto: "$istituto
+        ej_istituto_kv_AR["$ej"]=$istituto
+
+    done < $ej_itituto_file
+
+# printarr ej_istituto_kv_AR
+
+} # _carica_ej_istituto_array
 
 function _carica_mdr_array()
 {
@@ -147,7 +179,12 @@ function _carica_mdr_array()
                     rights=${array[9]}
 
                     if [ $done_main == 0 ]; then
-                        meta_dati_ricevute_kv_AR[$main]=$data_harvest"|"$data_tesi"|"$oai_id"|"$nbn_id"|"$rights"|"$titolo"|"$autore"|"$tutor"|"$soggetto"|"$main
+                        if [ $materiale == $MATERIALE_TESI ]; then
+                            meta_dati_ricevute_kv_AR[$main]=$data_harvest"|"$data_tesi"|"$oai_id"|"$nbn_id"|"$rights"|"$titolo"|"$autore"|"$tutor"|"$soggetto"|"$main
+                        else 
+                            # EJOURNALS
+                            meta_dati_ricevute_kv_AR[$main]=$data_harvest"|"$data_tesi"|"$oai_id"|"$nbn_id"| |"$titolo"|"$autore"|"$soggetto"|"$main
+                        fi;
 
                         main_url=${array[6]}
                         echo $oai_id"|"$nbn_id"|"$nbn_status"|"$rights"|"$main_url"|"$titolo >> $ok_main_csv
@@ -158,7 +195,15 @@ function _carica_mdr_array()
                     fi
 # echo "k=$k"
                     if [ $component == 1 ]; then
-                        meta_dati_ricevute_kv_AR[$k]=$data_harvest"|"$data_tesi"|"$oai_id"|"$nbn_id"| |"$titolo"|"$autore"|"$tutor"|"$soggetto"|"$url"|"$tesi
+
+                        if [ $materiale == $MATERIALE_TESI ]; then
+                            meta_dati_ricevute_kv_AR[$k]=$data_harvest"|"$data_tesi"|"$oai_id"|"$nbn_id"| |"$titolo"|"$autore"|"$tutor"|"$soggetto"|"$url"|"$tesi
+                        else 
+                            # EJOURNALS
+                            meta_dati_ricevute_kv_AR[$k]=$data_harvest"|"$data_tesi"|"$oai_id"|"$nbn_id"| |"$titolo"|"$autore"|"$soggetto"|"$url
+                        fi;
+
+
                     fi
                 done
 
@@ -199,7 +244,7 @@ echo "seeds_filename=$seeds_filename"
         echo "DATA HARVEST|DATA DOC|OAI IDENTIFIER|NBN IDENTIFIER|DIRITTI|TITOLO|AUTORE|TUTOR|SOGGETTO|HANDLE/URL|TESI" > $receipts_dir"/"$harvest_date_materiale"_"$istituto"_ok.csv"
     else
         # echo "DATA HARVEST|DATA TESI|OAI IDENTIFIER|DIRITTI|TITOLO TESI|AUTORE|URL|TESI" >> $receipts_dir"/"$harvest_date_materiale"_"$istituto"_ok.csv"
-        echo "DATA HARVEST|DATA DOC|OAI IDENTIFIER|NBN IDENTIFIER|DIRITTI|TITOLO|AUTORE|TUTOR|SOGGETTO|HANDLE/URL" > $receipts_dir"/"$harvest_date_materiale"_"$istituto"_ok.csv"
+        echo "DATA HARVEST|DATA DOC|OAI IDENTIFIER|NBN IDENTIFIER|DIRITTI|TITOLO|AUTORE|SOGGETTO|HANDLE/URL" > $receipts_dir"/"$harvest_date_materiale"_"$istituto"_ok.csv"
     fi;
 
 
@@ -221,6 +266,11 @@ echo "seeds_filename=$seeds_filename"
         replace_octal_with_encoded_hex "${line}" # return  value in $ret_replace_octal_with_encoded_hex
         tmp=$(urldecode "$ret_replace_octal_with_encoded_hex")
         url=$(urldecode "$tmp")
+        if [ -z "$url" ]
+        then
+              # echo "\$var is empty"
+              continue
+        fi
 
         if test "${seeds_in_warc_kv_AR[$url]+isset}"
             then
@@ -573,7 +623,7 @@ echo "remove "$ko_csv
         if [ $materiale == $MATERIALE_TESI ]; then
             echo "Errore HTTP|DATA HARVEST|DATA DOC|OAI IDENTIFIER|NBN IDENTIFIER|DIRITTI|TITOLO|AUTORE|TUTOR|SOGGETTO|HANDLE/URL|TESI" > $receipts_dir"/"$harvest_date_materiale"_"$istituto"_ko.csv"
         else
-            echo "Errore HTTP|DATA HARVEST|DATA DOC|OAI IDENTIFIER|NBN IDENTIFIER|DIRITTI|TITOLO|AUTORE|TUTOR|SOGGETTO|HANDLE/URL" > $receipts_dir"/"$harvest_date_materiale"_"$istituto"_ko.csv"
+            echo "Errore HTTP|DATA HARVEST|DATA DOC|OAI IDENTIFIER|NBN IDENTIFIER|DIRITTI|TITOLO|AUTORE|SOGGETTO|HANDLE/URL" > $receipts_dir"/"$harvest_date_materiale"_"$istituto"_ko.csv"
         fi;
 
 
@@ -705,8 +755,46 @@ function  _convert_csv_to_xls()
         ssconvert $csv_list_file $excel_file # > /dev/null 2>&1
     fi
 
-    echo "# Copy receipts to "$report_dir"/"$istituto" for the wayback machine"
+
+
+
+
+
+    if [ $materiale == $MATERIALE_EJOURNAL ]; then
+        # Troviamo la radice della rivista 
+        IFS='.' read -r -a array <<< "$istituto"
+        rootRivista=${array[0]}
+        # echo "rootRivista="$rootRivista
+
+
+   # echo "printarr:"
+   # printarr ej_istituto_kv_AR
+
+   # echo "Istituto per $rootRivista " $rootRivista " = " ${ej_istituto_kv_AR[$rootRivista]}
+
+        if test "${ej_istituto_kv_AR[$rootRivista]+isset}"; then
+            # echo "Istituto per $rootRivista " $rootRivista " = " ${ej_istituto_kv_AR[$rootRivista]}
+            istituto=${ej_istituto_kv_AR[$rootRivista]}
+            # Esiste la cartella in report?
+            # echo "ist = " $istituto
+
+            if [ ! -d $report_dir"/"$istituto ];   then
+                echo "Directory "$report_dir"/"$istituto" non esiste. La creo" 
+                # mkdir $report_dir"/"$istituto
+            fi
+        else
+            echo "Non trovo l'istituto per la rivista '$rootRivista'"
+        fi
+
+    fi
+
+    echo "# Copy $excel_file to "$report_dir"/"$istituto
     cp $excel_file $report_dir"/"$istituto"/."
+
+
+
+
+
 
 
 } # end _convert_csv_to_xls
@@ -861,6 +949,12 @@ function _prepara_ricevute_csv()
     # do
     # While read" doesn't work when the last line of a file doesn't end with newline char.
     # It reads the line but returns false (non-zero) value
+
+    if [ $materiale == $MATERIALE_EJOURNAL ]; then
+        _carica_ej_istituto_array
+    fi
+
+
     DONE1=false
     until $DONE1; do
         IFS='|' read -r -a array line  || DONE1=true
@@ -885,9 +979,9 @@ echo "Working on: " $istituto
         _genera_dati_per_ricevute $istituto
         _carica_oai_nbn_array $istituto # serve a mdr
         _carica_mdr_array $istituto
-
         _carica_seeds_in_warc $istituto
         _carica_seeds_not_in_warc $istituto
+
         _do_receipts_for_seeds_in_warc $istituto
         _do_receipts_for_seeds_not_in_warc $istituto
 
@@ -899,9 +993,11 @@ echo "Working on: " $istituto
 
         elif [ $materiale == $MATERIALE_EJOURNAL ]; then
             # Prepariamop le ricevute in formato excel per E-JOURNALS
-            echo "TODO ....." 
-            # _prepara_ricevute_excel_e_journals
+            _convert_csv_to_xls $istituto
         fi
+
+
+            _convert_csv_to_xls $istituto
 
             # Solo per debug
             # check_match_seeds_donloaded_to_download $istituto

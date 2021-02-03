@@ -272,8 +272,13 @@ function check_for_missing_seeds_istituto()
                 tmp2=$(urldecode "$tmp")
                 tmp3=$(urldecode "$tmp2")
                 url=${tmp3//\+/ }
-
-    # echo "test --->url=$url"
+                
+                if [ -z "$url" ]
+                then
+                      # echo "\$var is empty"
+                      continue
+                fi
+    # echo "test --->url='$url'"
                 if ! test "${seeds_scaricati_e_non_kv_AR[$url]+isset}"
                 then
                     echo "$url" >> $warcs_log_dir/$fname.log.seeds.missing
@@ -318,8 +323,7 @@ function check_for_missing_seeds()
 
         elif [ $materiale == $MATERIALE_EJOURNAL ]; then
             # Prepariamop le ricevute in formato excel per E-JOURNALS
-            echo "DA RIVEDERE ....." 
-            # _prepara_ricevute_excel_e_journals
+            check_for_missing_seeds_istituto $harvest_date_materiale"_"$istituto
         fi
 
     done < "$repositories_file"
@@ -764,7 +768,10 @@ local fname=$1
         # echo "seeds_to_harvest_filename="$seeds_to_harvest_filename
 # continue
         echo "$seeds_to_harvest_filename"
-        seeds_to_harvest=$(cat $seeds_to_harvest_filename | wc -l)
+        # seeds_to_harvest=$(cat $seeds_to_harvest_filename | wc -l)
+        seeds_to_harvest=$(cat $seeds_to_harvest_filename | sed '/^\s*#/d;/^\s*$/d' | wc -l) # Exclude empty lines (also  commented lines
+
+
         seeds_in_warc=0
         seeds_not_in_warc=0
         #  Contiamo i seed scaricati
@@ -827,8 +834,7 @@ function check_for_harvest_mismatch()
 
         elif [ $materiale == $MATERIALE_EJOURNAL ]; then
             # Prepariamop le ricevute in formato excel per E-JOURNALS
-            echo "DA RIVEDERE ....." 
-            # _prepara_ricevute_excel_e_journals
+            check_for_harvest_mismatch_istituto $harvest_date_materiale"_"$istituto
         fi
 
     done < "$repositories_file"

@@ -69,7 +69,8 @@ def print_elements( elements ):
                     if current == 0:
                         sys.stdout.write("|")
                     else:
-                        sys.stdout.write("")
+                        # sys.stdout.write("")
+                        sys.stdout.write(";;;")
                     element=element.text.encode('utf-8').rstrip()
                     sys.stdout.write(element.replace("\n",""))
                     current+=1
@@ -130,15 +131,21 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                 if ctr < 2:
                     sys.stdout.write("|"+url)
                 else:
-                    sys.stdout.write(""+url)
+                    # sys.stdout.write(""+url)
+                    sys.stdout.write(";;;"+url)
                 url_dict[url]="dummy value"
                 ctr+=1;
 
                 # if url di download genera anche il corrispettivo view
                 if "article/download" in url:
                     view_url = url.replace("download", "view")
-                    print ("%s" % (view_url))
+                    sys.stdout.write(";;;"+view_url)
                     url_dict[view_url]="dummy value"
+
+                    viewFile_url = url.replace("download", "viewFile")
+                    sys.stdout.write(";;;"+viewFile_url)
+                    url_dict[viewFile_url]="dummy value"
+
                     ctr+=1;
 
         for dc_relation in record.findall(paths['dc_relation'], namespaces=ns):
@@ -147,15 +154,22 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                 if ctr < 2:
                     sys.stdout.write("|"+url)
                 else:
-                    sys.stdout.write(""+url)
+                    # sys.stdout.write(""+url)
+                    sys.stdout.write(";;;"+url)
                 url_dict[url]="dummy value"
                 ctr+=1;
 
                 # if url di download genera anche il corrispettivo view
                 if "article/view" in url:
                     download_url = url.replace("view", "download")
-                    sys.stdout.write(""+download_url)
+                    sys.stdout.write(";;;"+download_url)
                     url_dict[download_url]="dummy value"
+
+                    viewFile_url = url.replace("view", "viewFile")
+                    sys.stdout.write(";;;"+viewFile_url)
+                    url_dict[viewFile_url]="dummy value"
+
+
                     ctr+=1;
 
 
