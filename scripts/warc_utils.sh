@@ -180,38 +180,38 @@ function create_warcs_concurrently()
             wait
 
 
-        if [ $materiale == $MATERIALE_EJOURNAL ]; then
-            # Rinominiamo i warc.gz in $warc_filename.org
-            while IFS='|' read -r -a array line
-            do
-                   line=${array[0]}
+        # if [ $materiale == $MATERIALE_EJOURNAL ]; then
+        #     # Rinominiamo i warc.gz in $warc_filename.org
+        #     while IFS='|' read -r -a array line
+        #     do
+        #            line=${array[0]}
 
-                # Remove whitespaces (empty lines)
-                line=`echo $line | xargs`
+        #         # Remove whitespaces (empty lines)
+        #         line=`echo $line | xargs`
 
-                if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
-                    break
-                fi
+        #         if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+        #             break
+        #         fi
 
-                   # se riga comentata o vuota skip
-                   if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
-                         continue
-                    fi
+        #            # se riga comentata o vuota skip
+        #            if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+        #                  continue
+        #             fi
 
-                local istituto=${array[1]}
-                local warc_filename=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
+        #         local istituto=${array[1]}
+        #         local warc_filename=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
 
-                echo "warc_filename="$warc_filename
-                if [ -f $warc_filename ]; then
-                    echo "rename $warc_filename in "$warc_filename".org"
-                   mv $warc_filename $warc_filename".org"
-                else
-                    echo "$warc_filename not found to rename"
-                fi
+        #         echo "warc_filename="$warc_filename
+        #         if [ -f $warc_filename ]; then
+        #             echo "rename $warc_filename in "$warc_filename".org"
+        #            mv $warc_filename $warc_filename".org"
+        #         else
+        #             echo "$warc_filename not found to rename"
+        #         fi
 
-            done < $HARVEST_DIR/$repositories_file
+        #     done < $HARVEST_DIR/$repositories_file
 
-        fi
+        # fi
 
 
 
@@ -628,13 +628,20 @@ function copy_warcs_and_logs_to_destination_dir_and_remove()
 
         # Copiamo il warc.gz
         # ==================
-        warc_source_filename=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
+        if [ $materiale == $MATERIALE_TESI ]; then
+            warc_source_filename=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
+        elif [ $materiale == $MATERIALE_EJOURNAL ]; then
+            warc_source_filename=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz.viewer"
+        fi
+
         warc_dest_filename=$dest_warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
         copy_warc_to_destination_dir $warc_source_filename $warc_dest_filename
         if [[ $? != 0 ]]; then 
             # echo "Copy failed"
             return; 
         fi
+
+
 
         warc_source_filename_md5=$warc_source_filename".md5"
         warc_dest_filename_md5=$warc_dest_filename".md5"
@@ -909,7 +916,13 @@ function create_warcs_md5()
         istituto=${array[1]}
 
 #       echo "istituto="$istituto
-        filename=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
+   
+        if [ $materiale == $MATERIALE_EJOURNAL ]; then
+            filename=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz.viewer"
+        else
+            filename=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
+        fi
+
         md5_filename=$filename".md5"
 
         echo "Do md5 for " $filename 
@@ -1241,7 +1254,7 @@ function split_warcs()
 
 function change_pdf_viewer_url()
     {
-    echo "CHANGE PODF VIEWER URL FOR E_JOURNALS"
+    echo "CHANGE PDF VIEWER URL FOR E_JOURNALS"
     echo "====================================="
 
 
@@ -1267,7 +1280,7 @@ function change_pdf_viewer_url()
 echo "istituto="$istituto
 
         warc_gz_in=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
-        warc_gz_out=$warc_gz_in".out"
+        warc_gz_out=$warc_gz_in".viewer"
 # echo "warc_gz_in="$warc_gz_in
 
 
@@ -1280,15 +1293,15 @@ echo "istituto="$istituto
         fi
 
         # -s FILE - True if the FILE exists and has nonzero size.
-        if [[ ! -s $warc_gz_out ]]; then
-            echo "No valid warcat file. DO NOT rename"
-            continue
-        else
-           echo "Rename $warc_gz_in to "$warc_gz_in".org"
-            mv $warc_gz_in $warc_gz_in".org"
-           echo "Rename $warc_gz_out to $warc_gz_in"
-            mv $warc_gz_out $warc_gz_in
-        fi
+        # if [[ ! -s $warc_gz_out ]]; then
+        #     echo "No valid warcat file. DO NOT rename"
+        #     continue
+        # else
+        #    echo "Rename $warc_gz_in to "$warc_gz_in".org"
+        #     mv $warc_gz_in $warc_gz_in".org"
+        #    echo "Rename $warc_gz_out to $warc_gz_in"
+        #     mv $warc_gz_out $warc_gz_in
+        # fi
 
 
      done < "$repositories_file"
