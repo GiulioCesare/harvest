@@ -664,8 +664,8 @@ function copy_warcs_and_logs_to_destination_dir_and_remove()
         if [ $? -ne 0 ]; then
             echo "ERROR: while copying log file"
         else
- echo "Removing "$fname".log"
-            rm $log_source_filename
+ echo "Removing "$log_source_filename
+             rm $log_source_filename
  echo "Removing "$fname".log.check_pdf"
             rm $log_check_pdf_source_filename
         fi

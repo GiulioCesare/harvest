@@ -71,7 +71,7 @@ for record in tree.xpath('//record'):
                         url_dict[rel_download_url]="dummy value"
 
                     rel_viewfile_url = rel_url.replace("view", "viewFile")
-                    if rel_download_url not in url_dict:
+                    if rel_viewfile_url not in url_dict:
                         print ("%s" % (rel_viewfile_url))
                         url_dict[rel_download_url]="dummy value"
 
