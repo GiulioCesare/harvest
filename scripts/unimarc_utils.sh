@@ -295,8 +295,8 @@ function createUnimarc()
 
     done < "$repositories_file"
 
-    # _do_prepara_unimarc_per_consegna
-    # _do_zip
+    _do_prepara_unimarc_per_consegna
+    _do_zip
 
     # TODO
     # Aggiornare lista di tutti i bid aggiungendo i nuovi e rimuovendo i vecchi, lascian inalterati quelli modificati.
