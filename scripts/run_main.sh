@@ -599,6 +599,10 @@ function harvest_metadata()
 # echo "${array[0]}"
       line=${array[0]}
 
+    # Remove whitespaces (empty lines)
+    line=`echo $line | xargs`
+
+
       # Se ignora resto del file
       if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
         break
