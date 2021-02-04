@@ -87,7 +87,7 @@ function create_warcs_concurrently()
                    local fname="${fname%.*}"
                # fi
 
-                echo "fname=$fname"
+ # echo "-->fname=$fname"
 
                 echo "wget_ting $seeds_filename"
 
@@ -159,6 +159,8 @@ function create_warcs_concurrently()
                     #     wget_options="${wget_options} --lua-script=$HARVEST_DIR/scripts/ojs.lua"
                     # fi
 
+# echo "wget option="$wget_options
+# echo "fname="$fname
                     wget $wget_options --input-file=$seeds_filename --output-file=./$fname.log --warc-file=$warcs_dir/$fname
 
 
@@ -176,6 +178,42 @@ function create_warcs_concurrently()
 
             # wait for pending jobs
             wait
+
+
+        if [ $materiale == $MATERIALE_EJOURNAL ]; then
+            # Rinominiamo i warc.gz in $warc_filename.org
+            while IFS='|' read -r -a array line
+            do
+                   line=${array[0]}
+
+                # Remove whitespaces (empty lines)
+                line=`echo $line | xargs`
+
+                if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+                    break
+                fi
+
+                   # se riga comentata o vuota skip
+                   if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+                         continue
+                    fi
+
+                local istituto=${array[1]}
+                local warc_filename=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
+
+                echo "warc_filename="$warc_filename
+                if [ -f $warc_filename ]; then
+                    echo "rename $warc_filename in "$warc_filename".org"
+                   mv $warc_filename $warc_filename".org"
+                else
+                    echo "$warc_filename not found to rename"
+                fi
+
+            done < $HARVEST_DIR/$repositories_file
+
+        fi
+
+
 
 
 cd $HARVEST_DIR
