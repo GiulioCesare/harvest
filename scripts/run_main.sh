@@ -817,6 +817,9 @@ function createSeeds()
       line=${array[0]}
 #echo "'$line'"
 
+        # Remove whitespaces (empty lines)
+        line=`echo $line | xargs`
+
       if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
         break
       fi
@@ -1272,6 +1275,9 @@ function prepare_wget_sites_list()
      while IFS='|' read -r -a array line
      do
            line=${array[0]}
+
+        # Remove whitespaces (empty lines)
+        line=`echo $line | xargs`
 
           if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
             break
