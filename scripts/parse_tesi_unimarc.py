@@ -292,7 +292,8 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
 
             dates=statements.findall(paths['dates'], namespaces=ns)
-            out_date="=100    $a"+"20190501d----------k--ita-50----ba"+" "
+            # out_date="=100    $a"+"20190501d----------k--ita-50----ba"+" "
+            out_date="=100    $a"+"20190501d        --k--ita-50----ba"+" "
             if dates is not None:
                 dates_len= len(dates)
                 if (dates_len > 0):
@@ -304,7 +305,8 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                     sub = date[ 0 : 0 + 4]
                     if sub.isdigit():
                         # print "=100    $a"+"20190501d"+sub+"------k--ita-50----ba"+" "
-                        out_date = "=100    $a"+"20190501d"+sub+"------k--ita-50----ba"+" "
+                        # out_date = "=100    $a"+"20190501d"+sub+"------k--ita-50----ba"+" "
+                        out_date = "=100    $a"+"20190501d"+sub+"    --k--ita-50----ba"+" "
 
             #         else:
             #             print "=100    $a"+"20190501d----------k--ita-50----ba"+" "
@@ -654,10 +656,14 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                 print "=856  4 $u"+wayback_http_server+"/"+opac_archive_name+"/"+componenturl+"$2"+componenturl
 
 
+            # 977 library code (local)
+            #   $a  Coded value
+            print "=977    $a CR"   # Per la Nazionale di Roma
+
 
             # 997 library code (local)
             #   $a	Coded value
-            print "=997    $aCF"
+            print "=997    $aCF"    # Per la Nazionale di Firenze
 
             # Work type (local)
             print "=FMT    $aTD"
