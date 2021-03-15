@@ -23,11 +23,14 @@ use LWP::UserAgent;
 
 my $header = ['Content-Type' => 'application/json; charset=UTF-8'];
 #my $nbn_development = $ENV{NBN_DEVELOPMENT};
-my $nbn_server_sviluppo="http://127.0.0.1:5003/api/nbn_generator.pl"; 			# SVILUPPO
-my $nbn_server_collaudo="http://nbn-collaudo.depositolegale.it/api/nbn_generator.pl";	# COLLAUDO
-#my $nbn_server_collaudo="http://nbn-collaudo.depositolegale.it/arge_api/nbn_generator.pl";	# COLLAUDO ARGE
 
-my $nbn_server_esercizio="http://nbn.depositolegale.it/api/nbn_generator.pl";			# ESERCIZIO
+#my $nbn_server_sviluppo="http://127.0.0.1:5003/api/nbn_generator.pl"; 			# SVILUPPO
+#my $nbn_server_collaudo="http://nbn-collaudo.depositolegale.it/api/nbn_generator.pl";	# COLLAUDO
+#my $nbn_server_collaudo="http://nbn-collaudo.depositolegale.it/arge_api/nbn_generator.pl";	# COLLAUDO ARGE
+#my $nbn_server_esercizio="http://nbn.depositolegale.it/api/nbn_generator.pl";			# ESERCIZIO
+#my $new_nbn_depositolegale_it="http://new-nbn.depositolegale.it/api/nbn_generator.pl"; 			# NUOVO ESERCIZIO
+#my $new_nbn_server_esercizio="http://new-nbn.depositolegale.it/api/nbn_generator.pl"; 			# NUOVO ESERCIZIO
+
 my $nbn_server="";
 
 # Command line parameters
@@ -53,7 +56,7 @@ my $rows_todo=0; # all by default
 
 sub nbn_create_archived # ()
 {
-	my ($url_sito, $url_memoria, $url_metadata, $username, $password, $opera_per_baseurl) = @_;
+	my ($nbn_server, $url_sito, $url_memoria, $url_metadata, $username, $password, $opera_per_baseurl) = @_;
 
 
 #$username="aoqu-unimi";
@@ -69,6 +72,7 @@ sub nbn_create_archived # ()
 #	$username="harvest";
 #	$password="harvest_pwd";
 #	$opera_per_baseurl="riviste.unimi.it/index.php/gilgames";
+
 #	$url_sito="http://riviste.unimi.it/index.php/gilgames/article/view/XXX_7767";
 #	$url_memoria="http://memoria.depositolegale.it/*/http://riviste.unimi.it/index.php/gilgames/article/view/XXX_7767";
 #	$url_metadata="http://riviste.unimi.it/index.php/gilgames/oai/?verb=GetRecord&metadataPrefix=oai_dc&identifier=oai:ojs.riviste.unimi.it:article/XXX_7767";
@@ -82,7 +86,7 @@ sub nbn_create_archived # ()
 	if ($ambiente eq "sviluppo") 
 		{
 		my $user='harvest';
-		$nbn_server = $nbn_server_sviluppo;
+#		$nbn_server = $nbn_server_sviluppo;
         %data = ( 'development_username', $user,	# NMB: OVERRIDE  for DEVELOPMENT
 					 'action', 'nbn_create',
 					 'url', $url_sito,
@@ -92,11 +96,19 @@ sub nbn_create_archived # ()
 		}
 	else
 		{
-		if ($ambiente eq "collaudo") 
-			{$nbn_server = $nbn_server_collaudo;}
-		else
-			{$nbn_server = $nbn_server_esercizio;}
-
+#		if ($ambiente eq "collaudo") 
+#			{$nbn_server = $nbn_server_collaudo;}
+#		elsif ($ambiente eq "esercizio")
+#			{$nbn_server = $nbn_server_esercizio;}
+#		elsif($ambiente eq "nuovo_esercizio")
+#			{$nbn_server = $new_nbn_server_esercizio;}
+#		else
+#			{
+#				print "Ambiente '$ambiente' sconosciuto\n";
+#				exit 1;
+#			}
+			
+		
 		%data = ( 'action', 'nbn_create',
             'url', $url_sito,
             'metadataURL', $url_metadata,
@@ -192,13 +204,15 @@ sub get_response_body
 
 
 # Check parameters in input
-die "Usage: $0 url_file nbn_server ambiente username password opera_per_baseurl rows_todo\n" if @ARGV < 6;
-$url_file=$ARGV[0];
-$ambiente=$ARGV[1];
-$arg_username=$ARGV[2];
-$arg_password=$ARGV[3];
-$arg_opera_per_baseurl=$ARGV[4];
-$rows_todo=$archived=$ARGV[5];
+die "Usage: $0 nbn_server url_file ambiente username password opera_per_baseurl rows_todo\n" if @ARGV < 7;
+
+$nbn_server=$ARGV[0];
+$url_file=$ARGV[1];
+$ambiente=$ARGV[2];
+$arg_username=$ARGV[3];
+$arg_password=$ARGV[4];
+$arg_opera_per_baseurl=$ARGV[5];
+$rows_todo=$archived=$ARGV[6];
 
 
 #print "\nurl_file=".$url_file;
@@ -217,7 +231,7 @@ print "\n#OAI Identifier|NBN Identifier|Status Id|Status|Azione";
 
 
 while (my $record = <url_fh>) {
-	last if ($rows_todo != 0 && $rows_done >= $rows_todo); # Facciamo sol oun certo numero di righe o tutte
+	last if ($rows_todo != 0 && $rows_done >= $rows_todo); # Facciamo solo un certo numero di righe o tutte
 
     # print $record;
 
@@ -234,7 +248,7 @@ while (my $record = <url_fh>) {
 #print "\nurl_metadata: ".$url_metadata;
 #print "\ntitle: ".$title;
 
-	my $response = nbn_create_archived ($url_sito, $url_memoria, $url_metadata, $arg_username, $arg_password, $arg_opera_per_baseurl);
+	my $response = nbn_create_archived ($nbn_server, $url_sito, $url_memoria, $url_metadata, $arg_username, $arg_password, $arg_opera_per_baseurl);
 
 #print "\nresponse=" . $response->content;
 

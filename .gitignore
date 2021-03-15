@@ -13,6 +13,7 @@ zip/
 *.txt
 *.out
 *.save
+*.hide
 *upd_ins
 
 csv/sw_login.csv

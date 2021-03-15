@@ -159,7 +159,7 @@ echo "repositories_file=".$repositories_file
         local istituto=${array[1]}
         local OAI_repository=${array[2]}
         local metadata_prefix=${array[4]}
-        local opera_per_baseurl=${array[6]}
+        local opera_per_baseurl=$OAI_repository
         local metadata_url_base=$OAI_repository"?verb=GetRecord\&metadataPrefix="$metadata_prefix"\&identifier="
 
         echo "Istituto: " $istituto
@@ -191,7 +191,15 @@ echo "repositories_file=".$repositories_file
         # Copiamoci ultima versione del generatore
         if [ "$ambiente" == "sviluppo" ]; then
             echo "Getting latest version of genera_nbn.pl"
-            cp ~/workspace/perl/harvest/genera_nbn.pl .
+            cp ~/workspace/perl/harvest/genera_nbn.pl scripts/.
+
+            # nbn_server="http://127.0.0.1:5003/api/nbn_generator.pl"
+            nbn_server="http://nbn-collaudo.depositolegale.it/api/nbn_generator.pl"
+        elif [ "$ambiente" == "collaudo" ]; then
+            nbn_server="http://nbn-collaudo.depositolegale.it/api/nbn_generator.pl"
+
+        elif [ "$ambiente" == ""nuovo_esercizio"" ]; then
+            nbn_server="http://nbn.depositolegale.it/api/nbn_generator.pl"
         fi
 
         url_in=$url_out_file
@@ -201,8 +209,15 @@ echo "repositories_file=".$repositories_file
         # ambiente_db_nbn=collaudo
         echo "Generiamo gli NBN dal db di '" $ambiente_db_nbn "'"
 
+echo "-> nbn_server: "  $nbn_server
+echo "-> file delle url: " $url_in
+echo "-> ambiente_db_nbn: " $ambiente_db_nbn
+echo "-> user: harvest"
+echo "-> pwd: harvest_pwd"
+echo "-> opera_per_baseurl: " $opera_per_baseurl
+echo "-> rows_todo: " $rows_todo
 
-./genera_nbn.pl $url_in $ambiente_db_nbn harvest harvest_pwd $opera_per_baseurl $rows_todo > $nbn_out
+./scripts/genera_nbn.pl $nbn_server $url_in $ambiente_db_nbn harvest harvest_pwd $opera_per_baseurl $rows_todo > $nbn_out
 
         # # Gli nbn generati vengono riportati nelle ricevute dell'harvesting!!! Per ora.
 

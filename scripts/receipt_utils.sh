@@ -11,7 +11,8 @@ declare -A ej_istituto_kv_AR
 
 function _carica_ej_istituto_array()
 {
-    ej_itituto_file="./csv/e_journals.istituto.csv"
+    # ej_itituto_file="./csv/e_journals.istituto.csv"
+    ej_itituto_file="./csv/e_journals.csv.srt"
 
     if [ ! -f $ej_itituto_file ]; then
         echo "Non trovo "$ej_itituto_file
@@ -109,7 +110,8 @@ function _carica_mdr_array()
 
                 # Abbiamo un NBN?
                 # if (( ${#oai_nbn_kv_AR[@]} )); then
-                if [ -n "$oai_nbn_kv_AR" ]; then
+
+                if [ -n $oai_nbn_kv_AR ]; then
                     if test "${oai_nbn_kv_AR[$oai_id]+isset}"; then
                         # echo "NBN="${oai_nbn_kv_AR[$oai_id]};
                         nbn_id=${oai_nbn_kv_AR[$oai_id]};
@@ -123,7 +125,10 @@ function _carica_mdr_array()
                     nbn_status=" ";
                 fi
 
-
+# echo "oai_id: " $oai_id
+# echo "nbn_id: " $nbn_id
+# echo "nbn_status: " $nbn_status
+# exit
 
 # if [[ $row_ctr == 117 ]]; then
 #     echo "components="$components
