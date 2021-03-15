@@ -627,28 +627,74 @@ function copy_warcs_and_logs_to_destination_dir_and_remove()
 
         # Copiamo il warc.gz
         # ==================
-        if [ $materiale == $MATERIALE_TESI ]; then
-            warc_source_filename=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
-        elif [ $materiale == $MATERIALE_EJOURNAL ]; then
-            warc_source_filename=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz.viewer"
+
+# ++++++++        
+#         if [ $materiale == $MATERIALE_TESI ]; then
+#             warc_source_filename=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
+#         elif [ $materiale == $MATERIALE_EJOURNAL ]; then
+#             warc_source_filename=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz.viewer"
+#         fi
+
+#         warc_dest_filename=$dest_warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
+#         copy_warc_to_destination_dir $warc_source_filename $warc_dest_filename
+#         if [[ $? != 0 ]]; then 
+#             # echo "Copy failed"
+#             return; 
+#         fi
+
+
+        if [ $materiale == $MATERIALE_EJOURNAL ]; then
+            root_filename=$harvest_date_materiale"_"$istituto*".warc.gz.viewer"
+        else
+            root_filename=$harvest_date_materiale"_"$istituto*".warc.gz"
         fi
 
-        warc_dest_filename=$dest_warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
-        copy_warc_to_destination_dir $warc_source_filename $warc_dest_filename
-        if [[ $? != 0 ]]; then 
-            # echo "Copy failed"
-            return; 
+        # gestione file segmentati e non
+        for warc_source_filename in $warcs_dir"/"$root_filename; do
+
+            dest_filename="${warc_source_filename##$warcs_dir/}" # substring removal
+            warc_dest_filename=$dest_warcs_dir"/"$dest_filename
+            echo "Copy '$warc_source_filename' to '$warc_dest_filename'"
+            copy_warc_to_destination_dir $warc_source_filename $warc_dest_filename
+            if [[ $? != 0 ]]; then 
+                echo "Copy '$warc_source_filename' to '$warc_dest_filename'"
+                echo "COPY FAILED!!!! STOP"
+                exit 1; 
+            fi
+        done
+
+        # copiamo gli md5
+        # warc_source_filename_md5=$warc_source_filename".md5"
+        # warc_dest_filename_md5=$warc_dest_filename".md5"
+        # copy_warc_to_destination_dir $warc_source_filename_md5 $warc_dest_filename_md5
+        # if [[ $? != 0 ]]; then 
+        #     # echo "Copy failed"
+        #     return; 
+        # fi
+
+
+        if [ $materiale == $MATERIALE_EJOURNAL ]; then
+            root_filename=$harvest_date_materiale"_"$istituto*".warc.gz.viewer.md5"
+        else
+            root_filename=$harvest_date_materiale"_"$istituto*".warc.gz.md5"
         fi
+        # gestione file segmentati e non
+        for warc_source_filename in $warcs_dir"/"$root_filename; do
+            # warc_dest_filename=$dest_warcs_dir"/"$root_filename
+            dest_filename="${warc_source_filename##$warcs_dir/}" # substring removal
+            warc_dest_filename=$dest_warcs_dir"/"$dest_filename
+
+            echo "Copy '$warc_source_filename' to '$warc_dest_filename'"
+            copy_warc_to_destination_dir $warc_source_filename $warc_dest_filename
+            if [[ $? != 0 ]]; then 
+                echo "Copy '$warc_source_filename' to '$warc_dest_filename'"
+                echo "COPY FAILED!!!! STOP"
+                exit 1; 
+            fi
+        done
 
 
 
-        warc_source_filename_md5=$warc_source_filename".md5"
-        warc_dest_filename_md5=$warc_dest_filename".md5"
-        copy_warc_to_destination_dir $warc_source_filename_md5 $warc_dest_filename_md5
-        if [[ $? != 0 ]]; then 
-            # echo "Copy failed"
-            return; 
-        fi
 
 
         # Copiamo il log file del warc
@@ -915,17 +961,39 @@ function create_warcs_md5()
         istituto=${array[1]}
 
 #       echo "istituto="$istituto
-   
+
+        # if [ $materiale == $MATERIALE_EJOURNAL ]; then
+        #     filename=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz.viewer"
+        # else
+        #     filename=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
+        # fi
+
+        # md5_filename=$filename".md5"
+
+        # echo "Do md5 for " $filename 
+        # md5sum $filename > $md5_filename 
+
+
+
         if [ $materiale == $MATERIALE_EJOURNAL ]; then
-            filename=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz.viewer"
+            root_filename=$harvest_date_materiale"_"$istituto*".warc.gz.viewer"
         else
-            filename=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
+            root_filename=$harvest_date_materiale"_"$istituto*".warc.gz"
         fi
 
+        # gestione file segmentati e non
+        for filename in $warcs_dir"/"$root_filename; do
         md5_filename=$filename".md5"
 
         echo "Do md5 for " $filename 
         md5sum $filename > $md5_filename 
+            
+        done
+
+
+
+
+
 
      done < "$repositories_file"
 
