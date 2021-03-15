@@ -16,21 +16,20 @@
 # [-r=|--repositories_file=elenco_repos] \
 # [-s=*|--start_from_block_override=*] \
 # [-t=|--today_override=] \
-# [-u=*|--warc_block_size_override=*]"      default 5
+# [-u=*|--warc-max-size_override=1G (o M)]"      default infinite
 
 # --development "
 # --today_override="2019_08_23
 # --harrvest_from_override="2019-07-15"
-# --warc_block_size_override=1
+# --warc_max_size_override=1G
 # --start_from_block_override
 
 # ./run.sh --development -m=tesi --jobs=3
 # --harrvest_from_override="2018-10-01"
 
-
 #===================================================================================
 # Decommentare ambiente di lavoro
-#./run.sh --ambiente=sviluppo --materiale=tesi --jobs=3 --concurrent_warc_jobs=3
+#--harrvest_from_override="2019-10-01"
+./run.sh --ambiente=sviluppo --materiale=tesi --jobs=3 --concurrent_warc_jobs=3 
 #./run.sh --ambiente=collaudo --materiale=tesi --jobs=3 --concurrent_warc_jobs=3
 #./run.sh --ambiente=esercizio --materiale=tesi --jobs=3 --concurrent_warc_jobs=3
-#./run.sh --ambiente=nuovo_esercizio --materiale=tesi --jobs=3 --concurrent_warc_jobs=3

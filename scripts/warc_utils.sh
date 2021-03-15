@@ -96,10 +96,8 @@ function create_warcs_concurrently()
                #  Certe opzioni sembrano essere ignorate: eg. --no-directories --no-warc-keep-log
                wget_options="--warc-tempdir=. --delete-after --no-directories --no-warc-keep-log --no-check-certificate --user-agent='bncf' --page-requisites"
 
-# --warc-max-size=100M
-# --warc-max-size=2G
 # Attivazione file segmentati
-wget_options="${wget_options} --warc-max-size=10G"
+wget_options="${wget_options} --warc-max-size=$warc_max_size"
 
                 # DEBUG
                # wget_options="--warc-tempdir=. --no-warc-keep-log --no-check-certificate --user-agent='bncf' --page-requisites"
@@ -1035,7 +1033,7 @@ function index_warcs()
         
         root_filename=$harvest_date_materiale"_"$istituto*".warc.gz"
 
-        # 22/12/2020 Gstione indexing compresi warcs splittati
+        # 22/12/2020 Gstione indexing compresi warcs segmentati
         for filename in $dest_warcs_dir"/"$root_filename; do
             echo "Indexing "$filename
             $WB_MANAGER_DIR"wb-manager" index $WAYBACK_COLLECTION_NAME $filename
@@ -1280,18 +1278,26 @@ function change_pdf_viewer_url()
 
 echo "istituto="$istituto
 
-        warc_gz_in=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
-        warc_gz_out=$warc_gz_in".viewer"
-# echo "warc_gz_in="$warc_gz_in
+        # warc_gz_in=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
+        # warc_gz_out=$warc_gz_in".viewer"
+        # if [ ! -f $warc_gz_in ]; then
+        #     # Abbiamo dei file segmentati?
+        #     echo "Warc sorgente mancante: " $warc_gz_in
+        #     continue
+        # else
+        #     echo "Change viewer url for "$warc_gz_in
+        #     python3 -m warcat ejviewer $warc_gz_in --output $warc_gz_out --gzip 
+        # fi
 
 
-        if [ ! -f $warc_gz_in ]; then
-            echo "Warc sorgente mancante: " $warc_gz_in
-            continue
-        else
-            echo "Change viewer url for "$warc_gz_in
-            python3 -m warcat ejviewer $warc_gz_in --output $warc_gz_out --gzip 
-        fi
+        # 15/03/2021 Gstione viewer warcs segmentati e non
+        root_filename=$harvest_date_materiale"_"$istituto*".warc.gz"
+        for filename in $warcs_dir"/"$root_filename; do
+            
+            echo "Change viewer url for "$filename
+            python3 -m warcat ejviewer $filename --output $filename".viewer" --gzip 
+        done
+
 
         # -s FILE - True if the FILE exists and has nonzero size.
         # if [[ ! -s $warc_gz_out ]]; then

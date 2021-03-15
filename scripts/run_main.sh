@@ -237,6 +237,9 @@ today=""
 today_override=""
 new_harvest_date_list=""
 
+warc-max-size="5G"
+
+
 # Include scripts
 source scripts/misc_utils.sh
 source scripts/log_utils.sh
@@ -302,18 +305,27 @@ function init_variables()
 
 
 
-# echo "warc_block_size_override....$warc_block_size_override"
-    if [ -z "$warc_block_size_override" ]; then
-        warc_block_size=5
+# echo "warc-max-size_override....$warc-max-size_override"
+
+    if [ -z "$warc_max_size_override" ]; then
+# echo "ambiente=$ambiente"        
+        if [ "$ambiente" == "sviluppo" ] ; then
+            warc_max_size="10M"
+        else
+            warc_max_size="10G"
+        fi
     else
-        warc_block_size=$warc_block_size_override
+        echo "Setting warc-max-size_override ($warc-max-size_override)"
+        warc_max_size=$warc_max_size_override
     fi
 
-    if [ -z "$start_from_block_override" ]; then
-        start_from_block=1
-    else
-        start_from_block=$start_from_block_override
-    fi
+# echo "--> warc-max-size=$warc_max_size"
+
+    # if [ -z "$start_from_block_override" ]; then
+    #     start_from_block=1
+    # else
+    #     start_from_block=$start_from_block_override
+    # fi
 
 
 
@@ -1376,18 +1388,18 @@ function print_configuration ()
 
 
 
-    if [ -z "$warc_block_size_override" ]; then
-        echo "  warc_block_size:    $warc_block_size"
+    if [ -z "$warc_max_size_override" ]; then
+        echo "  warc_max_size:    $warc_max_size"
     else
-        echo "  warc_block_size(overridden):  $warc_block_size_override"
+        echo "  warc_max_size(overridden):  $warc_max_size_override"
     fi
 
 
-    if [ -z "$start_from_block_override" ]; then
-        echo "  start from block:    $start_from_block"
-    else
-        echo "  start from block (overridden):  $start_from_block_override"
-    fi
+    # if [ -z "$start_from_block_override" ]; then
+    #     echo "  start from block:    $start_from_block"
+    # else
+    #     echo "  start from block (overridden):  $start_from_block_override"
+    # fi
 
 
 
@@ -1439,7 +1451,7 @@ function check_arguments()
             [-r=|--repositories_file=elenco_repos] \
             [-s=*|--start_from_block_override=*] \
             [-t=|--today_override=] \
-            [-u=*|--warc_block_size_override=*]"
+            [-u=*|--warc_max_size_override=*]"
         exit
     fi
 
@@ -1542,7 +1554,7 @@ function check_arguments()
             fi
             ;;
 
-            -u=*|--warc_block_size_override=*)
+            -u=*|--warc_max_size_override=*)
             # Usato quando vogliamo fare dei trattamenti su harvesting gia fatto oprecedentemente
             # e quindi non dover rifare l'harvesting
             b="${arg#*=}"
@@ -1552,7 +1564,7 @@ function check_arguments()
               echo "--block_size override $b is NOT a number"
               exit
             else
-              warc_block_size_override=$b
+              warc_max_size_override=$b
             fi
             ;;
 
