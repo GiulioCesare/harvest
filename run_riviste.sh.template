@@ -15,3 +15,4 @@
 ./run.sh --ambiente=sviluppo --materiale=riviste --jobs=3 --concurrent_warc_jobs=3 
 #./run.sh --ambiente=collaudo --materiale=riviste --jobs=3 --concurrent_warc_jobs=3
 #./run.sh --ambiente=esercizio --materiale=riviste --jobs=3 --concurrent_warc_jobs=3
+#./run.sh --ambiente=nuovo_esercizio --materiale=riviste --jobs=3 --concurrent_warc_jobs=3
