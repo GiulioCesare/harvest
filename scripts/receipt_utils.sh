@@ -30,10 +30,17 @@ function _carica_ej_istituto_array()
         if [[ ${ej:0:1} == "#" ]] || [[ ${ej} == "" ]];  then
               continue
         fi
+
+        if [[ ${ej:0:1} == "@" ]]; then # Ignore rest of file
+            break
+        fi
+
+
+
         local istituto=${array[1]}
 # echo "ej: "$ej
-# echo "istituto: "$istituto
-        ej_istituto_kv_AR["$ej"]=$istituto
+# echo "Carico ej: " $ej  ", istituto: "$istituto
+        ej_istituto_kv_AR[$istituto]=$ej
 
     done < $ej_itituto_file
 
@@ -753,19 +760,23 @@ function  _convert_csv_to_xls()
     arr=($csv_list_file)
     len=${#arr[@]}
     if [[ $len > 1 ]]; then
-		echo "ssconvert --merge-to=$excel_file $csv_list_file"
+		# echo "ssconvert --merge-to=$excel_file $csv_list_file"
         ssconvert --merge-to=$excel_file $csv_list_file > /dev/null 2>&1
     else
-        echo "ssconvert $csv_list_file $excel_file"
+        # echo "ssconvert $csv_list_file $excel_file"
         ssconvert $csv_list_file $excel_file # > /dev/null 2>&1
     fi
 
+echo "excel_file: "$excel_file
 
 
 
 
 
     if [ $materiale == $MATERIALE_EJOURNAL ]; then
+
+# echo "istituto: " $istituto
+
         # Troviamo la radice della rivista 
         IFS='.' read -r -a array <<< "$istituto"
         rootRivista=${array[0]}
@@ -777,9 +788,12 @@ function  _convert_csv_to_xls()
 
    # echo "Istituto per $rootRivista " $rootRivista " = " ${ej_istituto_kv_AR[$rootRivista]}
 
-        if test "${ej_istituto_kv_AR[$rootRivista]+isset}"; then
+        if test "${ej_istituto_kv_AR[$istituto]+isset}"; then
             # echo "Istituto per $rootRivista " $rootRivista " = " ${ej_istituto_kv_AR[$rootRivista]}
-            istituto=${ej_istituto_kv_AR[$rootRivista]}
+
+            # istituto=${ej_istituto_kv_AR[$istituto]}
+            istituto=$rootRivista
+
             # Esiste la cartella in report?
             # echo "ist = " $istituto
 
@@ -788,18 +802,13 @@ function  _convert_csv_to_xls()
                 # mkdir $report_dir"/"$istituto
             fi
         else
-            echo "Non trovo l'istituto per la rivista '$rootRivista'"
+            echo "Non trovo l'istituto per la rivista '$istituto'"
         fi
 
     fi
 
-    echo "# Copy $excel_file to "$report_dir"/"$istituto
+    echo "Copy $excel_file to "$report_dir"/"$istituto
     cp $excel_file $report_dir"/"$istituto"/."
-
-
-
-
-
 
 
 } # end _convert_csv_to_xls
@@ -1002,7 +1011,7 @@ echo "Working on: " $istituto
         fi
 
 
-            _convert_csv_to_xls $istituto
+            # _convert_csv_to_xls $istituto
 
             # Solo per debug
             # check_match_seeds_donloaded_to_download $istituto
