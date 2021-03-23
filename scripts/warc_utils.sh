@@ -628,7 +628,7 @@ function copy_warcs_and_logs_to_destination_dir_and_remove()
         # Copiamo il warc.gz
         # ==================
 
-# ++++++++        
+# 
 #         if [ $materiale == $MATERIALE_TESI ]; then
 #             warc_source_filename=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
 #         elif [ $materiale == $MATERIALE_EJOURNAL ]; then
@@ -653,8 +653,20 @@ function copy_warcs_and_logs_to_destination_dir_and_remove()
         for warc_source_filename in $warcs_dir"/"$root_filename; do
 
             dest_filename="${warc_source_filename##$warcs_dir/}" # substring removal
+
+        if [ $materiale == $MATERIALE_EJOURNAL ]; then
+            dest_filename=${dest_filename::-7} # remove ".viewer"
+            echo "dest_filename="$dest_filename
+        fi
+
+
             warc_dest_filename=$dest_warcs_dir"/"$dest_filename
-            echo "Copy '$warc_source_filename' to '$warc_dest_filename'"
+
+# echo "warc_source_filename="$warc_source_filename
+# echo "dest_filename="$dest_filename
+
+
+            # echo "Copy '$warc_source_filename' to '$warc_dest_filename'"
             copy_warc_to_destination_dir $warc_source_filename $warc_dest_filename
             if [[ $? != 0 ]]; then 
                 echo "Copy '$warc_source_filename' to '$warc_dest_filename'"
@@ -662,15 +674,6 @@ function copy_warcs_and_logs_to_destination_dir_and_remove()
                 exit 1; 
             fi
         done
-
-        # copiamo gli md5
-        # warc_source_filename_md5=$warc_source_filename".md5"
-        # warc_dest_filename_md5=$warc_dest_filename".md5"
-        # copy_warc_to_destination_dir $warc_source_filename_md5 $warc_dest_filename_md5
-        # if [[ $? != 0 ]]; then 
-        #     # echo "Copy failed"
-        #     return; 
-        # fi
 
 
         if [ $materiale == $MATERIALE_EJOURNAL ]; then
@@ -682,6 +685,14 @@ function copy_warcs_and_logs_to_destination_dir_and_remove()
         for warc_source_filename in $warcs_dir"/"$root_filename; do
             # warc_dest_filename=$dest_warcs_dir"/"$root_filename
             dest_filename="${warc_source_filename##$warcs_dir/}" # substring removal
+
+        if [ $materiale == $MATERIALE_EJOURNAL ]; then
+            dest_filename=${dest_filename::-11}".md5" # remove ".viewer"
+            echo "dest_filename="$dest_filename
+        fi
+
+
+
             warc_dest_filename=$dest_warcs_dir"/"$dest_filename
 
             echo "Copy '$warc_source_filename' to '$warc_dest_filename'"
@@ -692,8 +703,6 @@ function copy_warcs_and_logs_to_destination_dir_and_remove()
                 exit 1; 
             fi
         done
-
-
 
 
 
@@ -1102,18 +1111,24 @@ function index_warcs()
         root_filename=$harvest_date_materiale"_"$istituto*".warc.gz"
 
         # 22/12/2020 Gstione indexing compresi warcs segmentati
-        for filename in $dest_warcs_dir"/"$root_filename; do
-            echo "Indexing "$filename
-            $WB_MANAGER_DIR"wb-manager" index $WAYBACK_COLLECTION_NAME $filename
+        # for filename in $dest_warcs_dir"/"$root_filename; do
+        #     echo "Indexing "$filename
 
-            local fname=$(basename -- "$filename")
+# shopt -s nullglob
+for file in $dest_warcs_dir"/"$harvest_date_materiale"_"$istituto*".warc.gz";   do
+    echo "Processing $file file..."
 
-           # local fname="${fname%.*}"
-            cdxj_name="${fname%.*.*}.cdxj"
+# ++++ 
+           #  $WB_MANAGER_DIR"wb-manager" index $WAYBACK_COLLECTION_NAME $filename
 
-            echo "cdxj_name= "$cdxj_name
-            echo "Rinominiamo " $WAYBACK_INDEX_DIR"/index.cdxj in" $WAYBACK_INDEX_DIR"/"$cdxj_name
-            mv $WAYBACK_INDEX_DIR"/index.cdxj" $WAYBACK_INDEX_DIR"/"$cdxj_name
+           #  local fname=$(basename -- "$filename")
+
+           # # local fname="${fname%.*}"
+           #  cdxj_name="${fname%.*.*}.cdxj"
+
+           #  echo "cdxj_name= "$cdxj_name
+           #  echo "Rinominiamo " $WAYBACK_INDEX_DIR"/index.cdxj in" $WAYBACK_INDEX_DIR"/"$cdxj_name
+           #  mv $WAYBACK_INDEX_DIR"/index.cdxj" $WAYBACK_INDEX_DIR"/"$cdxj_name
             
         done
 
