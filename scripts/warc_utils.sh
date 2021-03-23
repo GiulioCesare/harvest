@@ -1111,24 +1111,19 @@ function index_warcs()
         root_filename=$harvest_date_materiale"_"$istituto*".warc.gz"
 
         # 22/12/2020 Gstione indexing compresi warcs segmentati
-        # for filename in $dest_warcs_dir"/"$root_filename; do
-        #     echo "Indexing "$filename
+        for filename in $dest_warcs_dir"/"$root_filename; do
+            echo "Indexing "$filename
 
-# shopt -s nullglob
-for file in $dest_warcs_dir"/"$harvest_date_materiale"_"$istituto*".warc.gz";   do
-    echo "Processing $file file..."
+            $WB_MANAGER_DIR"wb-manager" index $WAYBACK_COLLECTION_NAME $filename
 
-# ++++ 
-           #  $WB_MANAGER_DIR"wb-manager" index $WAYBACK_COLLECTION_NAME $filename
+            local fname=$(basename -- "$filename")
 
-           #  local fname=$(basename -- "$filename")
+           # local fname="${fname%.*}"
+            cdxj_name="${fname%.*.*}.cdxj"
 
-           # # local fname="${fname%.*}"
-           #  cdxj_name="${fname%.*.*}.cdxj"
-
-           #  echo "cdxj_name= "$cdxj_name
-           #  echo "Rinominiamo " $WAYBACK_INDEX_DIR"/index.cdxj in" $WAYBACK_INDEX_DIR"/"$cdxj_name
-           #  mv $WAYBACK_INDEX_DIR"/index.cdxj" $WAYBACK_INDEX_DIR"/"$cdxj_name
+            echo "cdxj_name= "$cdxj_name
+            echo "Rinominiamo " $WAYBACK_INDEX_DIR"/index.cdxj in" $WAYBACK_INDEX_DIR"/"$cdxj_name
+            mv $WAYBACK_INDEX_DIR"/index.cdxj" $WAYBACK_INDEX_DIR"/"$cdxj_name
             
         done
 
