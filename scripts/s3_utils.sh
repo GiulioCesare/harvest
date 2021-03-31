@@ -333,6 +333,7 @@ awk -v split_warc="$split_warc" 'BEGIN{
     nome_file_s3=""
     tempo_caricamento=""
     }
+
     {
     	if ($2 == "size")
     		{
@@ -371,6 +372,7 @@ awk -v split_warc="$split_warc" 'BEGIN{
             print $0;
     		}
     }
+
     END{
 
 	if (nome_file_s3 == "")
@@ -487,7 +489,7 @@ function prepare_harvest_record_AV()
 		# echo "s3log_filename = " $s3log_filename
 		# echo "s3log_split_filename_prefix = " $s3log_split_filename_prefix
 
-		# Cerchiamo se l'iistituto ha dei warc spl;ittati
+		# Cerchiamo se l'iistituto ha dei warc splittati
 		
 		# declare -i log_files=$(ls -l $s3log_split_filename_prefix | wc -l )
 
@@ -777,21 +779,30 @@ _upload_segmented_warc_to_s3()
 	local istituto=$1
 	echo "multifile_to_upload: " $istituto
 
-	for filename in $dest_warcs_dir"/"$harvest_date_materiale"_"$istituto-????".warc.gz"; do
+
+wild_fn=$dest_warcs_dir"/$harvest_date_materiale"_"$istituto-*.warc.gz"
+
+echo "wild_fn: $wild_fn"
+	for filename in $wild_fn ; do
 		echo ""
 	    echo "Process $filename"
 		fname=$(basename -- "$filename")
 
 # echo "--->fname="$fname
+# continue
 
 		file_to_upload=$filename
 		md5_file_to_upload=$file_to_upload".md5"
 		s3_path_filename="harvest/2020_08_05_tesi/indexes/cdxj.zip"
 
-		if [ $ambiente == "sviluppo" ]; then
-			s3_path_filename="harvest/"$harvest_date_materiale"/warcs/sviluppo_"$fname
-		elif [ $ambiente == "collaudo" ]; then 
-			s3_path_filename="harvest/"$harvest_date_materiale"/warcs/collaudo_"$fname
+		# if [ $ambiente == "sviluppo" ]; then
+		# 	s3_path_filename="harvest/"$harvest_date_materiale"/warcs/sviluppo_"$fname
+		# elif [ $ambiente == "collaudo" ]; then 
+		# 	s3_path_filename="harvest/"$harvest_date_materiale"/warcs/collaudo_"$fname
+
+
+		if [ $ambiente == "sviluppo" ] || [ $ambiente == "collaudo" ]; then
+			s3_path_filename="harvest/"$harvest_date_materiale"_"$ambiente"/warcs/"$fname
 		elif [ $ambiente == "esercizio" ] || [ $ambiente == "nuovo_esercizio" ]; then
 			# Esercizio
 			s3_path_filename="harvest/"$harvest_date_materiale"/warcs/"$fname
@@ -800,11 +811,6 @@ _upload_segmented_warc_to_s3()
 				exit
 		fi
 		s3log_filename=$fname".upload.log"
-
-
-# s3log_filename=$s3_dir"/"$warc_filename".upload.log"
-# echo "--->s3log_filename = " $s3log_filename
-
 
 		upload_file_to_s3 $multipart_mode $file_to_upload $md5_file_to_upload $s3_path_filename $s3log_filename
 	done
@@ -816,7 +822,7 @@ function upload_warcs_to_s3()
 {
 	echo "--------------------------------"
 	echo "Uploading warcs.gz to S3 storage"
-	echo "warcs.gz must have associated .md5 file in same folder"
+	# echo "warcs.gz must have associated .md5 file in same folder"
 
 	multipart_mode=$1
 
@@ -834,20 +840,28 @@ function upload_warcs_to_s3()
                  continue
             fi
 
-        local istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
+        # local istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
+        local istituto=${array[1]}
+
+# echo "istituto: ${array[1]}" 
+# echo "istituto: $istituto" 
+
 
        	# file_to_upload=$warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
        	local warc_filename=$harvest_date_materiale"_"$istituto".warc.gz"
        	local file_to_upload=$dest_warcs_dir"/"$warc_filename
 
-
+echo "file_to_upload: $file_to_upload" 
 
        	# Check if whole file to upload exist
 	    if [ ! -f $file_to_upload ]; then
-	    	# Whole file does not exist. Could be a segmented file
+# echo "# Whole file does not exist. Could be a segmented file"
 
-			if ls $dest_warcs_dir"/"$harvest_date_materiale"_"$istituto-????".warc.gz" 1> /dev/null 2>&1; then
-			    # UPLOADING SEGMENTED WARC
+# Trova meta.warc.gz
+wildfn=$dest_warcs_dir"/"$harvest_date_materiale"_"$istituto-????".warc.gz"
+# echo "wildfn: $wildfn"
+			if ls $wildfn > /dev/null 2>&1; then
+# echo "# UPLOADING SEGMENTED WARC"
 			    # ========================
 		    	_upload_segmented_warc_to_s3 $istituto
 		    	continue
@@ -874,10 +888,10 @@ function upload_warcs_to_s3()
        	# echo " file_to_upload="$file_to_upload
        	# echo " md5_file_to_upload="$md5_file_to_upload
 
-		if [ $ambiente == "sviluppo" ]; then
-			s3_path_filename="harvest/"$harvest_date_materiale"/warcs/sviluppo_"$warc_filename
-		elif [ $ambiente == "collaudo" ]; then 
-			s3_path_filename="harvest/"$harvest_date_materiale"/warcs/collaudo_"$warc_filename
+		
+		if [ $ambiente == "sviluppo" ] || [ $ambiente == "collaudo" ]; then
+			s3_path_filename="harvest/"$harvest_date_materiale"_"$ambiente"/warcs/"$warc_filename
+
 		elif [ $ambiente == "esercizio" ] || [ $ambiente == "nuovo_esercizio" ]; then
 			# Esercizio
 			s3_path_filename="harvest/"$harvest_date_materiale"/warcs/"$warc_filename
@@ -896,61 +910,108 @@ function upload_warcs_to_s3()
 
 function upload_unimarc_to_s3
 {
-echo "upload_unimarc_to_s3"
-	# Preparare zip file
-	zip_filename="tmp/$harvest_date_materiale.09_unimarcs.zip"
+	echo "upload_unimarc_to_s3"
 
-	files_to_zip=tesi/09_unimarcs"/*.mrc"
-    if [ ! -f $files_to_zip ]; then
-        echo "Non ci sono file unimarc per "$harvest_date_materiale
-        return
-    fi
+	multipart_mode=$1
 
-	zip -pr $zip_filename tesi/09_unimarcs
 
-	multipart_mode=true
-	file_to_upload=$zip_filename
 
+    # Zip degli unimarc concatenati
+    # =============================
+    unimarc_zip=$harvest_date_materiale"_all.mrc.zip"
+	file_to_upload=$unimarc_dir"/"$unimarc_zip
 	md5_file_to_upload=$file_to_upload".md5"
-
 	md5sum $file_to_upload > $md5_file_to_upload
 
-
-
-	s3_path_filename="harvest/"$harvest_date_materiale"/unimarc/09_unimarcs.zip"
-	log_filename="unimarc.upload.log"
-
+	if [ $ambiente == "sviluppo" ] || [ $ambiente == "collaudo" ]; then
+		s3_path_filename="harvest/"$harvest_date_materiale"_"$ambiente"/unimarc/"$unimarc_zip
+	elif [ $ambiente == "nuovo_esercizio" ]; then
+		s3_path_filename="harvest/"$harvest_date_materiale"/unimarc/"$unimarc_zip
+	else
+			echo "ambiente '"$ambiente"' sconosciuto. STOP'"
+			exit
+	fi
+	log_filename=$harvest_date_materiale"_unimarc.upload.log"
 	echo "file_to_upload: $file_to_upload"
 	echo "s3_path_filename: $s3_path_filename"
-
+	echo "log_filename = $log_filename"
 	upload_file_to_s3 $multipart_mode $file_to_upload $md5_file_to_upload $s3_path_filename $log_filename
+
+
+
+    # Zip dei file accessori
+    # ======================
+    unimarc_accessori_zip=$harvest_date_materiale"_accessori.zip"
+	file_to_upload=$unimarc_dir"/"$unimarc_accessori_zip
+	md5_file_to_upload=$file_to_upload".md5"
+	md5sum $file_to_upload > $md5_file_to_upload
+
+	if [ $ambiente == "sviluppo" ] || [ $ambiente == "collaudo" ]; then
+		s3_path_filename="harvest/"$harvest_date_materiale"_"$ambiente"/unimarc/"$unimarc_accessori_zip
+	elif [ $ambiente == "nuovo_esercizio" ]; then
+		s3_path_filename="harvest/"$harvest_date_materiale"/unimarc/"$unimarc_accessori_zip
+	else
+			echo "ambiente '"$ambiente"' sconosciuto. STOP'"
+			exit
+	fi
+	log_filename=$harvest_date_materiale"_unimarc_accessori.upload.log"
+	echo "file_to_upload: $file_to_upload"
+	echo "s3_path_filename: $s3_path_filename"
+	echo "log_filename = $log_filename"
+	upload_file_to_s3 $multipart_mode $file_to_upload $md5_file_to_upload $s3_path_filename $log_filename
+
+
+
+
+
+
+
 } # end upload_unimarc_to_s3
+
+
+
+
+
 
 function upload_metadati_to_s3
 {
 	echo "upload_metadati_to_s3"
 
+	multipart_mode=$1
+
+
 	# Preparare zip file
 	zip_filename="tmp/$harvest_date_materiale.01_metadata.zip"
 
-	files_to_zip=tesi/01_metadata"/*.xml"
+	files_to_zip=$work_dir"/01_metadata/*.xml"
     if [ ! -f $files_to_zip ]; then
         echo "Non ci sono file xml per "$harvest_date_materiale
         return
     fi
 
-	zip -pr $zip_filename tesi/01_metadata
+	zip -pr $zip_filename $work_dir"/01_metadata"
 
-	multipart_mode=true
 	file_to_upload=$zip_filename
 	md5_file_to_upload=$file_to_upload".md5"
 	md5sum $file_to_upload > $md5_file_to_upload
 
-	s3_path_filename="harvest/"$harvest_date_materiale"/metadati/01_metadata.zip"
-	log_filename="metadati.upload.log"
+
+
+	if [ $ambiente == "sviluppo" ] || [ $ambiente == "collaudo" ]; then
+		s3_path_filename="harvest/"$harvest_date_materiale"_"$ambiente"/metadati/01_metadata.zip"
+	elif [ $ambiente == "nuovo_esercizio" ]; then
+		s3_path_filename="harvest/"$harvest_date_materiale"/metadati/01_metadata.zip"
+	else
+			echo "ambiente '"$ambiente"' sconosciuto. STOP'"
+			exit
+	fi
+
+
+	log_filename=$harvest_date_materiale"_metadati.upload.log"
 
 	echo "file_to_upload: $file_to_upload"
 	echo "s3_path_filename: $s3_path_filename"
+	echo "log_filename: $log_filename"
 
 	upload_file_to_s3 $multipart_mode $file_to_upload $md5_file_to_upload $s3_path_filename $log_filename
 
@@ -960,24 +1021,40 @@ function upload_metadati_to_s3
 function upload_indici_warcs_to_s3
 {
 	echo "upload_indici_warcs_to_s3"
+	multipart_mode=$1
 
 	# Preparare zip file
 	zip_filename="tmp/$harvest_date_materiale.cdxj.zip"
 
 	files_to_zip=../wayback/tools/webarchive-indexing/cdx/$harvest_date_materiale"*.cdxj"
+
+echo "files_to_zip: $files_to_zip"
+
     if [ ! -f $files_to_zip ]; then
         echo "Non ci sono indici per "$harvest_date_materiale
         return
     fi
 	zip -pr $zip_filename $files_to_zip
 
-	multipart_mode=true
 	file_to_upload=$zip_filename
 	md5_file_to_upload=$file_to_upload".md5"
 	md5sum $file_to_upload > $md5_file_to_upload
 
-	s3_path_filename="harvest/"$harvest_date_materiale"/indexes/cdxj.zip"
-	log_filename="indici_warcs.upload.log"
+	# s3_path_filename="harvest/"$harvest_date_materiale"/indexes/cdxj.zip"
+
+	if [ $ambiente == "sviluppo" ] || [ $ambiente == "collaudo" ]; then
+		s3_path_filename="harvest/"$harvest_date_materiale"_"$ambiente"/indexes/cdxj.zip"
+	elif [ $ambiente == "nuovo_esercizio" ]; then
+		s3_path_filename="harvest/"$harvest_date_materiale"/indexes/cdxj.zip"
+	else
+			echo "ambiente '"$ambiente"' sconosciuto. STOP'"
+			exit
+	fi
+
+
+
+	# log_filename="indici_warcs.upload.log"
+	log_filename="cdxj.upload.log"
 
 	echo "file_to_upload: $file_to_upload"
 	echo "s3_path_filename: $s3_path_filename"
@@ -986,3 +1063,137 @@ function upload_indici_warcs_to_s3
 
 } # end upload_indici_warcs_to_s3
 
+function prepare_harvest_record_metadati()
+{
+	echo "--------------------------------"
+	echo "prepare_harvest_record_metadati"
+
+	s3_upd_ins=$s3_dir"/storageS3.upd_ins" 
+	
+    if [ -f $s3_upd_ins ]; then
+        rm $s3_upd_ins
+    fi
+
+    touch $s3_upd_ins # Create file
+    s3log_filename=$s3_dir"/"$harvest_date_materiale"_metadati.upload.log"
+   	
+    	# echo "Abbiamo il log di un file non _splittato? "$s3log_filename 
+	    if [ ! -f $s3log_filename ]; then
+	        "Missing log file: "$s3log_filename" STOP...."
+	        return;
+	    else
+		    echo "Working on "$s3log_filename
+	        split_warc=no
+	        prepare_s3_record $s3log_filename $s3_upd_ins
+	    fi
+} # end prepare_harvest_record_metadati
+
+
+function upload_warc_logs_to_s3
+{
+	echo "upload_warc_logs_to_s3"
+
+	multipart_mode=$1
+
+
+	# Preparare zip file
+	zip_filename="tmp/$harvest_date_materiale.06_warc_logs.zip"
+
+	files_to_zip=$warcs_dir"/log/*log"
+    if [ ! -f $files_to_zip ]; then
+        echo "Non ci sono file log per "$harvest_date_materiale
+        return
+    fi
+
+	zip -p $zip_filename $files_to_zip
+
+	file_to_upload=$zip_filename
+	md5_file_to_upload=$file_to_upload".md5"
+	md5sum $file_to_upload > $md5_file_to_upload
+
+
+
+	if [ $ambiente == "sviluppo" ] || [ $ambiente == "collaudo" ]; then
+		s3_path_filename="harvest/"$harvest_date_materiale"_"$ambiente"/warcs/06_warc_logs.zip"
+	elif [ $ambiente == "nuovo_esercizio" ]; then
+		s3_path_filename="harvest/"$harvest_date_materiale"/warcs/06_warc_logs.zip"
+	else
+			echo "ambiente '"$ambiente"' sconosciuto. STOP'"
+			exit
+	fi
+
+
+	log_filename=$harvest_date_materiale"_warc_logs.upload.log"
+
+	echo "file_to_upload: $file_to_upload"
+	echo "s3_path_filename: $s3_path_filename"
+	echo "log_filename: $log_filename"
+
+	upload_file_to_s3 $multipart_mode $file_to_upload $md5_file_to_upload $s3_path_filename $log_filename
+
+} # end upload_metadati_to_s3
+
+
+function prepare_harvest_record_warc_logs()
+{
+	echo "--------------------------------"
+	echo "prepare_harvest_record_warc_logs"
+
+	s3_upd_ins=$s3_dir"/storageS3.upd_ins" 
+	
+    if [ -f $s3_upd_ins ]; then
+        rm $s3_upd_ins
+    fi
+
+    touch $s3_upd_ins # Create file
+    s3log_filename=$s3_dir"/"$harvest_date_materiale"_warc_logs.upload.log"
+   	
+    	# echo "Abbiamo il log di un file non _splittato? "$s3log_filename 
+	    if [ ! -f $s3log_filename ]; then
+	        "Missing log file: "$s3log_filename" STOP...."
+	        return;
+	    else
+		    echo "Working on "$s3log_filename
+	        split_warc=no
+	        prepare_s3_record $s3log_filename $s3_upd_ins
+	    fi
+} # end prepare_harvest_record_warc_logs
+
+
+function prepare_harvest_record_unimarc()
+{
+	echo "--------------------------------"
+	echo "prepare_harvest_record_unimarc"
+
+	s3_upd_ins=$s3_dir"/storageS3.upd_ins" 
+	
+    if [ -f $s3_upd_ins ]; then
+        rm $s3_upd_ins
+    fi
+
+    touch $s3_upd_ins # Create file
+    s3log_filename=$s3_dir"/"$harvest_date_materiale"_unimarc.upload.log"
+
+    if [ ! -f $s3log_filename ]; then
+        "Missing log file: "$s3log_filename" STOP...."
+        return;
+    else
+	    echo "Working on "$s3log_filename
+        split_warc=no
+        prepare_s3_record $s3log_filename $s3_upd_ins
+    fi
+
+
+    s3log_filename=$s3_dir"/"$harvest_date_materiale"_unimarc_accessori.upload.log"
+    if [ ! -f $s3log_filename ]; then
+        "Missing log file: "$s3log_filename" STOP...."
+        return;
+    else
+	    echo "Working on "$s3log_filename
+        split_warc=no
+        prepare_s3_record $s3log_filename $s3_upd_ins
+    fi
+
+
+
+} # end prepare_harvest_record_metadati

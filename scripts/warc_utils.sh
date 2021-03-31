@@ -1392,3 +1392,26 @@ echo "istituto="$istituto
      done < "$repositories_file"
 
  } # end change_pdf_viewer_url
+
+# =============================================================================
+# OBSOLETE
+# Solo per file molto grandii > 15GB (split e md5 manuale per il momento)
+# upload_split_warcs_to_s3
+#
+# -------------------------------------
+# !!!! Caricamento warcs da harvest precedenti fino al 10/2018
+# 
+# ONCE ONLY!!!
+# -- prepare_etd_warcs_list_to_upload()
+# from_line=1
+# to_line=1
+# multipart_mode=false
+# upload_etd_warcs_to_S3    $from_line $to_line $multipart_mode
+#
+# prepare_harvest_record_storico    1   5
+# prepare_harvest_record_cdx_storico
+# scripts/DbUpdateInsertS3.sh
+
+# =============================================================================
+
+

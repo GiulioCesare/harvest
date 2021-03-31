@@ -8,8 +8,7 @@
 # ambiente di sviluppo
 # --------------------
 [sviluppo]
-#uploadDir=./tesi/13_s3
-uploadDir=/home/argentino/magazzini_digitali/harvest/tesi/13_s3
+uploadDir=/_MATERIALE_/13_s3
 
 jdbcDriver=com.mysql.cj.jdbc.Driver
 connectionUrl=jdbc:mysql://localhost:3306/harvest
@@ -25,8 +24,7 @@ fieldSeparator=|
 # Truncate
 #removeAllRecordsBeforeUpload=false
 
-#logFileOut=./logs/DbUpdateInsertS3.log
-logFileOut=/home/argentino/magazzini_digitali/harvest/logs/DbUpdateInsertS3.log
+logFileOut=/_MATERIALE_/13_s3/DbUpdateInsertS3.log
 #showQuery=true
 
 # commit in hex format
@@ -40,7 +38,7 @@ storageS3.upd_ins
 # ambiente di collaudo
 # --------------------
 [collaudo]
-uploadDir=./tesi/13_s3/
+uploadDir=/_MATERIALE_/13_s3
 jdbcDriver=com.mysql.cj.jdbc.Driver
 
 #connectionUrl=jdbc:mysql://localhost:3306/harvest
@@ -53,7 +51,7 @@ fieldSeparator=|
 # Truncate (BE VERY CAREFUL)
 #removeAllRecordsBeforeUpload=false
 
-logFileOut=./logs/DbUpdateInsert.log
+logFileOut=/_MATERIALE_/DbUpdateInsertS3.log
 # commit in hex format
 commitOgniTotRighe=FF
 endConfig
@@ -62,27 +60,27 @@ s3.upd_ins
 
 
 # --------------------
-# ambiente di esercizio
+# OBSOLETE ambiente di esercizio
 # --------------------
-[esercizio]
-uploadDir=./tesi/13_s3/
-jdbcDriver=com.mysql.cj.jdbc.Driver
-
-#connectionUrl=jdbc:mysql://localhost:3306/harvest
-#userName=harvest
-#userPassword=harvest_pwd_2020
-
-fieldSeparator=|
-#fieldSeparator=�
-
-# Truncate
-#removeAllRecordsBeforeUpload=false
-logFileOut=./logs/DbUpdateInsert.log
-# commit in hex format
-commitOgniTotRighe=FF
-endConfig
-
-storageS3.upd_ins
+#[esercizio]
+#uploadDir=./tesi/13_s3/
+#jdbcDriver=com.mysql.cj.jdbc.Driver
+#
+##connectionUrl=jdbc:mysql://localhost:3306/harvest
+##userName=harvest
+##userPassword=harvest_pwd_2020
+#
+#fieldSeparator=|
+##fieldSeparator=�
+#
+## Truncate
+##removeAllRecordsBeforeUpload=false
+#logFileOut=./logs/DbUpdateInsert.log
+## commit in hex format
+#commitOgniTotRighe=FF
+#endConfig
+#
+#storageS3.upd_ins
 
 
 
@@ -90,7 +88,7 @@ storageS3.upd_ins
 # ambiente di esercizio nuovo
 # --------------------
 [nuovo_esercizio]
-uploadDir=./tesi/13_s3/
+uploadDir=/_MATERIALE_/13_s3/
 jdbcDriver=com.mysql.cj.jdbc.Driver
 
 connectionUrl=jdbc:mysql://localhost:3306/harvest?serverTimezone=UTC
@@ -102,7 +100,7 @@ fieldSeparator=|
 
 # Truncate
 #removeAllRecordsBeforeUpload=false
-logFileOut=./logs/DbUpdateInsertS3.log
+logFileOut=/_MATERIALE_/DbUpdateInsertS3.log
 # commit in hex format
 commitOgniTotRighe=FF
 endConfig

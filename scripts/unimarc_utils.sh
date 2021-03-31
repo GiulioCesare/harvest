@@ -57,9 +57,9 @@ function _do_unimarc()
     # fi
 
     local ctr_file=$unimarc_dir"/ctr_001.txt"     # File con contatore per generazione BID
-    local tesi_aggiornate_file=$unimarc_dir/$harvest_date_materiale"_"$istituto"_001.updated"  # File di output per OAI_IDENTIFIER/BID aggiornati
-    local tesi_nuove_file=$unimarc_dir/$harvest_date_materiale"_"$istituto"_001.new"  # File di output per OAI_IDENTIFIER/BID nuovi
-    local tesi_cancellate_file=$unimarc_dir/$harvest_date_materiale"_"$istituto"_001.deleted"  # File di output per OAI_IDENTIFIER/BID aggiornati
+    local file_record_aggiornati=$unimarc_dir/$harvest_date_materiale"_"$istituto"_001.updated"  # File di output per OAI_IDENTIFIER/BID aggiornati
+    local file_record_nuovi=$unimarc_dir/$harvest_date_materiale"_"$istituto"_001.new"  # File di output per OAI_IDENTIFIER/BID nuovi
+    local file_record_cancellati=$unimarc_dir/$harvest_date_materiale"_"$istituto"_001.deleted"  # File di output per OAI_IDENTIFIER/BID aggiornati
 
     # ctr=$ctr_001
     # short_year=${harvest_date:2:2}
@@ -71,40 +71,65 @@ function _do_unimarc()
     # done < $unimarc_dir"/"$istituto"_oai.ids"
 
     metadati_filename=$metadata_dir"/"$harvest_date_materiale"_"$istituto".xml"
+
+
+    if [ ! -f $nbn_file ]; then
+        # Create empty file in order not to block procedure
+        echo "File NBN non presente. Generato file vuoto: " $nbn_file
+        touch $nbn_file
+    fi
+
+    if [ ! -s $nbn_file ]; then
+        echo "File NBN vuoto." $nbn_file
+    fi
+
+
+    if [ ! -f $oai_dictionary_file ]; then
+        # Create empty file in order not to block procedure
+
+        path=${oai_dictionary_file%/*} # get file path
+        echo "path=$path"
+        if [ ! -d $oai_dictionary_file ]; then
+            echo "Crea cartella $path"
+            mkdir $path
+        fi
+
+        echo "File OAI/BIDS non presente. Generato file vuoto: " $oai_dictionary_file
+        touch $oai_dictionary_file
+    fi
+
+
+echo "oai_dictionary_file: $oai_dictionary_file"
+echo "ctr_file: $ctr_file"
+echo "file_record_aggiornati: $file_record_aggiornati"
+echo "file_record_nuovi: $file_record_nuovi"
+echo "file_record_cancellati: $file_record_cancellati"
+echo "year2d: $year2d"
+
+
     if [ $work_dir == $E_JOURNALS_DIR ]; then
         # ts=$WAYBACK_INDEX_DIR"/tmp/"$harvest_date"_tesi_"$istituto".cdxj.clean.ts"
         # echo "ts: "$ts
-        command="python scripts/parse_e_journals_unimarc.py $metadati_filename $nbn_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente"
+
+        # command="python scripts/parse_e_journals_unimarc.py $metadati_filename $nbn_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente"
+        command="python scripts/parse_e_journals_unimarc.py $metadati_filename $oai_dictionary_file $nbn_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente  $ctr_file $file_record_aggiornati $file_record_nuovi $file_record_cancellati $year2d"
         echo "Create unimarc in formato ASCII for $filename"
         eval $command > $unimarc_dir/$harvest_date_materiale"_"$istituto".mrk"
     else
       # TESI
         # ts=$WAYBACK_INDEX_DIR"/tmp/"$harvest_date"_tesi_"$istituto".cdxj.clean.ts"
         # echo "ts: "$ts
-
-
-        if [ ! -f $nbn_file ]; then
-            # Create empty file in order not to block procedure
-            echo "File NBN non presente. Generato file vuoto: " $nbn_file
-            touch $nbn_file
-        fi
-        if [ ! -s $nbn_file ]; then
-            echo "File NBN vuoto." $nbn_file
-        fi
-
-
-        command="python scripts/parse_tesi_unimarc.py $metadati_filename $oai_dictionary_file $nbn_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente $ctr_file $tesi_aggiornate_file $tesi_nuove_file $tesi_cancellate_file $year2d"
-
         echo "Create unimarc in formato ASCII for $metadati_filename"
+        command="python scripts/parse_tesi_unimarc.py $metadati_filename $oai_dictionary_file $nbn_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente $ctr_file $file_record_aggiornati $file_record_nuovi $file_record_cancellati $year2d"
 # echo "command=$command"
         eval $command > $unimarc_dir/$harvest_date_materiale"_"$istituto.mrk
     fi
-      # Convertire da file mrk testuale a unimarc .mrc
-        cmd="marcConv $unimarc_dir"/""$harvest_date_materiale"_"$istituto".mrk"
-# echo "cmd=$cmd"
-        eval $cmd > $unimarc_dir/$harvest_date_materiale"_"$istituto.mrc
 
-        # echo $ctr_001 > $unimarc_dir"/ctr_001.txt"
+
+    # Converti file da mrk testuale a unimarc .mrc
+    cmd="marcConv $unimarc_dir"/""$harvest_date_materiale"_"$istituto".mrk"
+    eval $cmd > $unimarc_dir/$harvest_date_materiale"_"$istituto.mrc
+
 } # end _do_unimarc
 
 

@@ -8,52 +8,56 @@ import sys
 import os
 import urllib
 
-sys.stderr.write("arg1 "+sys.argv[1]+"\n")
-sys.stderr.write("arg2 "+sys.argv[2]+"\n")
-sys.stderr.write("arg3 "+sys.argv[3]+"\n")
-sys.stderr.write("arg4 "+sys.argv[4]+"\n")
-sys.stderr.write("arg5 "+sys.argv[5]+"\n")
-# sys.stderr.write("arg6 "+sys.argv[6]+"\n")
+sys.stderr.write("arg1 '"+sys.argv[1]+"'\n")
+sys.stderr.write("arg2 '"+sys.argv[2]+"'\n")
+sys.stderr.write("arg3 '"+sys.argv[3]+"'\n")
+sys.stderr.write("arg4 '"+sys.argv[4]+"'\n")
+sys.stderr.write("arg5 '"+sys.argv[5]+"'\n")
+sys.stderr.write("arg6 '"+sys.argv[6]+"'\n")
+sys.stderr.write("arg7 '"+sys.argv[7]+"'\n")
+sys.stderr.write("arg8 '"+sys.argv[8]+"'\n")
+sys.stderr.write("arg9 '"+sys.argv[9]+"'\n")
+sys.stderr.write("arg10 '"+sys.argv[10]+"'\n")
+sys.stderr.write("arg11 '"+sys.argv[11]+"'\n")
 
 
+
+
+# metadati_filename = sys.argv[1]
+# nbn_filename = sys.argv[2] # 20/04/2020
+# opac_archive_name = sys.argv[3]
+# wayback_http_server = sys.argv[4]
+# ambiente=sys.argv[5]
+
+# 29/03/2021
 metadati_filename = sys.argv[1]
-nbn_filename = sys.argv[2] # 20/04/2020
-opac_archive_name = sys.argv[3]
-wayback_http_server = sys.argv[4]
-ambiente=sys.argv[5]
+oai_001_filename = sys.argv[2] # Mapping oai_identifer|bid degli scarichi precedenti per verificare se tesi sia gia' stata acquisita precedentemente
+nbn_filename = sys.argv[3] 
+opac_archive_name = sys.argv[4]
+wayback_http_server = sys.argv[5]
+ambiente=sys.argv[6]
+bid_ctr_filename=sys.argv[7]
+record_aggiornati_filename=sys.argv[8]
+record_nuovi_filename=sys.argv[9]
+record_cancellati_filename=sys.argv[10]
+year2d=sys.argv[11]
 
-# oai_001_filename = sys.argv[2]
-# wayback_index_timestamp = sys.argv[4]
+# timestamp_dict = {}
+oai_001_dict = {}
+def load_oai_001 (filename):
+    f = open(filename, "r")
+    for line in f:
+    #     key=line.strip()
+    #     oai_001_dict[key]="value"
 
+        if line[0] == '#' or not line.strip():
+            continue
 
-timestamp_dict = {}
-
-
-# load the timestamp of indexed documents
-# def load_timestamp(filename):
-#     f = open(filename, "r")
-#     for line in f:
-#         # print(line)
-#         data_ar=line.split('|')
-#         key=data_ar[1].strip()      # url as key
-#         value=data_ar[0]    # timestamp as value
-#         timestamp_dict[key]=value
-#     f.close()
-
-    # for k, v in timestamp_dict.items():
-        # sys.stderr.write(k+' is  '+v+"\n")
-
-# oai_001_dict = {}
-# def load_oai_001 (filename):
-#     f = open(filename, "r")
-#     for line in f:
-#     #     key=line.strip()
-#     #     oai_001_dict[key]="value"
-#         data_ar=line.split('|')
-#         key=data_ar[0].strip()      # oai identifier as key
-#         value=data_ar[1].strip()            # unimarc 001 as value
-#         oai_001_dict[key]=value
-#     f.close()
+        data_ar=line.split('|')
+        key=data_ar[0]#.strip()      # oai identifier as key
+        value=data_ar[1].rstrip()    # BID as value
+        oai_001_dict[key]=value
+    f.close()
 
     # for k, v in oai_001_dict.items():
     #     sys.stderr.write(k+' is  '+v+"\n")
@@ -69,6 +73,9 @@ def load_oai_nbn (filename):
         if line[0] == '#' or not line.strip():
             continue
 
+        # if not line.strip():
+        #     continue
+
         data_ar=line.split('|')
         key=data_ar[0]#.strip()      # oai identifier as key
         value=data_ar[1].rstrip()    # nbn identifier as value
@@ -78,10 +85,20 @@ def load_oai_nbn (filename):
     f.close()
 
 load_oai_nbn(nbn_filename)
-# load_oai_001(oai_001_filename)
-# load_timestamp(wayback_index_timestamp)
-
+load_oai_001(oai_001_filename)
 tree = parse(metadati_filename)
+
+f_bid_ctr = open(bid_ctr_filename, "r")
+bid_ctr= int(f_bid_ctr.readline().rstrip())
+# sys.stderr.write( 'bid_ctr='+str(bid_ctr)+"\n")
+# bid_ctr+=1
+# sys.stderr.write( 'bid_ctr='+str(bid_ctr)+"\n")
+f_bid_ctr.close()
+
+
+f_record_aggiornati = open(record_aggiornati_filename, "w")
+f_record_nuovi = open(record_nuovi_filename, "w")
+f_record_cancellati = open(record_cancellati_filename, "w")
 
 
 ns = {
@@ -119,17 +136,56 @@ paths = {
 
 recs=int(0)
 
+if opac_archive_name == "ASTERISCO":
+    opac_archive_name = '*'
+
 
 for record in tree.xpath('.//record'): # Selects all subelements, on all levels beneath the current element. For example, .//egg selects all egg elements in the entire tree.
     recs += 1
     print ""
     # print "--> record # "+str(recs)
 
+    record_status=""  # n=new c=corrected
+
     status = record.find(paths['status'])
     # print "status="+str(status)
 
-    if status is None:
+    # if status is None:
+    if status is not None:
+        # sys.stderr.write("status="+status.attrib['status'])
+        stato=status.attrib['status']
+        if stato == "deleted":
+            # sys.stderr.write("stato="+stato)
 
+            if oaiidentifier in oai_001_dict.keys():
+                bid=oai_001_dict[oaiidentifier]
+
+                # Scriviamo il record cancellato in elenco dei record cancellati
+                # --------------------------------------------------------------
+                # sys.stderr.write("Record cancellato "+oaiidentifier+"\n")
+                f_record_cancellati.write(oaiidentifier+"|"+bid+"\n")
+
+
+                # Scriviamo il record cancellato in unimarc
+                # -----------------------------------------
+                record_status="d"
+
+                # LDR RECORD LABEL
+                print "=LDR  -0001"+record_status+"am  22----- n 450 "
+
+                # 001 RECORD IDENTIFIER
+                # print "=001  "+oai_001_dict[oaiidentifier]
+                print "=001  "+bid
+
+                # 017 OTHER STANDARD IDENTIFIER
+                #   $a  Standard Number
+                print "=017  80$a"+oaiidentifier+"\n"
+
+            else:
+                sys.stderr.write("Record cancellato "+oaiidentifier+" non presente negli scarichi precedenti\n")
+
+
+    else:
         oaiidentifier = record.find(paths['oaiidentifier']).text
         # print "--> cerca "+paths['oaiidentifier']
         # print "--> trovato "+oaiidentifier
@@ -146,6 +202,29 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
         # print "--> jumpoffpageurl="+jumpoffpageurl
 
+        if oaiidentifier in oai_001_dict.keys():
+            # sys.stderr.write("OAI record "+oaiidentifier+" IN WARC reuse ")
+
+            # Record presente in scarichi precedenti
+            # prendere bid
+            bid=oai_001_dict[oaiidentifier]
+            # sys.stderr.write("bid="+bid+"\n");
+
+            # segnalare record gia' presente
+            f_record_aggiornati.write(oaiidentifier+"|"+bid+"\n")
+            record_status="c"
+
+            # # 017 OTHER STANDARD IDENTIFIER
+            # #   $a    Standard Number
+            # sys.stdout.write("=017  80$a"+oaiidentifier+"\n")
+        else:
+            # genera bid "TD"+2 cifre per anno+6 cifre per contatore
+            bid="EJ"+year2d+'{:06d}'.format(bid_ctr)
+            f_record_nuovi.write(oaiidentifier+"|"+bid+"\n")
+            record_status="n"
+            bid_ctr+=1
+            # print "BID:"+bid
+
 
         for metadata in record.findall(paths['metadata'], namespaces=ns):
             #diiIdentifier = record.xpath(paths['diiIdentifier'], namespaces=ns)[0].text.strip()
@@ -161,10 +240,14 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
             #     title=title+"$g"+contributor_dc
 
             # LDR RECORD LABEL
-            print "=LDR  -0001nam  22----- n 450 "
+            #   tiporecord ='l'  risorsa elettronica
+            #   livello bibliografico = 's' periodico
+
+            print "=LDR  -0001nls  22----- n 450 "
 
             # 001 RECORD IDENTIFIER
-            print "=001    "+oaiidentifier
+            # print "=001    "+oaiidentifier
+            print "=001    "+bid
 
             # 005 Date and Time of Latest Transaction
             oaiidatestamp = record.find(paths['oaidatestamp']).text.replace("-", "").replace(":", "").replace("T", "").replace("Z", "")
@@ -193,6 +276,9 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
             #   $a  Standard Number
             #       Campo Ripetuto per ogni ripetizione di //dc:identifier.
             #       Non creato se corrisponde a //header/identifier. Non creato se inizia con ‘http’
+
+            sys.stdout.write("=017  80$a"+oaiidentifier+"\n")
+
 
             if oaiidentifier in oai_nbn_dict.keys():
                 nbn_identifier=oai_nbn_dict[oaiidentifier]
@@ -430,7 +516,8 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                 if size:
                     identifier=identifiers[0].text.encode('utf-8')
                     if identifier.startswith('http'):
-                        print "=856  4 $u"+identifier
+                        # print "=856  4 $u"+identifier
+                        print "=856  4 $u"+wayback_http_server+"/"+opac_archive_name+"/"+identifier+"$2"+identifier
 
 
             # 997 library code (local)
@@ -448,3 +535,11 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
         # #     resourceurl = urllib.quote(resource.get('ref').encode('utf-8'), safe="%/:=&?~#+!$,;'@()*[]")
         # #     print "--> resourceurl="+str(resourceurl)
         # #     # print "{}".format(resourceurl)
+
+# Salviamo il contatore (che puo' essere stato aggiornato)
+f_bid_ctr = open(bid_ctr_filename, "w")
+f_bid_ctr.write( str(bid_ctr)+"\n")
+f_bid_ctr.close()
+f_record_aggiornati.close()
+f_record_nuovi.close()
+f_record_cancellati.close()

@@ -14,11 +14,17 @@ import time
 from datetime import datetime
 import re
 
-# sys.stderr.write("arg1 "+sys.argv[1]+"\n")
-# sys.stderr.write("arg2 "+sys.argv[2]+"\n")
-# sys.stderr.write("arg3 "+sys.argv[3]+"\n")
-# sys.stderr.write("arg4 "+sys.argv[4]+"\n")
-# sys.stderr.write("arg5 "+sys.argv[5]+"\n")
+# sys.stderr.write("arg1 '"+sys.argv[1]+"'\n")
+# sys.stderr.write("arg2 '"+sys.argv[2]+"'\n")
+# sys.stderr.write("arg3 '"+sys.argv[3]+"'\n")
+# sys.stderr.write("arg4 '"+sys.argv[4]+"'\n")
+# sys.stderr.write("arg5 '"+sys.argv[5]+"'\n")
+# sys.stderr.write("arg6 '"+sys.argv[6]+"'\n")
+# sys.stderr.write("arg7 '"+sys.argv[7]+"'\n")
+# sys.stderr.write("arg8 '"+sys.argv[8]+"'\n")
+# sys.stderr.write("arg9 '"+sys.argv[9]+"'\n")
+# sys.stderr.write("arg10 '"+sys.argv[10]+"'\n")
+# sys.stderr.write("arg11 '"+sys.argv[11]+"'\n")
 
 
 metadati_filename = sys.argv[1]
@@ -28,9 +34,9 @@ opac_archive_name = sys.argv[4]
 wayback_http_server = sys.argv[5]
 ambiente=sys.argv[6]
 bid_ctr_filename=sys.argv[7]
-tesi_aggiornate_filename=sys.argv[8]
-tesi_nuove_filename=sys.argv[9]
-tesi_cancellate_filename=sys.argv[10]
+record_aggiornati_filename=sys.argv[8]
+record_nuovi_filename=sys.argv[9]
+record_cancellati_filename=sys.argv[10]
 year2d=sys.argv[11]
 
 # print sys.argv
@@ -80,10 +86,7 @@ def load_oai_nbn (filename):
     f.close()
 
 load_oai_nbn(nbn_filename)
-
 load_oai_001(oai_001_filename)
-
-
 tree = parse(metadati_filename)
 
 f_bid_ctr = open(bid_ctr_filename, "r")
@@ -94,9 +97,9 @@ bid_ctr= int(f_bid_ctr.readline().rstrip())
 f_bid_ctr.close()
 
 
-f_tesi_aggiornate = open(tesi_aggiornate_filename, "w")
-f_tesi_nuove = open(tesi_nuove_filename, "w")
-f_tesi_cancellate = open(tesi_cancellate_filename, "w")
+f_record_aggiornati = open(record_aggiornati_filename, "w")
+f_record_nuovi = open(record_nuovi_filename, "w")
+f_record_cancellati = open(record_cancellati_filename, "w")
 
 
 # quit()
@@ -151,7 +154,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
     componenturl=""
     tesi2=""
-    tipo_record=""  # n=new c=corrected
+    record_status=""  # n=new c=corrected
 
     oaiidentifier = record.find(paths['oaiidentifier']).text
     status = record.find(paths['status'])
@@ -169,15 +172,15 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                 # Scriviamo il record cancellato in elenco dei record cancellati
                 # --------------------------------------------------------------
                 # sys.stderr.write("Record cancellato "+oaiidentifier+"\n")
-                f_tesi_cancellate.write(oaiidentifier+"|"+bid+"\n")
+                f_record_cancellati.write(oaiidentifier+"|"+bid+"\n")
 
 
                 # Scriviamo il record cancellato in unimarc
                 # -----------------------------------------
-                tipo_record="d"
+                record_status="d"
 
                 # LDR RECORD LABEL
-                print "=LDR  -0001"+tipo_record+"am  22----- n 450 "
+                print "=LDR  -0001"+record_status+"am  22----- n 450 "
 
                 # 001 RECORD IDENTIFIER
                 # print "=001  "+oai_001_dict[oaiidentifier]
@@ -188,7 +191,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                 print "=017  80$a"+oaiidentifier+"\n"
 
             else:
-                # f_tesi_cancellate.write(oaiidentifier+"|"+"TEST0000000"+"\n")
+                # f_record_cancellati.write(oaiidentifier+"|"+"TEST0000000"+"\n")
                 sys.stderr.write("Record cancellato "+oaiidentifier+" non presente negli scarichi precedenti\n")
 
 
@@ -201,7 +204,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
         # if not componenturl in oai_001_dict.keys():
 
-# TODO
+
         if oaiidentifier in oai_001_dict.keys():
             # sys.stderr.write("OAI record "+oaiidentifier+" IN WARC reuse ")
 
@@ -211,8 +214,8 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
             # sys.stderr.write("bid="+bid+"\n");
 
             # segnalare record gia' presente
-            f_tesi_aggiornate.write(oaiidentifier+"|"+bid+"\n")
-            tipo_record="c"
+            f_record_aggiornati.write(oaiidentifier+"|"+bid+"\n")
+            record_status="c"
 
             # # 017 OTHER STANDARD IDENTIFIER
             # #   $a	Standard Number
@@ -220,8 +223,8 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
         else:
             # genera bid "TD"+2 cifre per anno+6 cifre per contatore
             bid="TD"+year2d+'{:06d}'.format(bid_ctr)
-            f_tesi_nuove.write(oaiidentifier+"|"+bid+"\n")
-            tipo_record="n"
+            f_record_nuovi.write(oaiidentifier+"|"+bid+"\n")
+            record_status="n"
             bid_ctr+=1
 
 
@@ -239,7 +242,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
         # print "--> jumpoffpageurl="+jumpoffpageurl
 
         # LDR RECORD LABEL
-        print "=LDR  -0001"+tipo_record+"am  22----- n 450 "
+        print "=LDR  -0001"+record_status+"am  22----- n 450 "
 
         # 001 RECORD IDENTIFIER
         print "=001  "+bid
@@ -254,7 +257,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
 
             # # LDR RECORD LABEL
-            # print "=LDR  -0001"+tipo_record+"am  22----- n 450 "
+            # print "=LDR  -0001"+record_status+"am  22----- n 450 "
             #
             # # 001 RECORD IDENTIFIER
             # # print "=001  "+oai_001_dict[oaiidentifier]
@@ -674,6 +677,6 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 f_bid_ctr = open(bid_ctr_filename, "w")
 f_bid_ctr.write( str(bid_ctr)+"\n")
 f_bid_ctr.close()
-f_tesi_aggiornate.close()
-f_tesi_nuove.close()
-f_tesi_cancellate.close()
+f_record_aggiornati.close()
+f_record_nuovi.close()
+f_record_cancellati.close()

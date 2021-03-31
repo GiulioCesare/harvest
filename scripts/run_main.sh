@@ -88,7 +88,7 @@ parse_update_insert_con(){
         echo $line >> scripts/DbUpdateInsert_env.con
     fi
     done < $update_insert_all_con
-}
+} # End parse_update_insert_con
 
 # Usage: parse_config <file> [<default array name>]
 parse_update_insert_s3_con(){
@@ -123,10 +123,13 @@ parse_update_insert_s3_con(){
         fi
     fi
     if [[ $keep == 1 ]]; then
+
+        line=${line/_MATERIALE_/$work_dir}
+
         echo $line >> scripts/DbUpdateInsertS3_env.con
     fi
     done < $update_insert_s3_all_con
-}
+} # End parse_update_insert_s3_con
 
 
 parse_delete_unembargoed_con(){
@@ -272,24 +275,6 @@ function init_variables()
 
 
 
-    # Prepara la configurazione di cancellazione delle tesi disembargate in base all'ambiente di lavoro
-    echo "#!/bin/bash" > scripts/DbDeleteUnembargoed_env.con
-    echo "" >> scripts/DbDeleteUnembargoed_env.con
-    parse_delete_unembargoed_con scripts/DbDeleteUnembargoed.con $ambiente
-    source scripts/DbDeleteUnembargoed_env.con
-
-
-    # Prepara la configurazione di upload in base all'ambiente di lavoro
-    echo "#!/bin/bash" > scripts/DbUpdateInsert_env.con
-    echo "" >> scripts/DbUpdateInsert_env.con
-    parse_update_insert_con scripts/DbUpdateInsert.con $ambiente
-    source scripts/DbUpdateInsert_env.con
-
-    # Prepara la configurazione di upload in base all'ambiente di lavoro
-    echo "#!/bin/bash" > scripts/DbUpdateInsertS3_env.con
-    echo "" >> scripts/DbUpdateInsertS3_env.con
-    parse_update_insert_s3_con scripts/DbUpdateInsertS3.con $ambiente
-    source scripts/DbUpdateInsertS3_env.con
 
 
     yesterday="$(date -d "1 days ago" +"%Y_%m_%d")"
@@ -426,10 +411,6 @@ function init_variables()
     dest_warcs_dir=$WAYBACK_ARCHIVE_DIR"/"$harvest_date_materiale
 
 
-
-
-
-
 	# Create link if not existing to physical warc dir
 	# Eg: ln -s /home/argentino/magazzini_digitali/wayback/volume1/collection_3/archive/harvest_AV harvest_AV
 
@@ -486,6 +467,26 @@ function init_variables()
 #             exit;
 #         fi
      fi
+
+
+    # Prepara la configurazione di cancellazione delle tesi disembargate in base all'ambiente di lavoro
+    echo "#!/bin/bash" > scripts/DbDeleteUnembargoed_env.con
+    echo "" >> scripts/DbDeleteUnembargoed_env.con
+    parse_delete_unembargoed_con scripts/DbDeleteUnembargoed.con $ambiente
+    source scripts/DbDeleteUnembargoed_env.con
+
+
+    # Prepara la configurazione di upload in base all'ambiente di lavoro
+    echo "#!/bin/bash" > scripts/DbUpdateInsert_env.con
+    echo "" >> scripts/DbUpdateInsert_env.con
+    parse_update_insert_con scripts/DbUpdateInsert.con $ambiente
+    source scripts/DbUpdateInsert_env.con
+
+    # Prepara la configurazione di upload in base all'ambiente di lavoro
+    echo "#!/bin/bash" > scripts/DbUpdateInsertS3_env.con
+    echo "" >> scripts/DbUpdateInsertS3_env.con
+    parse_update_insert_s3_con scripts/DbUpdateInsertS3.con $ambiente
+    source scripts/DbUpdateInsertS3_env.con
 
 
 
@@ -1760,6 +1761,24 @@ function check_directories_existance()
 } # end checkDirectoriesExistance
 
 
+function update_sw()
+    {
+        echo "update_sw"
+#         if cmp --silent -- "$FILE1" "$FILE2"; then
+#   echo "files contents are identical"
+# else
+#   echo "files differ"
+# fi
 
+    source_file=/home/argentino/workspace/jdt/s3client/target/s3client-0.0.1-SNAPSHOT.jar
+    target_file=/home/argentino/magazzini_digitali/harvest/bin/s3client-0.0.1-SNAPSHOT.jar
+
+    if [ $source_file -nt $target_file ];  then
+        # printf '%s\n' "$source_file is newer than $target_file"
+        echo "Copy $source_file to $target_file"
+        cp -p $source_file $target_file
+    fi
+
+    }
 
 
