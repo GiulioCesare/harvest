@@ -8,17 +8,17 @@ import sys
 import os
 import urllib
 
-sys.stderr.write("arg1 '"+sys.argv[1]+"'\n")
-sys.stderr.write("arg2 '"+sys.argv[2]+"'\n")
-sys.stderr.write("arg3 '"+sys.argv[3]+"'\n")
-sys.stderr.write("arg4 '"+sys.argv[4]+"'\n")
-sys.stderr.write("arg5 '"+sys.argv[5]+"'\n")
-sys.stderr.write("arg6 '"+sys.argv[6]+"'\n")
-sys.stderr.write("arg7 '"+sys.argv[7]+"'\n")
-sys.stderr.write("arg8 '"+sys.argv[8]+"'\n")
-sys.stderr.write("arg9 '"+sys.argv[9]+"'\n")
-sys.stderr.write("arg10 '"+sys.argv[10]+"'\n")
-sys.stderr.write("arg11 '"+sys.argv[11]+"'\n")
+# sys.stderr.write("arg1 '"+sys.argv[1]+"'\n")
+# sys.stderr.write("arg2 '"+sys.argv[2]+"'\n")
+# sys.stderr.write("arg3 '"+sys.argv[3]+"'\n")
+# sys.stderr.write("arg4 '"+sys.argv[4]+"'\n")
+# sys.stderr.write("arg5 '"+sys.argv[5]+"'\n")
+# sys.stderr.write("arg6 '"+sys.argv[6]+"'\n")
+# sys.stderr.write("arg7 '"+sys.argv[7]+"'\n")
+# sys.stderr.write("arg8 '"+sys.argv[8]+"'\n")
+# sys.stderr.write("arg9 '"+sys.argv[9]+"'\n")
+# sys.stderr.write("arg10 '"+sys.argv[10]+"'\n")
+# sys.stderr.write("arg11 '"+sys.argv[11]+"'\n")
 
 
 
@@ -478,18 +478,20 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
             if creators is not None:
                 size_creators=len(creators)
                 if size_creators:
-                    print "=700   0$a"+creators[0].text.encode('utf-8')
+                    if creators[0].text:
+                        print "=700   0$a"+creators[0].text.encode('utf-8')
 
 
-            # 701 PERSONAL NAME - ALTERNATIVE RESPONSIBILITY
-            #   $a  Entry Element
-            # Ogni ripetizione crea un nuovo tag
-            i=1
-            if size_creators > i:
-                while i < size_creators:
-                    creator=creators[i].text.encode('utf-8')
-                    print "=701   0$a"+creator
-                    i+=1
+                    # 701 PERSONAL NAME - ALTERNATIVE RESPONSIBILITY
+                    #   $a  Entry Element
+                    # Ogni ripetizione crea un nuovo tag
+                    i=1
+                    if size_creators > i:
+                        while i < size_creators:
+                            if creators[i].text:
+                                creator=creators[i].text.encode('utf-8')
+                                print "=701   0$a"+creator
+                            i+=1
 
             # 702 PERSONAL NAME - SECONDARY RESPONSIBILITY
             # Ogni ripetizione crea un nuovo tag
