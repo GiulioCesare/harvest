@@ -53,9 +53,13 @@ echo "==================================================="
 # -------------
 check_arguments "$@"
 init_variables
-if [ $ambiente == "sviluppo" ]; then
+
+if [ ${AMBIENTE_HARVEST_VM} == "locale" ]; then
+	# echo "update SW"
 	update_sw
-fi	
+fi
+
+# fi	
 print_configuration
 # ----
 # MAIN

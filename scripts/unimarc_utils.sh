@@ -28,13 +28,13 @@ function _do_unimarc()
 {
     # local filename=$1
     local istituto=$1
-    local oai_dictionary_file=$2
+    local oai_bid_dictionary_file=$2
     local nbn_file=$3
     local year2d=$4
 
     # echo "------>filename="$filename
     echo "------>istituto="$istituto
-    echo "------>oai_dictionary_file="$oai_dictionary_file
+    echo "------>oai_bid_dictionary_file="$oai_bid_dictionary_file
     echo "------>nbn_file="$nbn_file
 
     # Generiamo id 001 a fronte di un OAI:IDENTIFIER
@@ -66,7 +66,7 @@ function _do_unimarc()
     # echo "short_year=$short_year"
     # while read -r oai_id
     # do
-    #     printf "%s|TS%d%06d\n" $oai_id $short_year $ctr_001 >> $oai_dictionary_file
+    #     printf "%s|TS%d%06d\n" $oai_id $short_year $ctr_001 >> $oai_bid_dictionary_file
     #     let ctr_001=ctr_001+=1
     # done < $unimarc_dir"/"$istituto"_oai.ids"
 
@@ -84,35 +84,36 @@ function _do_unimarc()
     fi
 
 
-    if [ ! -f $oai_dictionary_file ]; then
+    if [ ! -f $oai_bid_dictionary_file ]; then
         # Create empty file in order not to block procedure
 
-        path=${oai_dictionary_file%/*} # get file path
+        path=${oai_bid_dictionary_file%/*} # get file path
         echo "path=$path"
-        if [ ! -d $oai_dictionary_file ]; then
+        if [ ! -d $oai_bid_dictionary_file ]; then
             echo "Crea cartella $path"
             mkdir $path
         fi
 
-        echo "File OAI/BIDS non presente. Generato file vuoto: " $oai_dictionary_file
-        touch $oai_dictionary_file
+        echo "File OAI/BIDS non presente. Generato file vuoto: " $oai_bid_dictionary_file
+        touch $oai_bid_dictionary_file
     fi
 
 
-echo "oai_dictionary_file: $oai_dictionary_file"
-echo "ctr_file: $ctr_file"
+echo "oai_bid_dictionary_file: $oai_bid_dictionary_file"
+echo "ctr_file: $ctr_file ciincia da " $(cat $ctr_file)
+
 echo "file_record_aggiornati: $file_record_aggiornati"
 echo "file_record_nuovi: $file_record_nuovi"
 echo "file_record_cancellati: $file_record_cancellati"
 echo "year2d: $year2d"
-
+return
 
     if [ $work_dir == $E_JOURNALS_DIR ]; then
         # ts=$WAYBACK_INDEX_DIR"/tmp/"$harvest_date"_tesi_"$istituto".cdxj.clean.ts"
         # echo "ts: "$ts
 
         # command="python scripts/parse_e_journals_unimarc.py $metadati_filename $nbn_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente"
-        command="python scripts/parse_e_journals_unimarc.py $metadati_filename $oai_dictionary_file $nbn_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente  $ctr_file $file_record_aggiornati $file_record_nuovi $file_record_cancellati $year2d"
+        command="python scripts/parse_e_journals_unimarc.py $metadati_filename $oai_bid_dictionary_file $nbn_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente  $ctr_file $file_record_aggiornati $file_record_nuovi $file_record_cancellati $year2d"
         echo "Create unimarc in formato ASCII for $filename"
         eval $command > $unimarc_dir/$harvest_date_materiale"_"$istituto".mrk"
     else
@@ -120,7 +121,7 @@ echo "year2d: $year2d"
         # ts=$WAYBACK_INDEX_DIR"/tmp/"$harvest_date"_tesi_"$istituto".cdxj.clean.ts"
         # echo "ts: "$ts
         echo "Create unimarc in formato ASCII for $metadati_filename"
-        command="python scripts/parse_tesi_unimarc.py $metadati_filename $oai_dictionary_file $nbn_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente $ctr_file $file_record_aggiornati $file_record_nuovi $file_record_cancellati $year2d"
+        command="python scripts/parse_tesi_unimarc.py $metadati_filename $oai_bid_dictionary_file $nbn_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente $ctr_file $file_record_aggiornati $file_record_nuovi $file_record_cancellati $year2d"
 # echo "command=$command"
         eval $command > $unimarc_dir/$harvest_date_materiale"_"$istituto.mrk
     fi
@@ -149,32 +150,34 @@ function _do_prepara_unimarc_per_consegna()
 
     # Creiamo file unico con la mappatura degli oai identifiers e gli 001 generati NUOVI
     # ----------------------------------------------------------------------------------
-    all_ids_file=$unimarc_dir/$harvest_date_materiale"_oai_bid_new.all"
-    if [[ -f $all_ids_file ]]; then
-        mv $all_ids_file $all_ids_file".save"
+    # all_new_ids_file=$unimarc_dir/$harvest_date_materiale"_oai_bid_new.all"
+    if [[ -f $all_new_ids_file ]]; then
+        mv $all_new_ids_file $all_new_ids_file".save"
     fi
     for file in $unimarc_dir"/*001.new"; do
-        cat $file >> $all_ids_file
+        cat $file >> $all_new_ids_file
     done
 
 
     # Creiamo file unico con la mappatura degli oai identifiers e gli 001 generati AGGIORNATI
     # ---------------------------------------------------------------------------------------
-    updated_ids_file=$unimarc_dir/$harvest_date_materiale"_oai_bid_updated.all"
-    if [[ -f $updated_ids_file ]]; then
-        mv $updated_ids_file $updated_ids_file".save"
+    # all_updated_ids_file=$unimarc_dir/$harvest_date_materiale"_oai_bid_updated.all"
+
+    if [[ -f $all_updated_ids_file ]]; then
+        mv $all_updated_ids_file $all_updated_ids_file".save"
     fi
     for file in $unimarc_dir"/*001.updated"; do
-        cat $file >> $updated_ids_file
+        cat $file >> $all_updated_ids_file
     done
 
     # Creiamo file unico con la mappatura degli oai identifiers e gli 001 generati CANCELLATI
-    deleted_ids_file=$unimarc_dir/$harvest_date_materiale"_oai_bid_deleted.all"
-    if [[ -f $deleted_ids_file ]]; then
-        mv $deleted_ids_file $deleted_ids_file".save"
+    # all_deleted_ids_file=$unimarc_dir/$harvest_date_materiale"_oai_bid_deleted.all"
+
+    if [[ -f $all_deleted_ids_file ]]; then
+        mv $all_deleted_ids_file $all_deleted_ids_file".save"
     fi
     for file in $unimarc_dir"/*001.deleted"; do
-        cat $file >> $deleted_ids_file
+        cat $file >> $all_deleted_ids_file
     done
 
     # Prepariamo l'unimarc concatenato
@@ -197,11 +200,11 @@ function _do_prepara_unimarc_per_consegna()
 function _do_zip()
 {
     # # Zip dello scarico integrale da Database
-    unimarc_integrale=$unimarc_dir"/db/"$harvest_date_materiale"_db.mrc"
-    if [ -f $unimarc_integrale".zip" ]; then
-        rm $unimarc_integrale".zip"
-    fi
-    zip $unimarc_integrale".zip" $unimarc_integrale
+    # unimarc_integrale=$unimarc_dir"/db/"$harvest_date_materiale"_db.mrc"
+    # if [ -f $unimarc_integrale".zip" ]; then
+    #     rm $unimarc_integrale".zip"
+    # fi
+    # zip $unimarc_integrale".zip" $unimarc_integrale
 
 
     # Zip degli unimarc concatenati
@@ -242,12 +245,12 @@ function create_unimarc_from_dublin_core()
 
     istituto=db
     in_metadati_filename=$metadata_dir"/db/"$istituto".xml.srt.record"
-    in_oai_dictionary_file=$metadata_dir"/db/"$istituto"_oai_001.ids.srt"
+    in_oai_bid_dictionary_file=$metadata_dir"/db/"$istituto"_oai_001.ids.srt"
     out_new_bids_file=$unimarc_dir"/db/"$harvest_date_materiale"_"$istituto".new_bids"
    
 
     # TESI
-    command="python scripts/parse_tesi_unimarc_dublin_core.py $in_metadati_filename $in_oai_dictionary_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente $out_new_bids_file"
+    command="python scripts/parse_tesi_unimarc_dublin_core.py $in_metadati_filename $in_oai_bid_dictionary_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente $out_new_bids_file"
 
     # echo "Command:"$command
     echo "Create unimarc in formato ASCII for $metadati_filename"
@@ -280,8 +283,17 @@ function createUnimarc()
     echo "=============="
 
     # NMB: Da sostituire con $harvest_date_materiale"_db.new_bids + $unimarc_dir/$harvest_date_materiale"_oai_bid_new.all" alla seconda sessione incrementale
-    local oai_dictionary_file=$unimarc_dir"/db/"$harvest_date_materiale"_db.new_bids"  # Creati da scarico unimarc integrale da DB Opac
+    # local oai_bid_dictionary_file=$unimarc_dir"/db/"$harvest_date_materiale"_db.new_bids"  # Creati da scarico unimarc integrale da DB Opac
+    local oai_bid_dictionary_file=$unimarc_dir"/tesi_oai_bid.txt"  # Creati da scarico unimarc integrale da DB Opac
     local year2d=${harvest_date_materiale:2:2}
+    
+    # GLOBAL
+    all_deleted_ids_file=$unimarc_dir/$harvest_date_materiale"_oai_bid_deleted.all"
+    all_updated_ids_file=$unimarc_dir/$harvest_date_materiale"_oai_bid_updated.all"
+    all_new_ids_file=$unimarc_dir/$harvest_date_materiale"_oai_bid_new.all"
+
+
+
     # echo "year2d="$year2d
 
     # Se non esiste generatore crearlo
@@ -289,41 +301,116 @@ function createUnimarc()
         echo "1" > $unimarc_dir"/ctr_001.txt"
     fi
 
-    # # for filename in $receipts_dir/*_main.csv
-    # for filename in $metadata_dir/*.xml
-    # do
-    #     base_name=$(basename -- "$filename")
-    #     local istituto=$(echo "$base_name" | cut -f 5 -d '_')
-    #     istituto=${istituto%.*}
-    #     _do_unimarc $filename $istituto $oai_dictionary_file $nbn_file $year2d
-    # done
+    # DONE=false
+    # until $DONE; do
+    #     IFS='|' read -r -a array line  || DONE=true
+    #     line=${array[0]}
+    #     if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+    #         break
+    #     fi
+    #     # se riga comentata o vuota skip
+    #     if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+    #           continue
+    #      fi
+    #     local istituto=${array[1]}
+    #     local nbn_file=$nbn_dir"/"$harvest_date_materiale"_"$istituto".url.nbn"
+    #     _do_unimarc $istituto $oai_bid_dictionary_file $nbn_file $year2d
 
+    # done < "$repositories_file"
 
-    DONE=false
-    until $DONE; do
-        IFS='|' read -r -a array line  || DONE=true
-
-        line=${array[0]}
-
-        if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
-            break
-        fi
-
-        # se riga comentata o vuota skip
-        if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
-              continue
-         fi
-        local istituto=${array[1]}
-        local nbn_file=$nbn_dir"/"$harvest_date_materiale"_"$istituto".url.nbn"
-# echo "Working on: " $istituto
-        _do_unimarc $istituto $oai_dictionary_file $nbn_file $year2d
-
-    done < "$repositories_file"
-
-    _do_prepara_unimarc_per_consegna
-    _do_zip
+    # _do_prepara_unimarc_per_consegna
+    # _do_zip
 
     # TODO
     # Aggiornare lista di tutti i bid aggiungendo i nuovi e rimuovendo i vecchi, lascian inalterati quelli modificati.
+    update_oai_bid_dictionary_file $oai_bid_dictionary_file 
+    # $all_deleted_ids_file $all_new_ids_file
 
 } # end createUnimarc
+
+function update_oai_bid_dictionary_file()
+{
+    oai_bid_dictionary_file_in=$1
+    oai_bid_dictionary_file_tmp=$1".tmp"
+    oai_bid_dictionary_file_out=$1"."$harvest_date
+
+    echo "update_oai_bid_dictionary_file"
+
+echo "oai_bid_dictionary_file_in: $oai_bid_dictionary_file_in"
+
+echo "all_updated_ids_file: " $all_updated_ids_file
+echo "all_deleted_ids_file: " $all_deleted_ids_file
+echo "all_new_ids_file: " $all_new_ids_file
+echo "oai_bid_dictionary_file_tmp: " $oai_bid_dictionary_file_tmp
+echo "oai_bid_dictionary_file_out: " $oai_bid_dictionary_file_out
+
+
+    if [[ -f $oai_bid_dictionary_file_out ]]; then
+        echo "Removing "$oai_bid_dictionary_file_out
+        rm $oai_bid_dictionary_file_out
+    fi
+
+
+    # Carichiamo i BID cancellati
+    declare -A oai_dictionary_kv_AR
+    while IFS='|' read -r -a array line
+    do
+        line=${array[0]}
+      # if [[ ${line:0:1} == "#" ]];     then
+        if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+            continue
+      else
+          oai=${array[0]}
+          bid=${array[1]}
+          # echo "site=$site, date=$date"
+          oai_dictionary_kv_AR[$bid]=$oai
+    fi
+    done < "$all_deleted_ids_file"
+
+# printarr oai_dictionary_kv_AR
+
+
+    # # Leggiamo i vecchi bids per rimuoverre quelli cancellati
+    # while IFS='|' read -r -a array line
+    # do
+    #     line=${array[0]}
+    #   # if [[ ${line:0:1} == "#" ]];     then
+    #     if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+    #         continue
+    #     else
+    #       oai=${array[0]}
+    #       bid=${array[1]}
+
+    #     if test "${oai_dictionary_kv_AR[$bid]+isset}"; then
+    #         echo "Rimuovo bid: " $bid
+    #     else
+    #         # echo "Salvo bid: " $bid
+    #         echo $oai"|"$bid >> $oai_bid_dictionary_file_tmp
+    #     fi
+
+    # fi
+    # done < "$oai_bid_dictionary_file_in"
+
+    # Lasciamo stare i bid modificati.
+    # --------------------------------
+
+
+    
+
+    # Aggiungiamo i nuovi bid ai vecchi
+    # ---------------------------------
+    echo "Concateniamo i nuovi bid ai vecchi"
+    cat $oai_bid_dictionary_file_tmp $all_new_ids_file > $oai_bid_dictionary_file_out
+
+
+    # --------------------
+
+    # Salviamo i vecchi bids
+    # mv $oai_bid_dictionary_file_in $oai_bid_dictionary_file_in".old"
+    # chmod 444 $oai_bid_dictionary_file_in".old"
+
+    # Ricreiamo la lista degli identigficativi aggiornata
+    # cp $oai_bid_dictionary_file_out".all" $oai_bid_dictionary_file_in
+
+} # End update_oai_bid_dictionary_file
+
