@@ -847,7 +847,7 @@ function createSeeds()
           else
               command="python ./scripts/parse_tesi_seeds.py "$metadata_dir"/"$harvest_date_materiale"_"${array[1]}".xml"
           fi
- # echo "Executing $command"
+ echo "Executing $command"
          # 27/11/2019 Gestione seed duplicati
           echo "Create seeds for ${array[1]}"
           file_out=$seeds_dir/$harvest_date_materiale"_"${array[1]}
@@ -862,6 +862,8 @@ function createSeeds()
           remove_duplicate_seeds $file_out
     fi
     done < "$repositories_file"
+
+echo "Done"    
 } # end createSeeds
 
 

@@ -47,11 +47,11 @@ for record in tree.xpath('//record'):
 
                 # if url di download genera anche il corrispettivo view
                 if "article/download" in url:
-                    view_url = url.replace("download", "view")
+                    view_url = url.replace("/download/", "/view/")
                     print ("%s" % (view_url))
                     url_dict[view_url]="dummy value"
 
-                    view_file_url = url.replace("download", "viewFile")
+                    view_file_url = url.replace("/download/", "/viewFile/")
                     print ("%s" % (view_file_url))
                     url_dict[view_url]="dummy value"
 
@@ -65,12 +65,12 @@ for record in tree.xpath('//record'):
 
                 # if url di view genera anche il corrispettivo download
                 if "article/view" in rel_url:
-                    rel_download_url = rel_url.replace("view", "download")
+                    rel_download_url = rel_url.replace("/view/", "/download/")
                     if rel_download_url not in url_dict:
                         print ("%s" % (rel_download_url))
                         url_dict[rel_download_url]="dummy value"
 
-                    rel_viewfile_url = rel_url.replace("view", "viewFile")
+                    rel_viewfile_url = rel_url.replace("/view/", "/viewFile/")
                     if rel_viewfile_url not in url_dict:
                         print ("%s" % (rel_viewfile_url))
                         url_dict[rel_download_url]="dummy value"
