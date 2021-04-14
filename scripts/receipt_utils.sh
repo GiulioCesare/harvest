@@ -366,7 +366,7 @@ _load_http_error_descriptions()
 
         # echo "$line"
       campo0=${array[0]}
-      if [[ ${campo0:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+      if [[ ${campo0:0:1} == "#" ]] || [[ ${array[0]} == "" ]];  then
           continue
       fi
       key=${array[0]}
@@ -377,9 +377,9 @@ _load_http_error_descriptions()
     done < $HARVEST_DIR"/csv/http_errors_it.csv"
 
 # echo "DUMP http_error_kv_AR"
-# printf '%s\n' "${http_error_kv_AR[@]}"
+# printarr http_error_kv_AR
 
-} # end _load_descriptions
+} # end _load_http_error_descriptions
 
 function _genera_dati_per_ricevute()
 {
