@@ -397,10 +397,10 @@ function clean_wayback_index ()
 
 function get_indexes_for_compression ()
 {
-    echo "--> Prendiamo i nuovi indici (cdxj): " 
-    cd $INDEX_COMPRESSION_DIR
 
-    echo "Copy index file in " $INDEX_COMPRESSION_DIR"/cdx"
+    echo "--> Prendiamo i nuovi indici (cdxj) da :" $WAYBACK_INDEX_DIR " e mettiamoli in " $INDEX_COMPRESSION_DIR"/cdx"
+
+    cd $INDEX_COMPRESSION_DIR
     cp $WAYBACK_INDEX_DIR/*.cdxj "cdx/."
 
     cd $HARVEST_DIR

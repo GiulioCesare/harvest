@@ -462,7 +462,6 @@ function prepare_harvest_record_AV()
 
     touch $s3_upd_ins # Create file
 
-
      while IFS='|' read -r -a array line
      do
            line=${array[0]}
@@ -478,36 +477,22 @@ function prepare_harvest_record_AV()
            if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
                  continue
             fi
-
-        local istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
-
-       	# echo "istituto="$istituto
+        
+        if [ $materiale == $MATERIALE_TESI ]; then
+        	local istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
+		else
+        	local istituto=${array[1]}
+		fi
 
 	    s3log_filename=$s3_dir"/"$harvest_date_materiale"."$istituto".upload.log"
-	    s3log_split_filename_prefix=$s3_dir"/"$harvest_date_materiale"_"$istituto"*"
-		
-		# echo "s3log_filename = " $s3log_filename
-		# echo "s3log_split_filename_prefix = " $s3log_split_filename_prefix
+		wildfn=$s3_dir"/"$harvest_date_materiale"_"$istituto-*".warc.gz.upload.log"
 
-		# Cerchiamo se l'iistituto ha dei warc splittati
-		
-		# declare -i log_files=$(ls -l $s3log_split_filename_prefix | wc -l )
-
-		# echo "log_files per "$s3log_split_filename_prefix" sono "$log_files
-
-		# Test if file with wildcard exists!!!
-		if ls $s3log_split_filename_prefix 1> /dev/null 2>&1; then
-			# echo "files do exist"
+		if ls $wildfn > /dev/null 2>&1; then
 	        split_warc=si
-	        
-		    # Cicliamo sui log dei warc (splittati o no)
-			for filename in $s3log_split_filename_prefix; do
-			    echo "Working on "$filename
-		        prepare_s3_record $filename $s3_upd_ins
-
-				# grep -E -- '^file size|^Inizio|^Finito|^Object upload started|S3 info on|^Tempo impiegato' $filename > $filename".1"
+			for filename in $wildfn; do
+			echo "Working on "$filename
+	        prepare_s3_record $filename $s3_upd_ins
 			done
-
 		else
 	    	# echo "Abbiamo il log di un file non _splittato? "$s3log_filename 
 		    if [ ! -f $s3log_filename ]; then
@@ -516,12 +501,11 @@ function prepare_harvest_record_AV()
 		    else
 			    echo "Working on "$s3log_filename
 		        split_warc=no
-
 		        prepare_s3_record $s3log_filename $s3_upd_ins
-
 		    fi
-
 		fi
+     done < "$repositories_file"
+
 
 
      done < "$repositories_file"

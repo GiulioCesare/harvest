@@ -292,9 +292,10 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                 i=0
                 if size > i:
                     while i < size:
-                        identifier=identifiers[i].text.encode('utf-8')
-                        if (identifier != oaiidentifier) and (not identifier.startswith('http')):
-                            print "=017  80$a"+identifier
+                        if identifiers[i].text is not None:
+                            identifier=identifiers[i].text.encode('utf-8')
+                            if (identifier != oaiidentifier) and (not identifier.startswith('http')):
+                                print "=017  80$a"+identifier
                         i+=1
 
 
@@ -321,8 +322,9 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                 i=0
                 if size > i:
                     while i < size:
-                        language=languages[i].text.encode('utf-8')
-                        print "=101  1$a"+language
+                        if languages[i].text is not None:
+                            language=languages[i].text.encode('utf-8')
+                            print "=101  1$a"+language
                         i+=1
 
 
@@ -334,8 +336,9 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                 size=len(titles)
                 if size > 0:
                     if titles[0].text:
-                        title=titles[0].text.encode('utf-8')
-                        print "=200  1 $a"+title+"$bArticolo"
+                        if titles[0].text is not None:
+                            title=titles[0].text.encode('utf-8')
+                            print "=200  1 $a"+title+"$bArticolo"
 
 
             # 210 PUBLICATION, DISTRIBUTION, ETC.
@@ -350,10 +353,11 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                 i=0
                 if size > i:
                     while i < size:
-                        publisher=publishers[i].text.encode('utf-8')
-                        if i < size_dates and dates[i].text:
-                            date=dates[i].text.encode('utf-8')
-                            print "=210   1"+"$c"+publisher+"$d"+date
+                        if publishers[i].text is not None:
+                            publisher=publishers[i].text.encode('utf-8')
+                            if i < size_dates and dates[i].text:
+                                date=dates[i].text.encode('utf-8')
+                                print "=210   1"+"$c"+publisher+"$d"+date
                         i+=1
 
 
@@ -371,8 +375,9 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                 i=0
                 if size > i:
                     while i < size:
-                        right=rights[i].text.encode('utf-8')
-                        print "=300    "+"$aDiritti: "+right
+                        if rights[i].text is not None:
+                            right=rights[i].text.encode('utf-8')
+                            print "=300    "+"$aDiritti: "+right
                         i+=1
 
             relation=metadata.findall(paths['relation'], namespaces=ns)
@@ -382,8 +387,9 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                 i=0
                 if size > i:
                     while i < size:
-                        relation1=relation[i].text.encode('utf-8')
-                        print "=300    "+"$aIn relazione con: "+relation1
+                        if relation[i].text is not None:
+                            relation1=relation[i].text.encode('utf-8')
+                            print "=300    "+"$aIn relazione con: "+relation1
                         i+=1
 
             source=metadata.findall(paths['source'], namespaces=ns)
@@ -393,8 +399,9 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                 i=0
                 if size > i:
                     while i < size:
-                        source1=source[i].text.encode('utf-8')
-                        print "=300    "+"$aSorgente: "+source1
+                        if source[i].text is not None:
+                            source1=source[i].text.encode('utf-8')
+                            print "=300    "+"$aSorgente: "+source1
                         i+=1
 
 
@@ -407,7 +414,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                 i=0
                 if size > i:
                     while i < size:
-                        if descriptions[i].text:
+                        if descriptions[i].text is not None:
                             description=descriptions[i].text.encode('utf-8')
                             print "=330    "+"$a"+description
                         i+=1
@@ -422,8 +429,9 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
             if source is not None:
                 size=len(source)
                 if size > 0:
-                    source0=source[0].text.encode('utf-8')
-                    print "=332    $a"+source0
+                    if source[0].text is not None:
+                        source0=source[0].text.encode('utf-8')
+                        print "=332    $a"+source0
 
 
 
@@ -437,7 +445,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                 i=0
                 if size > i:
                     while i < size:
-                        if formats[i].text:
+                        if formats[i].text is not None:
                             format=formats[i].text.encode('utf-8')
                             print "=336    "+"$a"+format
                         i+=1
@@ -452,7 +460,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                 i=1
                 if size > i:
                     while i < size:
-                        if titles[i].text:
+                        if titles[i].text is not None:
                             titles=titles[i].text.encode('utf-8')
                             print "=517  1 "+"$c"+titles
                         i+=1
@@ -467,7 +475,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                 i=0
                 if size > i:
                     while i < size:
-                        if subjects[i].text:
+                        if subjects[i].text is not None:
                             subject=subjects[i].text.encode('utf-8')
                             print "=610  0 "+subject
                         i+=1
@@ -478,7 +486,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
             if creators is not None:
                 size_creators=len(creators)
                 if size_creators:
-                    if creators[0].text:
+                    if creators[0].text is not None:
                         print "=700   0$a"+creators[0].text.encode('utf-8')
 
 
@@ -488,7 +496,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                     i=1
                     if size_creators > i:
                         while i < size_creators:
-                            if creators[i].text:
+                            if creators[i].text is not None:
                                 creator=creators[i].text.encode('utf-8')
                                 print "=701   0$a"+creator
                             i+=1
@@ -501,7 +509,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                 i=0
                 if size > i:
                     while i < size:
-                        if contributors[i].text:
+                        if contributors[i].text is not None:
                             contributor=contributors[i].text.encode('utf-8')
                             print "=702   0"+contributor
                         i+=1
