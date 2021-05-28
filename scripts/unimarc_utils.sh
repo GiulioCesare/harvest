@@ -24,7 +24,7 @@ function crea_wayback_index_timestamp_per_unimarc()
 
 
 
-function _do_unimarc()
+function _do_unimarc_mrk()
 {
     # local filename=$1
     local istituto=$1
@@ -103,16 +103,19 @@ echo "year2d: $year2d"
         eval $command > $unimarc_dir/$harvest_date_materiale"_"$istituto.mrk
     fi
 
+} # end _do_unimarc_mrk
 
-    # Converti file da mrk testuale a unimarc .mrc
+
+function _do_unimarc_mrc()
+{
+    # local filename=$1
+    local istituto=$1
+
+   # Converti file da mrk testuale a unimarc .mrc
     cmd="marcConv $unimarc_dir"/""$harvest_date_materiale"_"$istituto".mrk"
     eval $cmd > $unimarc_dir/$harvest_date_materiale"_"$istituto.mrc
 
-} # end _do_unimarc
-
-
-
-
+}
 
 
 
@@ -389,7 +392,10 @@ function createUnimarc()
          fi
         local istituto=${array[1]}
         local nbn_file=$nbn_dir"/"$harvest_date_materiale"_"$istituto".url.nbn"
-        _do_unimarc $istituto $oai_bid_dictionary_file $nbn_file $year2d
+        
+        _do_unimarc_mrk $istituto $oai_bid_dictionary_file $nbn_file $year2d
+        _do_unimarc_mrc $istituto 
+
     done < "$repositories_file"
 
     _do_prepara_unimarc_per_consegna
