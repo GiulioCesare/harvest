@@ -317,7 +317,8 @@ echo "oai_bid_dictionary_file_out: " $oai_bid_dictionary_file_out
     # Aggiungiamo i nuovi bid ai vecchi
     # ---------------------------------
     echo "Concateniamo i nuovi bid ai vecchi"
-    cat $oai_bid_dictionary_file_tmp $all_new_ids_file > $oai_bid_dictionary_file_out
+    # cat $oai_bid_dictionary_file_tmp $all_new_ids_file > $oai_bid_dictionary_file_out
+    cat $oai_bid_dictionary_file_tmp $all_new_ids_file | sort -t\| -k 2,2  > $oai_bid_dictionary_file_out".srt"
 
 } # End update_oai_bid_dictionary_file
 

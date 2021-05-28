@@ -461,7 +461,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                 if size > i:
                     while i < size:
                         if titles[i].text is not None:
-                            titles=titles[i].text.encode('utf-8')
+                            title=titles[i].text.encode('utf-8')
                             print "=517  1 "+"$c"+titles
                         i+=1
 
@@ -516,7 +516,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
             # ORIGINATING SOURCE
             # valori fissi
-            print "=801 3$aIT"+"$bIT-FI0098"
+            print "=801   3$aIT"+"$bIT-FI0098"
 
 
             # 856 ELECTRONIC LOCATION AND ACCESS
@@ -532,10 +532,14 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
             # 997 library code (local)
             #   $a  Coded value
-            print "=997  $aCF"
+            print "=977    $aCR"
+
+            #   $a  Coded value
+            print "=997    $aCF"
+
 
             # Work type (local)
-            print "=FMT  $aAR"
+            print "=FMT    $aAR"
 
 
 
