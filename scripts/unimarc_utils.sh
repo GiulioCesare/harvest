@@ -117,6 +117,21 @@ function _do_unimarc_mrc()
 
 }
 
+function _fix_unimarc_mrk()
+{
+    local istituto=$1
+        echo "Fix unimarc per " $istituto;
+
+        filename=$unimarc_dir"/"$harvest_date_materiale"_"$istituto".mrk"
+
+        sed -i 's/^=801/=801  /g' $filename
+        sed -i 's/^=997/=977    $aCR\n=997  /g' $filename
+        sed -i 's/^=FMT/=FMT  /g' $filename
+
+        # cmd="sed -i 's/^=801/=801  /g' $filename"
+        # eval $cmd
+} 
+
 
 
 
@@ -394,6 +409,7 @@ function createUnimarc()
         local nbn_file=$nbn_dir"/"$harvest_date_materiale"_"$istituto".url.nbn"
         
         _do_unimarc_mrk $istituto $oai_bid_dictionary_file $nbn_file $year2d
+        #### _fix_unimarc_mrk
         _do_unimarc_mrc $istituto 
 
     done < "$repositories_file"

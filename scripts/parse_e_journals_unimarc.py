@@ -247,11 +247,11 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
             # 001 RECORD IDENTIFIER
             # print "=001    "+oaiidentifier
-            print "=001    "+bid
+            print "=001  "+bid
 
             # 005 Date and Time of Latest Transaction
             oaiidatestamp = record.find(paths['oaidatestamp']).text.replace("-", "").replace(":", "").replace("T", "").replace("Z", "")
-            print "=005    "+oaiidatestamp+".0"
+            print "=005  "+oaiidatestamp+".0"
 
 
             # 011 INTERNATIONAL STANDARD SERIAL NUMBER
@@ -532,7 +532,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
             # 997 library code (local)
             #   $a  Coded value
-            print "=977    $aCR"
+            print "=977    $a CR"
 
             #   $a  Coded value
             print "=997    $aCF"
