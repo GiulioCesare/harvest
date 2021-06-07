@@ -317,15 +317,27 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
             #   $a  Language of Text, Soundtrack etc.
             #       Sottocampo ripetuto per ogni ripetizione di dc:language
             languages=metadata.findall(paths['languages'], namespaces=ns)
+            # if languages is not None:
+            #     size=len(languages)
+            #     i=0
+            #     if size > i:
+            #         while i < size:
+            #             if languages[i].text is not None:
+            #                 language=languages[i].text.encode('utf-8')
+            #                 print "=101  1 $a"+language
+            #             i+=1
+
             if languages is not None:
                 size=len(languages)
                 i=0
                 if size > i:
+                    sys.stdout.write("=101  1 ")
                     while i < size:
-                        if languages[i].text is not None:
-                            language=languages[i].text.encode('utf-8')
-                            print "=101  1 $a"+language
+                        language=languages[i].text.encode('utf-8')
+                        sys.stdout.write("$a"+language)
                         i+=1
+                    sys.stdout.write("\n")
+
 
 
             # 200 TITLE AND STATEMENT OF RESPONSIBILITY
@@ -477,7 +489,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                     while i < size:
                         if subjects[i].text is not None:
                             subject=subjects[i].text.encode('utf-8')
-                            print "=610  0 "+subject
+                            print "=610  0 $a"+subject
                         i+=1
 
             # 700 PERSONAL NAME - PRIMARY RESPONSIBILITY

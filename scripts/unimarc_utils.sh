@@ -124,12 +124,45 @@ function _fix_unimarc_mrk()
 
         filename=$unimarc_dir"/"$harvest_date_materiale"_"$istituto".mrk"
 
-        sed -i 's/^=801/=801  /g' $filename
-        sed -i 's/^=997/=977    $aCR\n=997  /g' $filename
-        sed -i 's/^=FMT/=FMT  /g' $filename
+        # sed -i 's/^=801/=801  /g' $filename
+        # sed -i 's/^=997/=977    $aCR\n=997  /g' $filename
+        # sed -i 's/^=FMT/=FMT  /g' $filename
 
-        # cmd="sed -i 's/^=801/=801  /g' $filename"
-        # eval $cmd
+        # 07/06/2021
+        # sed -i 's/^=001    /=001  /g' $filename
+        # sed -i 's/^=005    /=005  /g' $filename
+        # sed -i 's/^=977    $a/=977    $a /g' $filename
+        # sed -i 's/^=610  0 /=610  0 $a/g' $filename
+
+        # # Non si possono avere + di una 101. Concateniamo le $a
+        # sed -i 's/^=101  1/=101  1 /g' $filename
+        # awk 'BEGIN{\
+        # in_101=0;\
+        # new_101 = "";\
+        # } \
+        # {\
+        # if ($1 == "=101")\
+        #         {
+        #         if (in_101 == 1)        \
+        #                 new_101=new_101 "" $3;\
+        #         else
+        #                 new_101=new_101 "" $0;\
+        #         in_101=1;\
+        #         }\
+        # else\
+        #         {\
+        #         if (in_101 == 1)        \
+        #                 {\
+        #                 print new_101;\
+        #                 new_101="";     \
+        #                 in_101 = 0;\
+        #                 }\
+        #         print $0;\
+        #         }\
+        # }'\
+        # $filename > ./tmp/tmp_fix.txt
+        # mv ./tmp/tmp_fix.txt $filename
+
 } 
 
 
