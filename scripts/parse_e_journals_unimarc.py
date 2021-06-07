@@ -324,7 +324,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                     while i < size:
                         if languages[i].text is not None:
                             language=languages[i].text.encode('utf-8')
-                            print "=101  1$a"+language
+                            print "=101  1 $a"+language
                         i+=1
 
 
