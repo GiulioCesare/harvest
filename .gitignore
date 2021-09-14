@@ -46,7 +46,7 @@ run.sh
 *_env.cfg
 scripts/*_env.con
 scripts/*_env.dev.con
-
+scripts/*sql
 harvest.code-workspace
 
 

@@ -240,7 +240,7 @@ today=""
 today_override=""
 new_harvest_date_list=""
 
-warc-max-size="5G"
+warc_max_size="5G"
 
 
 # Include scripts
@@ -300,7 +300,7 @@ function init_variables()
             warc_max_size="10G"
         fi
     else
-        echo "Setting warc-max-size_override ($warc-max-size_override)"
+        echo "Setting warc_max_size_override ($warc_max_size_override)"
         warc_max_size=$warc_max_size_override
     fi
 

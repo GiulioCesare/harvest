@@ -528,9 +528,9 @@ function replace_octal_with_encoded_hex()
 # s3_path_filename=harvest/2020_01_26_tesi_test_unige.warc.gz
 # 194 mega, Tempo impiegato per il caricamento: 00:05:09.776
 
-file_to_upload=/home/argentino/zip/2020_03_04_harvest.tar.gz 
-s3_path_filename=harvest/2020_03_04_harvest.tar.gz
-file_to_download_to=/home/argentino/Downloads/2020_03_04_harvest.tar.gz 
+# file_to_upload=/home/argentino/zip/2020_03_04_harvest.tar.gz 
+# s3_path_filename=harvest/2020_03_04_harvest.tar.gz
+# file_to_download_to=/home/argentino/Downloads/2020_03_04_harvest.tar.gz 
 
 
 # ====================
@@ -555,34 +555,34 @@ file_to_download_to=/home/argentino/Downloads/2020_03_04_harvest.tar.gz
     
 
 # Genera md5 da controllare
-file_to_download_to_md5=$file_to_download_to".md5"
-file_to_download_to_md5_check=$file_to_download_to_md5".check"
+# file_to_download_to_md5=$file_to_download_to".md5"
+# file_to_download_to_md5_check=$file_to_download_to_md5".check"
 
 # md5sum $file_to_download_to > $file_to_download_to_md5_check 
 
 
 # Controllare che MD5 scaricato da S3 corrisonda ad MD5 generato dlocalmente dopo il download
-awk_command='
-    BEGIN    {
-        FS=" "; 
-    }
+# awk_command='
+#     BEGIN    {
+#         FS=" "; 
+#     }
  
-    FILENAME == ARGV[1] {
-        md5_AR[$1] = $1;
-        print "->S3    md5 " $1
-        next;
-    }
-    {
-    if ($1 in md5_AR)
-        {
-        print "->CHECK md5 " $1 " matches " 
-        next
-        }
-    else
-        {
-        print "CHECK md5 " $1 " DOES NOT match"
-        }
-    }' 
+#     FILENAME == ARGV[1] {
+#         md5_AR[$1] = $1;
+#         print "->S3    md5 " $1
+#         next;
+#     }
+#     {
+#     if ($1 in md5_AR)
+#         {
+#         print "->CHECK md5 " $1 " matches " 
+#         next
+#         }
+#     else
+#         {
+#         print "CHECK md5 " $1 " DOES NOT match"
+#         }
+#     }' 
 
 # awk "$awk_command" $file_to_download_to_md5 $file_to_download_to_md5_check
 
@@ -618,8 +618,8 @@ awk_command='
 
 
 # Count records in warc
-awk '{if ($1 ~ /^WARC\/1.0/) print $1}' 2020_11_11_tesi_lumsa.warc | wc -l
+# awk '{if ($1 ~ /^WARC\/1.0/) print $1}' 2020_11_11_tesi_lumsa.warc | wc -l
 
-8893
+
 
 

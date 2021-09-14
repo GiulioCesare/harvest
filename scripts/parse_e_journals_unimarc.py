@@ -306,10 +306,16 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
             #   $a  GENERAL PROCESSING DATA
             #       Al posto di ‘xxxx’ vanno i primi 4 char di dc:data[0] se tutti e quattro sono numeri; altrimenti va ‘----'
             sub = date[ 0 : 0 + 4]
+            # if sub.isdigit():
+            #     print "=100    $a"+"20190501d"+sub+"------k--ita-50----ba"+" "
+            # else:
+            #     print "=100    $a"+"20190501d----------k--ita-50----ba"+" "
+
+            # 10/06/2020 (deve essere approvata)
             if sub.isdigit():
-                print "=100    $a"+"20190501d"+sub+"------k--ita-50----ba"+" "
+                print "=100    $a"+"20190501a"+sub+"    --k--ita-50----ba"+" "
             else:
-                print "=100    $a"+"20190501d----------k--ita-50----ba"+" "
+                print "=100    $a"+"20190501a        --k--ita-50----ba"+" "
 
 
 
@@ -427,7 +433,12 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                 if size > i:
                     while i < size:
                         if descriptions[i].text is not None:
-                            description=descriptions[i].text.encode('utf-8')
+                            # description=descriptions[i].text.encode('utf-8')
+
+                            # 14/09/2021 sosrtituire $ con {dollar} nel testo
+                            description=descriptions[i].text.encode('utf-8').replace("\n", " ")
+                            description=description.replace("$", "{dollar}")
+
                             print "=330    "+"$a"+description
                         i+=1
 

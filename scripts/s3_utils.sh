@@ -505,10 +505,6 @@ function prepare_harvest_record_AV()
 		    fi
 		fi
      done < "$repositories_file"
-
-
-
-     done < "$repositories_file"
 } # end prepare_harvest_record_AV
 
 

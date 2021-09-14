@@ -347,6 +347,11 @@ for record in root.findall(paths['dc_records'], namespaces=ns):
             while i < size:
                 if descriptions[i].text is not None:
                     description=descriptions[i].text.encode('utf-8').replace("\n", " ")
+
+                    # 14/09/2021 sosrtituire $ con {dollar} nel testo
+                    description=description.replace("$", "{dollar}")
+
+                    
                     sys.stdout.write("$a"+description)
                 i+=1
             sys.stdout.write("\n")

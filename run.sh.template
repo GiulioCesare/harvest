@@ -13,6 +13,57 @@
 # Prendi l'ambiente dell'utente
 #. ~.bash_profile
 
+
+# Configure Error Traps
+# ---------------------
+trap exit_trap EXIT
+function exit_trap {
+    local r=$?
+   	set +o xtrace
+ 
+    echo "==================="
+    echo "Exit from exit_trap"
+    echo "exit code: $r"
+    echo "==================="
+
+  	# Do some clean up if required
+
+    exit $r
+}
+
+# Exit on any errors so that errors don't compound
+trap err_trap ERR
+function err_trap {
+    local r=$?
+    set +o xtrace
+    # if [[ -n "$LOGFILE" ]]; then
+    #     echo "${0##*/} failed: full log in $LOGFILE"
+    # else
+    #     echo "${0##*/} failed"
+    # fi
+
+    echo "==================="
+    echo "Exit from err_trap"
+    echo "${0##*/} failed"
+    echo "exit code: $r"
+    echo "==================="
+
+  	# Do some clean up if required
+
+    exit $r
+}
+
+# Begin trapping error exit codes
+
+# to make your script exit when a command fails.
+# set -o errexit
+
+# to exit when your script tries to use undeclared variables.
+# set -o nounset TROPPI PROBLEMI 
+
+
+
+
 source scripts/run_main.sh
 
 
@@ -40,13 +91,24 @@ echo " dottorato o riviste (eJournals)"
 # echo " Versione 2019_12_09.1"   # Rifatto index_warcs per gestire + volumi usando i symbolic links
                                 # Pulizia indici tramite liste seed da scaricare
 # echo " Versione 2020_23_01.1" # Generazione lista delle tesi in ricevuta
-echo " Versione 2021_01_25.1"	# Prove con wget recursive
+# echo " Versione 2021_01_25.1"	# Prove con wget recursive
 # echo " Versione 2019_12_08.1"
 # echo " Versione 2019_12_08.1"
+echo " Versione 2021_06_30.1"	# Gestione exit con trap
 
 
 echo " `${ora}` Inizio processo di run.sh"
 echo "==================================================="
+
+
+# -------------
+# WHEN NEEDED
+# -------------
+# To execute if in need to recreate the .csv files for harvesting (./csv/etd.csv and ./csv/e_journals.csv )
+# NMB: per ora output in ./tmp per TESTING (csv_td.out, csv_ej.out)
+# 
+# scripts/csvDownload.sh  # Da schema harvest prepara i file in formato csv per l'harvest!!!
+# 
 
 # -------------
 # PRELIMINARIES
@@ -54,23 +116,21 @@ echo "==================================================="
 check_arguments "$@"
 init_variables
 
-if [ ${AMBIENTE_HARVEST_VM} == "locale" ]; then
-	# echo "update SW"
+if [[ -v "${AMBIENTE_HARVEST_VM}" ]]; then
 	update_sw
 fi
-
-# fi	
 print_configuration
+
+
 # ----
 # MAIN
 # ----
 
+
+
+
 # harvest_metadata
-
 # createSeeds
-
-# TODO try wget with option --warc-max-size=NUMBER   to limit file size. Eg. --warc-max-size=2G
-
 # create_warcs_concurrently
 
 # if [ $materiale == $MATERIALE_EJOURNAL ]; then
