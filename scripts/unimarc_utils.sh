@@ -77,7 +77,7 @@ function _do_unimarc_mrk()
 
 
 echo "oai_bid_dictionary_file: $oai_bid_dictionary_file"
-echo "ctr_file: $ctr_file ciincia da " $(cat $ctr_file)
+echo "ctr_file: $ctr_file comincia da " $(cat $ctr_file)
 
 echo "file_record_aggiornati: $file_record_aggiornati"
 echo "file_record_nuovi: $file_record_nuovi"
@@ -268,21 +268,29 @@ function _do_zip()
 # Funzione per generazione una tantum a partire da dati provenienti da DB Mysql di BNCF
 function create_unimarc_from_dublin_core()
 {
-    echo "create_unimarc_from_dublin_core"
+    echo "create_unimarc_from_dublin_core per STORICO da DB"
 
 
     istituto=db
+    
     in_metadati_filename=$metadata_dir"/db/"$istituto".xml.srt.record"
     in_oai_bid_dictionary_file=$metadata_dir"/db/"$istituto"_oai_001.ids.srt"
     out_new_bids_file=$unimarc_dir"/db/"$harvest_date_materiale"_"$istituto".new_bids"
    
+    # in_metadati_filename=$metadata_dir"/db/"$istituto".xml.srt.record.small"
+    # in_oai_bid_dictionary_file=$metadata_dir"/db/"$istituto"_oai_001.ids.srt.small"
+    # out_new_bids_file=$unimarc_dir"/db/"$harvest_date_materiale"_"$istituto".new_bids.small"
+
+
 
     # TESI
     command="python scripts/parse_tesi_unimarc_dublin_core.py $in_metadati_filename $in_oai_bid_dictionary_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente $out_new_bids_file"
 
     # echo "Command:"$command
     echo "Create unimarc in formato ASCII for $metadati_filename"
-    eval $command > $unimarc_dir"/db/"$harvest_date_materiale"_"$istituto.mrk
+    eval $command 1> $unimarc_dir"/db/"$harvest_date_materiale"_"$istituto.mrk
+     # 2> $unimarc_dir"/db/"$harvest_date_materiale"_"$istituto.err
+
 
     # Convertire da file mrk testuale a unimarc .mrc
     cmd="marcConv "$unimarc_dir"/db/"$harvest_date_materiale"_"$istituto".mrk"

@@ -1078,6 +1078,7 @@ echo "create md5 for istituto="$istituto
 function index_warcs()
 {
     echo "--> INDICIZZA WARCS IN WAYBACK $dest_warcs_dir"
+    echo "--> WAYBACK_INDEX_DIR = $WAYBACK_INDEX_DIR"
 
     # Rimozione di index.cdxj
     printf "\n-> Rimuovo vecchio indice: "$WAYBACK_INDEX_DIR"/index.cdxj\n\n"

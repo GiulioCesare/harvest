@@ -112,40 +112,27 @@ function copy_files_in_area_temporanea()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function copy_warc_to_destination_dir ()
-{
-    echo "copy_warc_to_destination_dir"
-    local source_filename=$1
-    local dest_filename=$2
-
-    echo "source_filename: " $source_filename
-    echo "dest_filename: " $dest_filename
-
-
-    echo "Copying $source_filename to $dest_filename"
-    
-    cp -p $source_filename $dest_filename
-
-    if [ $? -ne 0 ]; then
-        echo "ERROR: while copying warc file!!! STOP COPYING"
-        return 1 
-    fi
-    return 0 
-} # End copy_warc_to_destination_dir
+# funzione gia' presente in warc-utils.sh
+#function copy_warc_to_destination_dir ()
+#{
+#    echo "copy_warc_to_destination_dir"
+#    local source_filename=$1
+#    local dest_filename=$2
+#
+#    echo "source_filename: " $source_filename
+#    echo "dest_filename: " $dest_filename
+#
+#
+#    echo "Copying $source_filename to $dest_filename"
+#    
+#    cp -p $source_filename $dest_filename
+#
+#    if [ $? -ne 0 ]; then
+#        echo "ERROR: while copying warc file!!! STOP COPYING"
+#        return 1 
+#    fi
+#    return 0 
+#} # End copy_warc_to_destination_dir
 
 
 function copy_warcs_to_temporary_area ()
