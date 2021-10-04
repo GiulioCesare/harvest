@@ -111,7 +111,10 @@ function  _convert_tsv_to_xls()
 # }
 
 
-function generate_nbn_identifiers()
+
+
+# 04/10/2021 IN STAND BY, per ora non lo si vuole!
+function generate_nbn_identifiers_IN_STAND_BY()
 {
     # local archived_documents=$1
     local archived_documents=false  # Per ora la Storti non vuole gestire lo storico
@@ -209,18 +212,17 @@ echo "repositories_file=".$repositories_file
         # ambiente_db_nbn=collaudo
         echo "Generiamo gli NBN dal db di '" $ambiente_db_nbn "'"
 
-echo "-> nbn_server: "  $nbn_server
-echo "-> file delle url: " $url_in
-echo "-> ambiente_db_nbn: " $ambiente_db_nbn
-echo "-> user: harvest"
-echo "-> pwd: harvest_pwd"
-echo "-> opera_per_baseurl: " $opera_per_baseurl
-echo "-> rows_todo: " $rows_todo
+        echo "-> nbn_server: "  $nbn_server
+        echo "-> file delle url: " $url_in
+        echo "-> ambiente_db_nbn: " $ambiente_db_nbn
+        echo "-> user: harvest"
+        echo "-> pwd: harvest_pwd"
+        echo "-> opera_per_baseurl: " $opera_per_baseurl
+        echo "-> rows_todo: " $rows_todo
 
-./scripts/genera_nbn.pl $nbn_server $url_in $ambiente_db_nbn harvest harvest_pwd $opera_per_baseurl $rows_todo > $nbn_out
+        ./scripts/genera_nbn.pl $nbn_server $url_in $ambiente_db_nbn harvest harvest_pwd $opera_per_baseurl $rows_todo > $nbn_out
 
         # # Gli nbn generati vengono riportati nelle ricevute dell'harvesting!!! Per ora.
-
 
 
         # Prepariamo il file excel per l'istituto

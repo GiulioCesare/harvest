@@ -9,6 +9,20 @@
 #           cartelle:   /home/rmessuti
 #                       /mnt/volume2/in-progress
 #           https://github.com/depositolegale/ojs-archive
+
+# Per fare test della wayback machine in ambiente di collaudo/esercizio(.151)
+#   sudo service supervisor stop
+#   sudo service supervisor start
+#   sudo service supervisor restart
+#
+# Per fare test della wayback machine in ambiente di collaudo/esercizio(.83)
+#   /mnt/volume2/wayback/venv/bin/uwsgi --plugin python --ini /mnt/volume2/wayback/memoria.depositolegale.it/uwsgi-wayback.ini
+#   /mnt/volume2/wayback/venv/bin/uwsgi --plugin python --ini /mnt/volume2/wayback/index.depositolegale.it/uwsgi-cdx-server.ini
+#
+# Per fare test della wayback machine in ambiente locale
+#   cd /home/argentino/magazzini_digitali/wayback
+#   wayback   (will run on port 8080)
+
 #======================================================
 # Prendi l'ambiente dell'utente
 #. ~.bash_profile
@@ -145,10 +159,10 @@ print_configuration
 # copy_warcs_and_logs_to_destination_dir_and_remove
 
 # index_warcs
+
+# Create compressed indexes
+# -------------------------
 # get_indexes_for_compression
-
-# Rinominare a mano con .embargo. i siti sotto embargo
-
 # compress_parziale=0
 # compress_completo=1
 #
@@ -159,21 +173,11 @@ print_configuration
 # replace_warc_indexes_with_compressed_ones_in_memoria
 
 
-# # Per fare test della wayback machine in ambiente di collaudo/esercizio
-# # sudo service supervisor stop
-# # sudo service supervisor start
-# # sudo service supervisor restart
-
-# # Per fare test della wayback machine in ambiente locale
-# cd /home/argentino/magazzini_digitali/wayback
-# wayback   (will run on port 8080)
-
-
+# Controlli per vedere se abbiamo scaricato meno di quanto dovuto
+# ---------------------------------------------------------------
 # get_warcked_seeds_and_not_from_logs
 # check_for_missing_seeds
 # check_for_harvest_mismatch
-
-# generate_nbn_identifiers
 
 
 # UNIMARC
@@ -291,9 +295,9 @@ echo
 echo "Elapsed time $(timer $tmr)"
 echo `${ora}` "Fine processo di run.sh"
 echo
-echo =================
-echo FINE ELABORAZIONE
-echo =================
+echo "================="
+echo "FINE ELABORAZIONE"
+echo "================="
 
 # Start Stop wayback in esercizio
 #   sudo service supervisor stop

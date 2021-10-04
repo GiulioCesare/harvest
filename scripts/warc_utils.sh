@@ -890,11 +890,16 @@ local fname=$1
         fi
     # done
 
-    if [[ $mismatch < 1 ]]; then
-        echo "GREAT!!! Nessun miscmath tra URL(seed) da scaricare e scaricate"
-    else
+    # if [[ $mismatch < 1 ]]; then
+    #     echo "GREAT!!! Nessun mismatch tra URL(seed) da scaricare e scaricate"
+    # else
+    #     echo "CHECK!!! $mismatch siti miscmath tra URL(seed) da scaricare e scaricate"
+    # fi
+
+    if [[ $mismatch > 0 ]]; then
         echo "CHECK!!! $mismatch siti miscmath tra URL(seed) da scaricare e scaricate"
     fi
+
 } # end check_for_harvest_mismatch_istituto
 
 
