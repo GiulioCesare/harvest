@@ -115,6 +115,12 @@ function _carica_mdr_array()
                 components=${array[7]} # URL desc + altre url (component o dc:identifiers)
                 oai_id=${array[8]}  # qui prendo l'OAI identifier
 
+                if [ -z "$oai_id" ]
+                then
+                      # echo "\$oai_id is empty"
+                      continue
+                fi
+
                 # Abbiamo un NBN?
                 # if (( ${#oai_nbn_kv_AR[@]} )); then
 
@@ -403,11 +409,6 @@ function _genera_dati_per_ricevute()
 
 
 
-
-
-
-
-
 # controlliamo che il numero di elementi delle ricevute siano uguali al numero di elementi
 # dei seed in warc e non
 function check_for_receipts_mismatch()
@@ -415,16 +416,33 @@ function check_for_receipts_mismatch()
     echo "CHECK FOR RECEIPTS MISMATCH"
     echo "==========================="
 
+
     mismatch=0;
 
-    for seeds_to_harvest_filename in $seeds_dir/*.seeds
-    do
-        echo "$seeds_to_harvest_filename"
-        fname=$(basename -- "$seeds_to_harvest_filename")
-        fname="${fname%.*}"
-# echo "fname=$fname"
+    DONE=false
+    until $DONE; do
+        IFS='|' read -r -a array line  || DONE=true
 
+        line=${array[0]}
 
+        # Remove whitespaces (empty lines)
+        line=`echo $line | xargs`
+
+        if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+            break
+        fi
+
+        # se riga comentata o vuota skip
+        if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+              continue
+         fi
+        local istituto=${array[1]}
+
+        echo "Working on: " $istituto
+
+                fname=$harvest_date_materiale"_"$istituto
+
+                # echo "fname=$fname"
 
         seeds_in_warc=0
         seeds_not_in_warc=0
@@ -468,15 +486,76 @@ function check_for_receipts_mismatch()
             let "mismatch=mismatch+1"
         fi
 
-    done
 
-    if [[ $mismatch < 1 ]]; then
-        echo ""
-        echo "GREAT!!! Nessun mismatch tra RICEVUTE e SEEDS"
-    else
+    done < "$repositories_file"
+
+    if [[ $mismatch > 0 ]]; then
         echo ""
         echo "CHECK!!! $mismatch siti mismatch tra RICEVUTE e SEED"
     fi
+
+# return;
+
+
+
+#     for seeds_to_harvest_filename in $seeds_dir/*.seeds
+#     do
+#         echo "$seeds_to_harvest_filename"
+#         fname=$(basename -- "$seeds_to_harvest_filename")
+#         fname="${fname%.*}"
+# echo "fname=$fname"
+
+        # seeds_in_warc=0
+        # seeds_not_in_warc=0
+        # receipts_in_warc=0
+        # receipts_not_in_warc=0
+        # #  Contiamo i seed scaricati inseriti nei warc
+        # siw=$warcs_dir/log/$fname.log.seeds_in_warc
+        # if [[ -f $siw ]]; then
+        #     seeds_in_warc=$(cat $siw | wc -l)
+        # fi
+        # #  Contiamo le ricevute dei seed inseriti nei warc
+        # riw=$receipts_dir/$fname"_ok.csv"
+        # if [[ -f $siw ]]; then
+        #     receipts_in_warc=$(cat $riw | wc -l)
+        #     let "receipts_in_warc=receipts_in_warc-1" # togli header
+        # fi
+
+
+        # # Contiamo i seed che non sono stati inseriti nei warc
+        # sniw=$warcs_dir/log/$fname.log.seeds_not_in_warc
+        # if [[ -f $sniw ]]; then
+        #     seeds_not_in_warc=$(cat $sniw | wc -l)
+        # fi
+
+        # #  Contiamo le ricevute dei seed inseriti nei warc
+        # rniw=$receipts_dir/$fname"_ko.csv"
+        # if [[ -f $sniw ]]; then
+        #     receipts_not_in_warc=$(cat $rniw | wc -l)
+        #     let "receipts_not_in_warc=receipts_not_in_warc-1" # togli header
+        # fi
+
+
+        # tot_seeds_from_wget=$((seeds_in_warc + seeds_not_in_warc))
+        # # echo "tot seeds   ="$tot_seeds_from_wget
+
+        # tot_receipts=$((receipts_in_warc + receipts_not_in_warc))
+        # # echo "tot receipts="$tot_receipts
+
+        # if [[ $tot_seeds_from_wget != $tot_receipts ]]; then
+        #     echo "tot seeds "$tot_seeds_from_wget " NOT equal tot receipts " $tot_receipts
+        #     let "mismatch=mismatch+1"
+        # fi
+
+    # done
+
+    # if [[ $mismatch < 1 ]]; then
+    #     echo ""
+    #     echo "GREAT!!! Nessun mismatch tra RICEVUTE e SEEDS"
+    # else
+    #     echo ""
+    #     echo "CHECK!!! $mismatch siti mismatch tra RICEVUTE e SEED"
+    # fi
 
 } # end check_for_receipts_mismatch
 
