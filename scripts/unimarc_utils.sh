@@ -395,16 +395,18 @@ echo "oai_bid_dictionary_file_out: " $oai_bid_dictionary_file_out
 # 10/12/2019 Generare unimarc solo per quei record che sono stati archiviati correttamente
 #
 # ----------
-function createUnimarc()
-{
-    echo "CREATE UNIMARC"
-    echo "=============="
 
 # TODO A MANO 
 # ===========
 # Ricordarsi di 
 #     1. prendere tesi_oai_bid.txt da ultimo harvest (eg. tesi_oai_bid.txt.2021_01_19) e farlo diventare tesi_oai_bid.txt
 #     2. prendere ctr_001.txt da ultimo harvest se non siamo al primo harvest dell anno in corso
+
+function createUnimarc()
+{
+    echo "CREATE UNIMARC"
+    echo "=============="
+
 
 
     # NMB: Da sostituire con $harvest_date_materiale"_db.new_bids + $unimarc_dir/$harvest_date_materiale"_oai_bid_new.all" alla seconda sessione incrementale
@@ -442,7 +444,7 @@ function createUnimarc()
         if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
             break
         fi
-        # se riga comentata o vuota skip
+        # se riga commentata o vuota skip
         if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
               continue
          fi

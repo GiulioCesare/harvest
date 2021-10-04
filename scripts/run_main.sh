@@ -1697,17 +1697,17 @@ function count_all_seeds()
 
 
 
+# 04/20/2021 OBSOLETE
+#function check_unimarc_for_no_wayback_link()
+# {
+#     echo "CHECK UNIMARC FOR NO WAYBACK LINKS"
+#     echo "=================================="
 
-function check_unimarc_for_no_wayback_link()
-{
-    echo "CHECK UNIMARC FOR NO WAYBACK LINKS"
-    echo "=================================="
-
-    for filename in $unimarc_dir/*mrk; do
-        # echo "filename: "$filename
-        grep "WAYBACK" $filename
-    done
-}
+#     for filename in $unimarc_dir/*mrk; do
+#         # echo "filename: "$filename
+#         grep "WAYBACK" $filename
+#     done
+# }
 
 
 
@@ -1784,3 +1784,76 @@ function update_sw()
     }
 
 
+# 04/10/2021
+# Store warcs, indexes, metadata unimarc, logs
+function store_in_S3()
+{
+# ==========================================
+# S3 warc.gz upload / download
+# Prima di fare le ricevute facciamo il salvataggio dei dati su S3
+#
+# # --------------------------------
+# Caricamebnto dati su S3 da harvest Almaviva 
+# 
+# Si usa il file etd.csv per guidare il caricamento
+# multipart_mode=true
+# multipart_mode=false
+
+# upload_metadati_to_s3 $multipart_mode
+# prepare_harvest_record_metadati
+# scripts/DbUpdateInsertS3.sh
+
+# upload_warcs_to_s3 $multipart_mode
+# prepare_harvest_record_AV
+# scripts/DbUpdateInsertS3.sh
+
+
+# upload_warc_logs_to_s3 $multipart_mode
+# prepare_harvest_record_warc_logs
+# scripts/DbUpdateInsertS3.sh
+
+# upload_indici_warcs_to_s3 $multipart_mode
+# prepare_harvest_record_cdxj
+# scripts/DbUpdateInsertS3.sh
+
+
+# upload_unimarc_to_s3 to_s3 $multipart_mode
+# prepare_harvest_record_unimarc
+# scripts/DbUpdateInsertS3.sh
+
+# --------------------------
+
+# download_warcs_from_s3
+
+# END S3 warc.gz upload / download
+# ---------------------------------
+
+} # end store_in_S3
+
+
+# 04/10/2021
+function compress_indexes()
+{
+# Create compressed indexes
+# -------------------------
+# get_indexes_for_compression
+# compress_parziale=0
+# compress_completo=1
+#
+# compress_warc_indexes $compress_completo
+# replace_warc_indexes_with_compressed_ones_in_index
+#
+# compress_warc_indexes $compress_completo
+# replace_warc_indexes_with_compressed_ones_in_memoria
+} # end compress_indexes
+
+
+# 04/10/2021
+function check_harvest()
+{
+# Controlli per vedere se abbiamo scaricato meno di quanto dovuto
+# ---------------------------------------------------------------
+# get_warcked_seeds_and_not_from_logs
+# check_for_missing_seeds
+# check_for_harvest_mismatch
+} # end check_harvest

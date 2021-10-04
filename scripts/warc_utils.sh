@@ -929,7 +929,7 @@ function check_for_harvest_mismatch()
          fi
         local istituto=${array[1]}
 
-        echo "Working on: " $istituto
+        # echo "Working on: " $istituto
 
         if [ $materiale == $MATERIALE_TESI ]; then
             # Prepariamop le ricevute in formato excel per TESI
