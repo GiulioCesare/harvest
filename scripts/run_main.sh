@@ -1788,6 +1788,8 @@ function update_sw()
 # Store warcs, indexes, metadata unimarc, logs
 function store_in_S3()
 {
+    echo "function store_in_S3()"
+
 # ==========================================
 # S3 warc.gz upload / download
 # Prima di fare le ricevute facciamo il salvataggio dei dati su S3
@@ -1834,6 +1836,7 @@ function store_in_S3()
 # 04/10/2021
 function compress_indexes()
 {
+    echo "function compress_indexes"
 # Create compressed indexes
 # -------------------------
 # get_indexes_for_compression
@@ -1851,6 +1854,7 @@ function compress_indexes()
 # 04/10/2021
 function check_harvest()
 {
+    echo "function check_harvest()"
 # Controlli per vedere se abbiamo scaricato meno di quanto dovuto
 # ---------------------------------------------------------------
 # get_warcked_seeds_and_not_from_logs
