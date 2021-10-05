@@ -1,5 +1,6 @@
 #!/bin/sh
 
+
 declare -A http_error_kv_AR
 declare -A meta_dati_ricevute_kv_AR
 declare -A seeds_in_warc_kv_AR
@@ -886,17 +887,12 @@ echo "excel_file: "$excel_file
 
     fi
 
+
     echo "Copy $excel_file to "$report_dir"/"$istituto
     cp $excel_file $report_dir"/"$istituto"/."
 
 
 } # end _convert_csv_to_xls
-
-
-
-
-
-
 
 
 
@@ -990,47 +986,33 @@ function _prepara_ricevute_excel_e_journals()
 
 
 
+# function _prepara_ricevute_excel()
+# {
+#     echo "prepara_ricevute_excel"
+#     if [ $materiale == $MATERIALE_TESI ]; then
+#         # Prepariamop le ricevute in formato excel per TESI
+#         _prepara_ricevute_excel_tesi
 
+#     elif [ $materiale == $MATERIALE_EJOURNAL ]; then
+#         # Prepariamop le ricevute in formato excel per E-JOURNALS
+#         _prepara_ricevute_excel_e_journals
+#     fi
 
+# }
 
-
-
-
-
-
-
-
- # end _prepara_ricevute_excel
-
-
-
-function _prepara_ricevute_excel()
-{
-    echo "prepara_ricevute_excel"
-    if [ $materiale == $MATERIALE_TESI ]; then
-        # Prepariamop le ricevute in formato excel per TESI
-        _prepara_ricevute_excel_tesi
-
-    elif [ $materiale == $MATERIALE_EJOURNAL ]; then
-        # Prepariamop le ricevute in formato excel per E-JOURNALS
-        _prepara_ricevute_excel_e_journals
-    fi
-
-}
-
-function _prepara_ricevute_excel_tesi()
-{
-    echo "Do excel receipts for tesi"
-            for filename in $warcs_dir/log/*.log; do
-    # echo "filename: "$filename
-                fname=$(basename -- "$filename")
-                fname="${fname%.*}"
-    # echo "fname=$fname"
-                istituto=${fname##*_}   # rimuovi fino all'ultimo underscore
-    # echo "istituto TESI: $istituto"
-                _convert_csv_to_xls $istituto
-            done
-}
+#function _prepara_ricevute_excel_tesi()
+# {
+#     echo "Do excel receipts for tesi"
+#     for filename in $warcs_dir/log/*.log; do
+# # echo "filename: "$filename
+#         fname=$(basename -- "$filename")
+#         fname="${fname%.*}"
+# # echo "fname=$fname"
+#         istituto=${fname##*_}   # rimuovi fino all'ultimo underscore
+# # echo "istituto TESI: $istituto"
+#         _convert_csv_to_xls $istituto
+#     done
+# }
 
 
 
@@ -1099,6 +1081,10 @@ echo "Working on: " $istituto
 } # end _prepara_ricevute_csv
 
 
+# --------------------------------------------------
+# Per vedere i fogli excel sul serve in modalita' X: 
+#   gnumeric nome_file.xls
+# --------------------------------------------------
 function make_receipts()
 {
     echo "MAKE RECEIPTS"
