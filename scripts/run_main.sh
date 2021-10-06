@@ -77,15 +77,15 @@ parse_update_insert_con(){
             break
         fi
         if [[ $line =~ $ambiente ]]; then
-            echo "# ========" >> scripts/DbUpdateInsert_env.con
-            echo "# $ambiente" >> scripts/DbUpdateInsert_env.con
-            echo "# ========" >> scripts/DbUpdateInsert_env.con
+            echo "# ========" >> scripts/DbUpdateInsertEmbargoed_env.con
+            echo "# $ambiente" >> scripts/DbUpdateInsertEmbargoed_env.con
+            echo "# ========" >> scripts/DbUpdateInsertEmbargoed_env.con
             keep=1
             continue;
         fi
     fi
     if [[ $keep == 1 ]]; then
-        echo $line >> scripts/DbUpdateInsert_env.con
+        echo $line >> scripts/DbUpdateInsertEmbargoed_env.con
     fi
     done < $update_insert_all_con
 } # End parse_update_insert_con
@@ -477,10 +477,10 @@ function init_variables()
 
 
     # Prepara la configurazione di upload in base all'ambiente di lavoro
-    echo "#!/bin/bash" > scripts/DbUpdateInsert_env.con
-    echo "" >> scripts/DbUpdateInsert_env.con
-    parse_update_insert_con scripts/DbUpdateInsert.con $ambiente
-    source scripts/DbUpdateInsert_env.con
+    echo "#!/bin/bash" > scripts/DbUpdateInsertEmbargoed_env.con
+    echo "" >> scripts/DbUpdateInsertEmbargoed_env.con
+    parse_update_insert_con scripts/DbUpdateInsertEmbargoed.con $ambiente
+    source scripts/DbUpdateInsertEmbargoed_env.con
 
     # Prepara la configurazione di upload in base all'ambiente di lavoro
     echo "#!/bin/bash" > scripts/DbUpdateInsertS3_env.con
