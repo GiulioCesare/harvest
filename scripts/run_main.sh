@@ -651,12 +651,22 @@ function harvest_metadata()
             harvest_from_override_date=$harvest_from_override;
         fi
 
+
+
         until_date=$(echo $harvest_date | sed -r "s#([0-9]{4})_([0-9]{2})_([0-9]{2})#\1-\2-\3#g" )
 # echo "until_date=$until_date"
 # echo "harvest_from_override_date=$harvest_from_override_date"
 
-        command="python scripts/pyoaiharvest.py  --link "$url" --filename $metadata_dir/"$harvest_date_materiale"_"${array[1]}".xml \
+        # command="python scripts/pyoaiharvest.py  --link "$url" --filename $metadata_dir/"$harvest_date_materiale"_"${array[1]}".xml \
+        # --from "$harvest_from_override_date" --until "$until_date" --mdprefix "$metadata_format
+
+        httpsVerify="";
+        if [[ "$site" == "uniroma3" ]];     then
+            httpsVerify="PYTHONHTTPSVERIFY=0 ";
+        fi
+        command=""$httpsVerify"python scripts/pyoaiharvest.py  --link "$url" --filename $metadata_dir/"$harvest_date_materiale"_"${array[1]}".xml \
         --from "$harvest_from_override_date" --until "$until_date" --mdprefix "$metadata_format
+
 
         if [ "$set" != "all" ] ; then
             command+=" --setName "$set

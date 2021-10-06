@@ -169,11 +169,12 @@ print_configuration
 
 # make_receipts
 
-# check_for_receipts_mismatch ### DA RIVEDERE forse sostituibile con check_match_seeds_donloaded_to_download ()
+# check_for_receipts_mismatch
 
+# if [ $materiale == $MATERIALE_TESI ]; then
+#     find_embargoed
+# fi
 
-# Troviamo documenti sotto embargo (SOLO per Tesi)
-# find_embargoed
 
 # Rimuoviamo le tesi alle quali hanno tolto l'embargo
 # scripts/DbDeleteUnembargoed.sh

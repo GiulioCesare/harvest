@@ -1,7 +1,7 @@
 #!/bin/bash
 #set -x
 
-# Prendi l'ambiente dell/utente export
+# Prendi l'ambiente dell'utente
 
 #. ./constants.inc.sh
 #. ./common_functions.inc.sh

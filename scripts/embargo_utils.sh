@@ -1,8 +1,9 @@
 #!/bin/sh
 
 
-# HARVEST METADATA
-# ================
+# EMBARGO UTILITIES
+# =================
+
 function _find_rights_unique()
 {
     echo 
