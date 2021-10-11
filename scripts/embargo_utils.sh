@@ -1,4 +1,56 @@
 #!/bin/sh
+# ---------------------------------------------------------------------
+# 07/10/2021
+# Gestione TESI sotto embargo 
+# Specifiche in GestioneDirittiPerMemoria.docx. Inviate alla BNCF (Storti) in data 15/07/2020 16:29
+# 
+# =========
+# Tipo OPEN 
+# =========
+# • openAccess = OPEN 
+#   - Le tesi dichiarate ‘openAccess’ possono essere interamente consultate da qualsiasi postazione 
+#     collegata alle reti interne della BNCF e della BNCR.
+#
+# • closedAccess = OPEN
+#   - Le tesi dichiarate ‘closedAccess’ sono considerate interamente consultabili da qualsiasi postazione 
+#     collegata alle reti interne della BNCF e della BNCR.
+#
+# • reserved = OPEN
+#   - Le tesi dichiarate ‘reserved’ possono essere interamente consultate da qualsiasi postazione collegata alle 
+#     reti interne della BNCF e della BNCR.
+# • none = OPEN
+#   - Le tesi dichiarate ‘none’ sono considerate interamente consultabili da qualsiasi postazione collegata alle reti 
+#     interne della BNCF e della BNCR.
+# 
+# ==============
+# Tipo EMBARGOED
+# ==============
+# • restrictedAccess = EMBARGOED
+#   - Le tesi dichiarate ‘restrictedAccess’, nella gestione ipotizzata con i dati attualmente a disposizione, 
+#     si considerano embargate in tutte le loro parti, quindi non consultabili in nessun caso. 
+#
+# • partially_open = EMBARGOED
+#   - Le tesi dichiarate ‘partially_open, nella gestione ipotizzata con i dati attualmente a disposizione, 
+#     si considerano embargate in tutte le loro parti, quindi non consultabili in nessun caso.
+#
+# • embargoedAccess = EMBARGOED
+#   - Le tesi esplicitamente dichiarate ‘embargoedAccess’ sono considerate non consultabili fino alla data 
+#     di fine dell’embargo, dopo il quale saranno consultabili da qualsiasi postazione collegata alle reti 
+#     interne della BNCF e della BNCR.
+#
+#
+#
+# ==============
+# Da definire
+# ==============
+#
+# • mixed = OPEN or EMBARGOED ??? (unicatt)
+#
+#
+#
+# ---------------------------------------------------------------------
+
+
 
 
 # EMBARGO UTILITIES
@@ -19,17 +71,22 @@ function _find_rights_unique()
       line=${array[0]}
       # se riga comentata o vuota skip
 
+echo "line=$line"
+      if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];     then
+        continue
+      fi
+
+
       # Remove whitespaces (empty lines)
       line=`echo $line | xargs`
+      if [[ ${line} == "" ]];     then
+        continue
+      fi
 
       # Se ignora resto del file
       if [[ ${line:0:1} == "@" ]] ; then # Ignore rest of file
         break
       fi
-      if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];     then
-# echo skip;
-        continue
-      else
 
       site=${array[1]}
       metadata_file=$metadata_dir"/"$harvest_date_materiale"_"$site".xml"
@@ -53,7 +110,7 @@ function _find_rights_unique()
       done
 
 
-    fi
+    # fi
     done < "$repositories_file"
 } # end find_rights_unique
 
@@ -213,7 +270,7 @@ awk_command='
     # If line commented or empty
     if ($1 ~ "#"  || $1 == "")
         next
-
+    fi
     oai_id = $1
     if (prev_oai_id != oai_id)
       {
@@ -253,18 +310,22 @@ function _extract_rights()
     do
       line=${array[0]}
 
+      if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];     then
+        continue
+      fi
+
+
       # Remove whitespaces (empty lines)
       line=`echo $line | xargs`
+      if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];     then
+        continue
+      fi
 
       # se riga comentata o vuota skip
       if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
         break
       fi
 
-      if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];     then
-# echo skip;
-        continue
-      else
 
       istituto=${array[1]}
       metadata_file=$metadata_dir"/"$harvest_date_materiale"_"$istituto".xml"
@@ -286,7 +347,7 @@ function _extract_rights()
       echo "--> Working on: " $rights_filename
       eval $command > $rights_filename
 
-    fi
+    # fi
     done < "$repositories_file"
 
 } # _extract_rights

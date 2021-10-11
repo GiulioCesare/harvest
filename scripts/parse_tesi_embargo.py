@@ -145,8 +145,8 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                         if (re.search('EMBARGO', u_R )):
                             global_embargo=1
                         # print "u_R="+u_R + "global_embargo="+str(global_embargo)
-                        break 
-
+                            break 
+                        i+=1
 
 
 
@@ -231,6 +231,8 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                         COMP += "\n" + oaiidentifier+"|" +R  + "|" + global_embargo_end_date +"|" +resourceurl + "|" + TESI 
                         continue
 
+                    # RIGTHS a livello di componente!!!
+                    # ---------------------------------
                     component_descriptor=component.find(paths['component_descriptor'], namespaces=ns)
                     # print etree.tostring(component_descriptor)
                     # comp_embargo_end_date=""
@@ -239,15 +241,14 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
                         # Tesi NON sotto emabargo a livello globale
                         # Abbiamo dei diritti nel componente?
-                        rights_comp=component_descriptor.find(paths['component_descriptor_rights'], namespaces=ns)
                         date_comp=component_descriptor.find(paths['component_descriptor_date'], namespaces=ns)
 
+                        rights_comp=component_descriptor.find(paths['component_descriptor_rights'], namespaces=ns)
                         r_cmp="";
                         if rights_comp is not None:
                             r_cmp = rights_comp.text.encode('utf-8')
 
                         # sys.stdout.write("\nr_cmp='"+r_cmp+"'")
-
 
                         if not r_cmp:
                             # sys.stdout.write(oaiidentifier+"|" +R + "|" + embargo_end_date  +"|" +resourceurl + "|" + tesi)    # diritti derivati dalla tesi nel suo insieme
@@ -269,11 +270,11 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                                         comp_embargo_end_date = u_date.rsplit('/', 1)[1]; # get the date
 
                                 COMP += "\n" + oaiidentifier+"|" +r_cmp  + "|" + comp_embargo_end_date +"|"+resourceurl +"|" + TESI
-
                     else: 
                         # nessun descriptor con o senza rights. Mettiamo i rights della pagina descrittiva 
                         # sys.stdout.write(oaiidentifier+"|" +R  + "|" + embargo_end_date +"|" +resourceurl + "|" + tesi  )   # diritti derivati dalla tesi nel suo insieme
                         COMP += "\n" + oaiidentifier+"|" +"accesso libero"  + "|" + comp_embargo_end_date +"|" +resourceurl + "|" + TESI 
+
 
             r = R.upper()
             # print r

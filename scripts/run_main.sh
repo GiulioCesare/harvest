@@ -1849,15 +1849,15 @@ function compress_indexes()
     echo "function compress_indexes"
 # Create compressed indexes
 # -------------------------
-# get_indexes_for_compression
-# compress_parziale=0
-# compress_completo=1
-#
-# compress_warc_indexes $compress_completo
-# replace_warc_indexes_with_compressed_ones_in_index
-#
-# compress_warc_indexes $compress_completo
-# replace_warc_indexes_with_compressed_ones_in_memoria
+get_indexes_for_compression
+compress_parziale=0
+compress_completo=1
+
+compress_warc_indexes $compress_completo
+replace_warc_indexes_with_compressed_ones_in_index
+
+compress_warc_indexes $compress_completo
+replace_warc_indexes_with_compressed_ones_in_memoria
 } # end compress_indexes
 
 
@@ -1867,7 +1867,7 @@ function check_harvest()
     echo "function check_harvest()"
 # Controlli per vedere se abbiamo scaricato meno di quanto dovuto
 # ---------------------------------------------------------------
-# get_warcked_seeds_and_not_from_logs
-# check_for_missing_seeds
-# check_for_harvest_mismatch
+get_warcked_seeds_and_not_from_logs
+check_for_missing_seeds
+check_for_harvest_mismatch
 } # end check_harvest
