@@ -155,10 +155,9 @@ print_configuration
 
 # check_pdf_download
 
-# check_harvest
-
-
 # copy_warcs_and_logs_to_destination_dir_and_remove
+
+# check_harvest
 
 # index_warcs
 
@@ -173,8 +172,7 @@ print_configuration
 # check_for_receipts_mismatch
 
 # if [ $materiale == $MATERIALE_TESI ]; then
-#     find_embargoed
-    # Rimuoviamo le tesi alle quali hanno tolto l'embargo
+    # find_embargoed
     # scripts/DbDeleteUnembargoed.sh
     # Carichiamo le tesi sotto embargo sul db
     # scripts/DbUpdateInsert.sh

@@ -852,11 +852,19 @@ function createSeeds()
         continue
       else
 
+          # if [ $work_dir == $E_JOURNALS_DIR ]; then
+          #     command="python ./scripts/parse_e_journals_seeds.py "$metadata_dir"/"$harvest_date_materiale"_"${array[1]}".xml"
+          # else
+          #     command="python ./scripts/parse_tesi_seeds.py "$metadata_dir"/"$harvest_date_materiale"_"${array[1]}".xml"
+          # fi
+
+          istituto=${array[1]};
           if [ $work_dir == $E_JOURNALS_DIR ]; then
-              command="python ./scripts/parse_e_journals_seeds.py "$metadata_dir"/"$harvest_date_materiale"_"${array[1]}".xml"
+              command="python ./scripts/parse_e_journals_seeds.py "$metadata_dir"/"$harvest_date_materiale"_"$istituto".xml"
           else
-              command="python ./scripts/parse_tesi_seeds.py "$metadata_dir"/"$harvest_date_materiale"_"${array[1]}".xml"
+              command="python ./scripts/parse_tesi_seeds.py "$metadata_dir"/"$harvest_date_materiale"_"$istituto".xml $istituto" 
           fi
+
  echo "Executing $command"
          # 27/11/2019 Gestione seed duplicati
           echo "Create seeds for ${array[1]}"

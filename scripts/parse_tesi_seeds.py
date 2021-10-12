@@ -9,6 +9,8 @@ import os
 import urllib
 
 filename = sys.argv[1]
+istituto = sys.argv[2].lower()
+
 tree = parse(filename)
 
 ns = {
@@ -41,7 +43,11 @@ for record in tree.xpath('//record'):
         else:
             jumpoffpageurl = jumpoffpage
 
-        print jumpoffpageurl
+        # print jumpoffpageurl
+        # Exclude LIUC descriptive page
+        if istituto != "liuc":
+            print jumpoffpageurl
+
 
         for components in record.findall(paths['components'], namespaces=ns):
             component = components.find(paths['component'], namespaces=ns)

@@ -38,7 +38,7 @@ record_aggiornati_filename=sys.argv[8]
 record_nuovi_filename=sys.argv[9]
 record_cancellati_filename=sys.argv[10]
 year2d=sys.argv[11]
-
+istituto=sys.argv[12] # 12/10/2021 per escludere pagina descrittiva LIUC
 # print sys.argv
 
 # timestamp_dict = {}
@@ -638,7 +638,8 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
             # else:
             #     print "=856  4 $uWAYBACK URL NOT FOUND"+"$2"+jumpoffpageurl
 
-            print "=856  4 $u"+wayback_http_server+"/"+opac_archive_name+"/"+jumpoffpageurl+"$2"+jumpoffpageurl
+            if istituto != "liuc":
+                print "=856  4 $u"+wayback_http_server+"/"+opac_archive_name+"/"+jumpoffpageurl+"$2"+jumpoffpageurl
 
 
 

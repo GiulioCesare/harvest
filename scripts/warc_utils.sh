@@ -1114,7 +1114,7 @@ function index_warcs()
 
         # filename=$dest_warcs_dir"/"$harvest_date_materiale"_"$istituto".warc.gz"
         
-        root_filename=$harvest_date_materiale"_"$istituto*".warc.gz"
+        root_filename=$harvest_date_materiale"_"$istituto-*".warc.gz"
 
         # 22/12/2020 Gstione indexing compresi warcs segmentati
         for filename in $dest_warcs_dir"/"$root_filename; do
