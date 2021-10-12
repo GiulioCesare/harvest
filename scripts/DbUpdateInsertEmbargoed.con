@@ -18,7 +18,7 @@ fieldSeparator=|
 
 # Truncate
 #removeAllRecordsBeforeUpload=false
-logFileOut=./logs/DbUpdateInsert.log
+logFileOut=./logs/DbUpdateInsertEmbargoed.log
 # commit in hex format
 commitOgniTotRighe=FF
 endConfig

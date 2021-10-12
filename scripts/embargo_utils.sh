@@ -543,11 +543,9 @@ function _get_embargoed_only_in_warc_istituto ()
 
 function find_embargoed()
 {
-
-    # _find_rights_unique
-    # _extract_rights
+    _find_rights_unique
+    _extract_rights
     _filterEmbargo_e_non
-    # _get_embargoed_only_in_warc
-    # _prepareDbUpdateInsertDelete
-
+    _get_embargoed_only_in_warc
+    _prepareDbUpdateInsertDelete
 }
