@@ -272,8 +272,8 @@ awk_command='
         next
     fi
     oai_id = $1
-    if (prev_oai_id != oai_id)
-      {
+    # if (prev_oai_id != oai_id)
+    #   {
       rights = toupper($2)
       if (rights !~ "EMBARGO" && rights !~ "PARTIALLY" && rights !~ "RESTRICTED")
         {
@@ -281,8 +281,7 @@ awk_command='
         print oai_id"|"rights"|"url
         }
         prev_oai_id = oai_id
-      }
-
+      # }
 
     
     }'
@@ -291,7 +290,7 @@ awk_command='
   # Creiamo il file do oaid_univoci per rimuovere tesi che prima erano embargate e che forse adesso non lo sono piu'
   # sort -t\| -k 1,1 -u $non_embargo_filename > $non_embargo_filename".unq"
 
-}
+} # end _filterNonEmbargoIstituto
 
 
 
@@ -545,10 +544,10 @@ function _get_embargoed_only_in_warc_istituto ()
 function find_embargoed()
 {
 
-    _find_rights_unique
-    _extract_rights
+    # _find_rights_unique
+    # _extract_rights
     _filterEmbargo_e_non
-    _get_embargoed_only_in_warc
-    _prepareDbUpdateInsertDelete
+    # _get_embargoed_only_in_warc
+    # _prepareDbUpdateInsertDelete
 
 }
