@@ -55,8 +55,8 @@ function _carica_mdr_array()
     # local metadata_url=$2
 
     # Carichiamo l'associative array dei metadati che ha la url come chiave
-    if [[ -f $receipts_dir/$harvest_date_materiale"_"$istituto".no_didl_resource" ]]; then
-        rm $receipts_dir/$harvest_date_materiale"_"$istituto".no_didl_resource"
+    if [[ -f $receipts_dir/$harvest_date_materiale"_"$istituto".no_didl_resource.csv" ]]; then
+        rm $receipts_dir/$harvest_date_materiale"_"$istituto".no_didl_resource.csv"
     fi
 
     mdr_file=$receipts_dir/$harvest_date_materiale"_"$istituto".mdr"
@@ -152,11 +152,11 @@ function _carica_mdr_array()
 
                     if [ $materiale == $MATERIALE_TESI ]; then
                         echo "No didl.component.resource per:'$main'"
-                        if [[ ! -f $receipts_dir/$harvest_date_materiale"_"$istituto".no_didl_resource" ]]; then
-                            echo "URL|descrizione|titolo" >> $receipts_dir/$harvest_date_materiale"_"$istituto".no_didl_resource"
+                        if [[ ! -f $receipts_dir/$harvest_date_materiale"_"$istituto".no_didl_resource.csv" ]]; then
+                            echo "URL|descrizione|titolo" >> $receipts_dir/$harvest_date_materiale"_"$istituto".no_didl_resource.csv"
                         fi
                         titolo=${array[2]}
-                        echo "$main|no didl:resource associato|"$titolo >> $receipts_dir/$harvest_date_materiale"_"$istituto".no_didl_resource"
+                        echo "$main|no didl:resource associato|"$titolo >> $receipts_dir/$harvest_date_materiale"_"$istituto".no_didl_resource.csv"
                     fi;
                     # component=0
 
@@ -392,7 +392,7 @@ function _genera_dati_per_ricevute()
 {
     local istituto=$1
     local out_mdr=$receipts_dir/$harvest_date_materiale"_"$istituto".mdr"
-    local out_deleted=$receipts_dir/$harvest_date_materiale"_"$istituto".del"
+    local out_deleted=$receipts_dir/$harvest_date_materiale"_"$istituto".del.csv"
 
     # Generiamo i dati per le ricevute
     if [ $work_dir == $E_JOURNALS_DIR ]; then
@@ -797,9 +797,14 @@ function  _convert_csv_to_xls()
         csv_list_file=$csv_list_file" "$receipts_dir"/"$main
     fi
 
-    if [[ -f $base_name".del" ]]; then
-        sed s/\|/\\t/g $base_name".del" | perl -pe 's/\x01/ # /g'  > $receipts_dir"/cancellate"
-        csv_list_file=$csv_list_file" "$receipts_dir"/cancellate"
+
+    # 1310/2021Creare foglio delle tesi cancellate se abbiamo + di una riga (testata) nel file .del.csv
+    if [[ -f $base_name".del.csv" ]]; then
+        righe=$(cat $base_name".del.csv" | wc -l)
+        if [[ $righe -gt 1  ]]; then
+            sed s/\|/\\t/g $base_name".del.csv" | perl -pe 's/\x01/ # /g'  > $receipts_dir"/cancellate"
+            csv_list_file=$csv_list_file" "$receipts_dir"/cancellate"
+        fi
     fi
 
 
@@ -813,18 +818,17 @@ function  _convert_csv_to_xls()
         csv_list_file=$csv_list_file" "$receipts_dir"/ko"
     fi
 
-    if [[ -f $base_name".no_didl_resource" ]]; then
-        sed s/\|/\\t/g $base_name".no_didl_resource" > $receipts_dir"/senza_risorse"
+    if [[ -f $base_name".no_didl_resource.csv" ]]; then
+        sed s/\|/\\t/g $base_name".no_didl_resource.csv" > $receipts_dir"/senza_risorse"
         csv_list_file=$csv_list_file" "$receipts_dir"/senza_risorse"
     fi
 
-    missing_file=$warcs_dir"/log/"$harvest_date_materiale"_"$istituto".log.seeds.missing"
-    if [[ -f $missing_file ]]; then
-        echo "\"URL con caratteri riservati\"" > $receipts_dir"/missing"
-        cat $missing_file >> $receipts_dir"/missing"
-        csv_list_file=$csv_list_file" "$receipts_dir"/missing"
-
-    fi
+    # missing_file=$warcs_dir"/log/"$harvest_date_materiale"_"$istituto".log.seeds.missing"
+    # if [[ -f $missing_file ]]; then
+    #     echo "\"URL con caratteri riservati\"" > $receipts_dir"/missing"
+    #     cat $missing_file >> $receipts_dir"/missing"
+    #     csv_list_file=$csv_list_file" "$receipts_dir"/missing"
+    # fi
 
     duplicate_file=$seeds_dir"/"$harvest_date_materiale"_"$istituto".seeds_dup.csv"
     if [[ -f $duplicate_file ]]; then
