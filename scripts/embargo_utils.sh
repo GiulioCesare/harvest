@@ -425,7 +425,7 @@ function _prepareDbUpdateInsertDelete ()
 echo "Istituto = '$istituto'"
       
       # filename=$rights_dir/$harvest_date_materiale"_"$istituto".embargo.csv"
-      filename=$rights_dir/$harvest_date_materiale"_"$istituto".embargo.csv.in_warc" # 11/10/2020
+      filename=$rights_dir/$harvest_date_materiale"_"$istituto".embargo.csv.in_warc.csv" # 11/10/2020
 
       echo "--> Appending " $filename " to " $upd_ins_filename
       cat $filename >> $upd_ins_filename
@@ -500,11 +500,11 @@ function _get_embargoed_only_in_warc_istituto ()
 
     # Leggiamo il file delle tesi embargate
     file_emabrgo=$rights_dir/$harvest_date_materiale"_"$istituto".embargo.csv"
-    if [[ -f $file_emabrgo".in_warc" ]]; then
-      rm $file_emabrgo".in_warc"
+    if [[ -f $file_emabrgo".in_warc.csv" ]]; then
+      rm $file_emabrgo".in_warc.csv"
     fi
-    if [[ -f $file_emabrgo".not_in_warc" ]]; then
-      rm $file_emabrgo".not_in_warc"
+    if [[ -f $file_emabrgo".not_in_warc.csv" ]]; then
+      rm $file_emabrgo".not_in_warc.csv"
     fi
 
 
@@ -524,10 +524,10 @@ function _get_embargoed_only_in_warc_istituto ()
 
             if ! test "${seeds_in_warc_kv_AR[$url]+isset}"
             then
-                # echo ${array[0]}"|"${array[1]}"|"${array[2]} >> $file_emabrgo".in_warc"
+                # echo ${array[0]}"|"${array[1]}"|"${array[2]} >> $file_emabrgo".in_warc.csv"
                 echo $line >> $file_emabrgo".in_warc"
             else
-                # echo ${array[0]}"|"${array[1]}"|"${array[2]} >> $file_emabrgo".not_in_warc"
+                # echo ${array[0]}"|"${array[1]}"|"${array[2]} >> $file_emabrgo".not_in_warc.csv"
                 echo $line >> $file_emabrgo".not_in_warc"
             fi
 
