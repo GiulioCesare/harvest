@@ -233,7 +233,7 @@ function _carica_mdr_array()
     done < $mdr_file    #$receipts_dir/$harvest_date_materiale"_"$istituto".mdr"
     # $receipts_dir"/tmp.mdr"
 
-printarr meta_dati_ricevute_kv_AR > $receipts_dir/$harvest_date_materiale"_"$istituto".mdr.expanded"
+printarr meta_dati_ricevute_kv_AR > $receipts_dir/$harvest_date_materiale"_"$istituto".mdr.expanded.csv"
 
 
 # echo "meta_dati_ricevute_kv_AR"
