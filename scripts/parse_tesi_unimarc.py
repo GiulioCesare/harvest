@@ -37,8 +37,9 @@ bid_ctr_filename=sys.argv[7]
 record_aggiornati_filename=sys.argv[8]
 record_nuovi_filename=sys.argv[9]
 record_cancellati_filename=sys.argv[10]
-year2d=sys.argv[11]
-istituto=sys.argv[12] # 12/10/2021 per escludere pagina descrittiva LIUC
+record_cancellati_filename_non_in_opac=sys.argv[11]
+year2d=sys.argv[12]
+istituto=sys.argv[13] # 12/10/2021 per escludere pagina descrittiva LIUC
 # print sys.argv
 
 # timestamp_dict = {}
@@ -192,7 +193,8 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
             else:
                 # f_record_cancellati.write(oaiidentifier+"|"+"TEST0000000"+"\n")
-                sys.stderr.write("Record cancellato "+oaiidentifier+" non presente negli scarichi precedenti\n")
+                # sys.stderr.write("Record cancellato "+oaiidentifier+" non presente negli scarichi precedenti\n")
+                f_record_cancellati_non_in_opac.write(oaiidentifier+"|"+bid+"\n")
 
 
     # if status is None:

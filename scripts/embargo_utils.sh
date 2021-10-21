@@ -525,10 +525,10 @@ function _get_embargoed_only_in_warc_istituto ()
             if ! test "${seeds_in_warc_kv_AR[$url]+isset}"
             then
                 # echo ${array[0]}"|"${array[1]}"|"${array[2]} >> $file_emabrgo".in_warc.csv"
-                echo $line >> $file_emabrgo".in_warc"
+                echo $line >> $file_emabrgo".in_warc.csv"
             else
                 # echo ${array[0]}"|"${array[1]}"|"${array[2]} >> $file_emabrgo".not_in_warc.csv"
-                echo $line >> $file_emabrgo".not_in_warc"
+                echo $line >> $file_emabrgo".not_in_warc.csv"
             fi
 
 

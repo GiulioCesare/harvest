@@ -45,6 +45,8 @@ function _do_unimarc_mrk()
     local file_record_aggiornati=$unimarc_dir/$harvest_date_materiale"_"$istituto"_001.updated"  # File di output per OAI_IDENTIFIER/BID aggiornati
     local file_record_nuovi=$unimarc_dir/$harvest_date_materiale"_"$istituto"_001.new"  # File di output per OAI_IDENTIFIER/BID nuovi
     local file_record_cancellati=$unimarc_dir/$harvest_date_materiale"_"$istituto"_001.deleted"  # File di output per OAI_IDENTIFIER/BID aggiornati
+    local file_record_cancellati_non_in_opac=$file_record_cancellati"_non_in_opac"  
+
 
 
     metadati_filename=$metadata_dir"/"$harvest_date_materiale"_"$istituto".xml"
@@ -99,7 +101,7 @@ echo "year2d: $year2d"
         # echo "ts: "$ts
         echo "Create unimarc in formato ASCII for $metadati_filename"
         # command="python scripts/parse_tesi_unimarc.py $metadati_filename $oai_bid_dictionary_file $nbn_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente $ctr_file $file_record_aggiornati $file_record_nuovi $file_record_cancellati $year2d"
-        command="python scripts/parse_tesi_unimarc.py $metadati_filename $oai_bid_dictionary_file $nbn_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente $ctr_file $file_record_aggiornati $file_record_nuovi $file_record_cancellati $year2d $istituto"
+        command="python scripts/parse_tesi_unimarc.py $metadati_filename $oai_bid_dictionary_file $nbn_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente $ctr_file $file_record_aggiornati $file_record_nuovi $file_record_cancellati $file_record_cancellati_non_in_opac $year2d $istituto"
 # echo "command=$command"
         eval $command > $unimarc_dir/$harvest_date_materiale"_"$istituto.mrk
     fi
@@ -347,7 +349,7 @@ echo "oai_bid_dictionary_file_out: " $oai_bid_dictionary_file_out
 
 
     # Leggiamo i vecchi bids per rimuovere quelli cancellati
-    echo "Rimuoviamo i bid cancellati"
+    echo "Rimuoviamo i bid cancellati da $oai_bid_dictionary_file_in"
     while IFS='|' read -r -a array line
     do
         line=${array[0]}
