@@ -25,6 +25,7 @@ import re
 # sys.stderr.write("arg9 '"+sys.argv[9]+"'\n")
 # sys.stderr.write("arg10 '"+sys.argv[10]+"'\n")
 # sys.stderr.write("arg11 '"+sys.argv[11]+"'\n")
+# sys.stderr.write("arg11 '"+sys.argv[12]+"'\n")
 
 
 metadati_filename = sys.argv[1]
@@ -37,7 +38,7 @@ bid_ctr_filename=sys.argv[7]
 record_aggiornati_filename=sys.argv[8]
 record_nuovi_filename=sys.argv[9]
 record_cancellati_filename=sys.argv[10]
-record_cancellati_filename_non_in_opac=sys.argv[11]
+record_cancellati_non_in_opac_filename=sys.argv[11]
 year2d=sys.argv[12]
 istituto=sys.argv[13] # 12/10/2021 per escludere pagina descrittiva LIUC
 # print sys.argv
@@ -101,6 +102,7 @@ f_bid_ctr.close()
 f_record_aggiornati = open(record_aggiornati_filename, "w")
 f_record_nuovi = open(record_nuovi_filename, "w")
 f_record_cancellati = open(record_cancellati_filename, "w")
+f_record_cancellati_non_in_opac = open(record_cancellati_non_in_opac_filename, "w")
 
 
 # quit()
@@ -188,13 +190,13 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                 print "=001  "+bid
 
                 # 017 OTHER STANDARD IDENTIFIER
-                #   $a	Standard Number
+                #   $a  Standard Number
                 print "=017  80$a"+oaiidentifier+"\n"
 
             else:
                 # f_record_cancellati.write(oaiidentifier+"|"+"TEST0000000"+"\n")
                 # sys.stderr.write("Record cancellato "+oaiidentifier+" non presente negli scarichi precedenti\n")
-                f_record_cancellati_non_in_opac.write(oaiidentifier+"|"+bid+"\n")
+                f_record_cancellati_non_in_opac.write(oaiidentifier+"\n")
 
 
     # if status is None:
@@ -220,7 +222,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
             record_status="c"
 
             # # 017 OTHER STANDARD IDENTIFIER
-            # #   $a	Standard Number
+            # #   $a    Standard Number
             # sys.stdout.write("=017  80$a"+oaiidentifier+"\n")
         else:
             # genera bid "TD"+2 cifre per anno+6 cifre per contatore
@@ -270,7 +272,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
 
             # 017 OTHER STANDARD IDENTIFIER
-            #   $a	Standard Number
+            #   $a  Standard Number
             #       Campo ripetuto per ogni ripetizione di //dc:identifier. Non creato se corrisponde a //dii:Identifier[0]
             sys.stdout.write("=017  80$a"+oaiidentifier+"\n")
 
@@ -305,7 +307,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                     date=dates[0].text.encode('utf-8')
 
                     # 100 GENERAL PROCESSING DATA
-                    #   $a	GENERAL PROCESSING DATA
+                    #   $a  GENERAL PROCESSING DATA
                     #       Al posto di ‘xxxx’ vanno i primi 4 char di dc:data[0] se tutti e quattro sono numeri; altrimenti va ‘----'
                     sub = date[ 0 : 0 + 4]
                     if sub.isdigit():
@@ -319,7 +321,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
 
             # 101 LANGUAGE OF THE ITEM
-            #   $a	Language of Text, Soundtrack etc.
+            #   $a  Language of Text, Soundtrack etc.
             #       Sottocampo ripetuto per ogni ripetizione di dc:language
             languages=statements.findall(paths['languages'], namespaces=ns)
             if languages is not None:
@@ -336,8 +338,8 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
 
             # 200 TITLE AND STATEMENT OF RESPONSIBILITY
-            #   $a	Title Proper
-            #   $b	General Material Designation
+            #   $a  Title Proper
+            #   $b  General Material Designation
             titles=statements.findall(paths['titles'], namespaces=ns)
             if titles is not None:
                 size=len(titles)
@@ -354,8 +356,8 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
 
             # 210 PUBLICATION, DISTRIBUTION, ETC.
-            #   $c	Name of Publisher, Distributor, etc.
-            #   $d	Date of Publication, Distribution, etc.
+            #   $c  Name of Publisher, Distributor, etc.
+            #   $d  Date of Publication, Distribution, etc.
             publishers=statements.findall(paths['publishers'], namespaces=ns)
             if publishers is not None:
                 size=len(publishers)
@@ -376,7 +378,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
 
             # 300 GENERAL NOTES
-            #   $a	Text of Note
+            #   $a  Text of Note
             #       ‘Diritti: ‘ + //dc:rights
             #       ‘In relazione con: ‘ + //dc:relation
             #       'Copertura: ‘ + //dc:coverage
@@ -432,8 +434,8 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
             # 328 DISSERTATION (THESIS) NOTE
             #   $b Dissertation or thesis details and type of degree
-            #   $c	Discipline of degree
-            #   $e	Body granting the degree
+            #   $c  Discipline of degree
+            #   $e  Body granting the degree
                         # thesis degree level
                         # print "=998  $a"+thesis_degree_level
             #
@@ -535,7 +537,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
 
             # 610 UNCONTROLLED SUBJECT TERMS
-            #   $a	Subject Term
+            #   $a  Subject Term
             #       Sempre e solo se dc.subject non inizia con un SSD, se no è 689. Per ogni ripetizione da fare un nuovo tag
             if subjects is not None:
                 size=len(subjects)
@@ -566,14 +568,14 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                         i+=1
             creators=statements.findall(paths['creators'], namespaces=ns)
             # 700 PERSONAL NAME - PRIMARY RESPONSIBILITY
-            #   $a	Entry Element
+            #   $a  Entry Element
             if creators is not None:
                 size_creators=len(creators)
                 if size_creators:
                     print "=700   0$a"+creators[0].text.encode('utf-8')
 
                 # 701 PERSONAL NAME - ALTERNATIVE RESPONSIBILITY
-                #   $a	Entry Element
+                #   $a  Entry Element
                 # Ogni ripetizione crea un nuovo tag
                 i=1
                 if size_creators > i:
@@ -604,8 +606,8 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
 
             # 856 ELECTRONIC LOCATION AND ACCESS
-            #   $u	Uniform Resource Identifier
-            #   $2	Link al sito originale
+            #   $u  Uniform Resource Identifier
+            #   $2  Link al sito originale
 
 #             if identifiers is not None:
 #                 size=len(identifiers)
@@ -672,7 +674,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
 
             # 997 library code (local)
-            #   $a	Coded value
+            #   $a  Coded value
             print "=997    $aCF"    # Per la Nazionale di Firenze
 
             # Work type (local)
@@ -687,3 +689,5 @@ f_bid_ctr.close()
 f_record_aggiornati.close()
 f_record_nuovi.close()
 f_record_cancellati.close()
+f_record_cancellati_non_in_opac.close()
+

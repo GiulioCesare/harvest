@@ -238,30 +238,34 @@ function _do_zip()
     # zip $unimarc_integrale".zip" $unimarc_integrale
 
 
+    elab_date=".elab_$(date '+%Y_%m_%d')"
+
     # Zip degli unimarc concatenati
     unimrc_incrementale=$unimarc_dir"/"$harvest_date_materiale"_all.mrc"
-    if [ -f $unimrc_incrementale".zip" ]; then
-        rm $unimrc_incrementale".zip"
+    if [ -f $unimrc_incrementale""$elab_date".zip" ]; then
+        rm $unimrc_incrementale""$elab_date".zip"
     fi
-    zip $unimrc_incrementale".zip" $unimrc_incrementale
+    zip $unimrc_incrementale""$elab_date".zip" $unimrc_incrementale
 
 
-    # Zip delgli unimarc in chiaro concatenati
+    # Zip degli unimarc in chiaro concatenati
     unimrk_incrementale=$unimarc_dir"/"$harvest_date_materiale"_all.mrk"
-    if [ -f $unimrk_incrementale".zip" ]; then
-        rm $unimrk_incrementale".zip"
+    if [ -f $unimrk_incrementale""$elab_date".zip" ]; then
+        rm $unimrk_incrementale""$elab_date".zip"
     fi
-    zip $unimrk_incrementale".zip" $unimrk_incrementale
+    zip $unimrk_incrementale""$elab_date".zip" $unimrk_incrementale
 
 
     # Zip dei file accessori
-    unimarc_accessori=$unimarc_dir/$harvest_date_materiale"_accessori.zip"
+    unimarc_accessori=$unimarc_dir/$harvest_date_materiale"_accessori"$elab_date
     if [ -f $unimarc_accessori".zip" ]; then
         rm $unimarc_accessori".zip"
     fi
-    zip $unimarc_accessori $unimarc_dir/$harvest_date_materiale"_oai_bid_new.all"
-    zip $unimarc_accessori $unimarc_dir/$harvest_date_materiale"_oai_bid_updated.all"
-    zip $unimarc_accessori $unimarc_dir/$harvest_date_materiale"_oai_bid_deleted.all"
+
+    zip $unimarc_accessori".zip" $unimarc_dir/$harvest_date_materiale"_oai_bid_new.all"
+    zip $unimarc_accessori".zip" $unimarc_dir/$harvest_date_materiale"_oai_bid_updated.all"
+    zip $unimarc_accessori".zip" $unimarc_dir/$harvest_date_materiale"_oai_bid_deleted.all"
+
 } # End _do_zip
 
 
