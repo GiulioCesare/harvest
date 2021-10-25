@@ -644,9 +644,9 @@ function copy_warcs_and_logs_to_destination_dir_and_remove()
 
 
         if [ $materiale == $MATERIALE_EJOURNAL ]; then
-            root_filename=$harvest_date_materiale"_"$istituto*".warc.gz.viewer"
+            root_filename=$harvest_date_materiale"_"$istituto-*".warc.gz.viewer"
         else
-            root_filename=$harvest_date_materiale"_"$istituto*".warc.gz"
+            root_filename=$harvest_date_materiale"_"$istituto-*".warc.gz"
         fi
 
         # gestione file segmentati e non
@@ -677,9 +677,9 @@ function copy_warcs_and_logs_to_destination_dir_and_remove()
 
 
         if [ $materiale == $MATERIALE_EJOURNAL ]; then
-            root_filename=$harvest_date_materiale"_"$istituto*".warc.gz.viewer.md5"
+            root_filename=$harvest_date_materiale"_"$istituto-*".warc.gz.viewer.md5"
         else
-            root_filename=$harvest_date_materiale"_"$istituto*".warc.gz.md5"
+            root_filename=$harvest_date_materiale"_"$istituto-*".warc.gz.md5"
         fi
         # gestione file segmentati e non
         for warc_source_filename in $warcs_dir"/"$root_filename; do
@@ -1421,3 +1421,82 @@ echo "istituto="$istituto
 # =============================================================================
 
 
+
+# 22/10/2021 in attesa dello storage S3
+function temp_warcs_backup()
+{
+    echo "backup metadata"
+    zip -r "/mnt/volume2/backup/"$harvest_date"_tesi.da_mettere_altrove/01_metadata.zip" $metadata_dir
+
+    echo "backup warcs log"
+    zip -r "/mnt/volume2/backup/"$harvest_date"_tesi.da_mettere_altrove/06_warcs.log.zip" $warcs_dir/log
+
+    echo "backup receipts"
+    zip -r "/mnt/volume2/backup/"$harvest_date"_tesi.da_mettere_altrove/08_metadata.zip" $receipts_dir
+    
+
+    source_warcs_dir=""/mnt/volume2/wayback/memoria.depositolegale.it/collections/web/archive/harvest_AV/$harvest_date_materiale
+    temp_backup_dir="/mnt/volume2/backup/"$harvest_date_materiale".da_mettere_altrove/warcs"
+
+    echo "backup WARCS"
+
+    source_warcs_dir=/mnt/volume2/wayback/memoria.depositolegale.it/collections/web/archive/harvest_AV/2021_09_23_tesi
+    temp_backup_dir=/mnt/volume2/backup/2021_09_23_tesi.da_mettere_altrove/warcs
+
+
+     while IFS='|' read -r -a array line
+     do
+        line=${array[0]}
+        # Remove whitespaces (empty lines)
+        line=`echo $line | xargs`
+
+        if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+        break
+        fi
+
+        # se riga comentata o vuota skip
+        if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+             continue
+        fi
+
+        # istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
+        istituto=${array[1]}
+        echo "istituto="$istituto
+
+
+        # Copiamo il warc.gz
+        # ==================
+        if [ $materiale == $MATERIALE_EJOURNAL ]; then
+            root_filename=$harvest_date_materiale"_"$istituto-*".warc.gz.viewer"
+        else
+            root_filename=$harvest_date_materiale"_"$istituto-*".warc.gz"
+        fi
+
+        # gestione file segmentati e non
+        for warc_source_filename in $source_warcs_dir"/"$root_filename; do
+
+            dest_filename="${warc_source_filename##$source_warcs_dir/}" 
+
+
+            warc_dest_filename=$temp_backup_dir"/"$dest_filename
+
+# echo "warc_source_filename="$warc_source_filename
+# echo "dest_filename="$dest_filename
+echo "Copy '$warc_source_filename' to '$warc_dest_filename'"
+
+
+            cp -p $warc_source_filename $warc_dest_filename
+            if [ $? -ne 0 ]; then
+                echo "ERROR: while copying warc file!!! STOP COPYING"
+                return 1 
+            fi
+
+            cp -p $warc_source_filename".md5" $warc_dest_filename".md5"
+            if [ $? -ne 0 ]; then
+                echo "ERROR: while copying warc file!!! STOP COPYING"
+                return 1 
+            fi
+        done
+     done < "$repositories_file"
+
+} # end temp_warcs_backup

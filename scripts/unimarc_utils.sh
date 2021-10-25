@@ -92,7 +92,7 @@ echo "year2d: $year2d"
         # echo "ts: "$ts
 
         # command="python scripts/parse_e_journals_unimarc.py $metadati_filename $nbn_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente"
-        command="python scripts/parse_e_journals_unimarc.py $metadati_filename $oai_bid_dictionary_file $nbn_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente  $ctr_file $file_record_aggiornati $file_record_nuovi $file_record_cancellati $year2d"
+        command="python scripts/parse_e_journals_unimarc.py $metadati_filename $oai_bid_dictionary_file $nbn_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente  $ctr_file $file_record_aggiornati $file_record_nuovi $file_record_cancellati $file_record_cancellati_non_in_opac $year2d"
         echo "Create unimarc in formato ASCII for $filename"
         eval $command > $unimarc_dir/$harvest_date_materiale"_"$istituto".mrk"
     else

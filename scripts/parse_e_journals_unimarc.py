@@ -19,6 +19,7 @@ import urllib
 # sys.stderr.write("arg9 '"+sys.argv[9]+"'\n")
 # sys.stderr.write("arg10 '"+sys.argv[10]+"'\n")
 # sys.stderr.write("arg11 '"+sys.argv[11]+"'\n")
+# sys.stderr.write("arg12 '"+sys.argv[12]+"'\n")
 
 
 
@@ -40,7 +41,8 @@ bid_ctr_filename=sys.argv[7]
 record_aggiornati_filename=sys.argv[8]
 record_nuovi_filename=sys.argv[9]
 record_cancellati_filename=sys.argv[10]
-year2d=sys.argv[11]
+record_cancellati_non_in_opac_filename=sys.argv[11]
+year2d=sys.argv[12]
 
 # timestamp_dict = {}
 oai_001_dict = {}
@@ -99,6 +101,7 @@ f_bid_ctr.close()
 f_record_aggiornati = open(record_aggiornati_filename, "w")
 f_record_nuovi = open(record_nuovi_filename, "w")
 f_record_cancellati = open(record_cancellati_filename, "w")
+f_record_cancellati_non_in_opac = open(record_cancellati_non_in_opac_filename, "w")
 
 
 ns = {
@@ -182,7 +185,8 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                 print "=017  80$a"+oaiidentifier+"\n"
 
             else:
-                sys.stderr.write("Record cancellato "+oaiidentifier+" non presente negli scarichi precedenti\n")
+                # sys.stderr.write("Record cancellato "+oaiidentifier+" non presente negli scarichi precedenti\n")
+                f_record_cancellati_non_in_opac.write(oaiidentifier+"\n")
 
 
     else:
@@ -485,7 +489,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                     while i < size:
                         if titles[i].text is not None:
                             title=titles[i].text.encode('utf-8')
-                            print "=517  1 "+"$c"+titles
+                            print "=517  1 "+"$c"+title
                         i+=1
 
 
@@ -580,3 +584,4 @@ f_bid_ctr.close()
 f_record_aggiornati.close()
 f_record_nuovi.close()
 f_record_cancellati.close()
+f_record_cancellati_non_in_opac.close()

@@ -166,16 +166,16 @@ print_configuration
 # createUnimarc
 
 # store_in_S3
+# temp_warcs_backup
 
 # make_receipts
 
 # check_for_receipts_mismatch
 
 # if [ $materiale == $MATERIALE_TESI ]; then
-    # find_embargoed
-    # scripts/DbDeleteUnembargoed.sh
-    # Carichiamo le tesi sotto embargo sul db
-    # scripts/DbUpdateInsert.sh
+#     # find_embargoed
+#     # NON NECESSARIO. Cancellazione da fare con script a parte. scripts/DbDeleteUnembargoed.sh          # Cancelliamo (se presenti) tesi NON sotto embargo
+#     # scripts/DbUpdateInsertEmbargoed.sh    # Carichiamo le tesi sotto embargo sul db
 # fi
 
 
