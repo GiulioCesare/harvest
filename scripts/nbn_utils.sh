@@ -125,9 +125,10 @@ function generate_nbn_identifiers_IN_STAND_BY()
 
 
     # echo "repositories_file: " $repositories_file
-echo "repositories_file=".$repositories_file
+# echo "repositories_file=".$repositories_file
 # pwd
 # return;
+
     # Scarichiamo i metadati di tutte le tesi dell'istituto
     # -----------------------------------------------------
     # Solo per storico
@@ -166,9 +167,10 @@ echo "repositories_file=".$repositories_file
         local metadata_url_base=$OAI_repository"?verb=GetRecord\&metadataPrefix="$metadata_prefix"\&identifier="
 
         echo "Istituto: " $istituto
-        # echo "OAI Repository: " $OAI_repository
-        # echo "metadata_prefix: " $metadata_prefix
+        echo "OAI Repository: " $OAI_repository
+        echo "metadata_prefix: " $metadata_prefix
         echo "opera_per_baseurl: " $opera_per_baseurl
+
 
         # echo "metadata_url_base: "$metadata_url_base
         # echo "metadata_url: "$metadata_url_base"oai:apeiron.iulm.it:10808/599"
@@ -184,8 +186,9 @@ echo "repositories_file=".$repositories_file
 
 # echo "url_out_file="$url_out_file
 # echo "opera_per_baseurl="$opera_per_baseurl
+# break
 
-        _prepare_todo_list $istituto $metadata_url_base $url_out_file;
+# FATTO A MANO PER TEST        _prepare_todo_list $istituto $metadata_url_base $url_out_file;
 
 
         # echo "Generiamo NBN per TESI/E-JOURNALS"
@@ -196,8 +199,8 @@ echo "repositories_file=".$repositories_file
             echo "Getting latest version of genera_nbn.pl"
             cp ~/workspace/perl/harvest/genera_nbn.pl scripts/.
 
-            # nbn_server="http://127.0.0.1:5003/api/nbn_generator.pl"
-            nbn_server="http://nbn-collaudo.depositolegale.it/api/nbn_generator.pl"
+            nbn_server="http://127.0.0.1:5004/api/nbn_generator.pl"
+            # nbn_server="http://nbn-collaudo.depositolegale.it/api/nbn_generator.pl"
         elif [ "$ambiente" == "collaudo" ]; then
             nbn_server="http://nbn-collaudo.depositolegale.it/api/nbn_generator.pl"
 

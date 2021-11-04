@@ -219,7 +219,7 @@ ETD_NEW_HARVEST_DATE_LIST="./csv/etd_new_harvest_date.csv"
 # E_JOURNALS_CSV="./e_journals.csv"
 # E_JOURNALS_CLEAN="e_journals_clean.csv"
 
-E_JOURNALS_CSV="./csv/e_journals.csv.srt"
+E_JOURNALS_CSV="./csv/e_journals.csv"
 E_JOURNALS_CLEAN="./csv/e_journals_clean.csv.srt"
 
 E_JOURNALS_LAST_HARVEST_DATE="./csv/e_journals_last_harvest_date.csv"
@@ -473,20 +473,20 @@ function init_variables()
     echo "#!/bin/bash" > scripts/DbDeleteUnembargoed_env.con
     echo "" >> scripts/DbDeleteUnembargoed_env.con
     parse_delete_unembargoed_con scripts/DbDeleteUnembargoed.con $ambiente
-    source scripts/DbDeleteUnembargoed_env.con
+    # source scripts/DbDeleteUnembargoed_env.con
 
 
     # Prepara la configurazione di upload in base all'ambiente di lavoro
     echo "#!/bin/bash" > scripts/DbUpdateInsertEmbargoed_env.con
     echo "" >> scripts/DbUpdateInsertEmbargoed_env.con
     parse_update_insert_con scripts/DbUpdateInsertEmbargoed.con $ambiente
-    source scripts/DbUpdateInsertEmbargoed_env.con
+    # source scripts/DbUpdateInsertEmbargoed_env.con
 
     # Prepara la configurazione di upload in base all'ambiente di lavoro
     echo "#!/bin/bash" > scripts/DbUpdateInsertS3_env.con
     echo "" >> scripts/DbUpdateInsertS3_env.con
     parse_update_insert_s3_con scripts/DbUpdateInsertS3.con $ambiente
-    source scripts/DbUpdateInsertS3_env.con
+    # source scripts/DbUpdateInsertS3_env.con
 
 
 

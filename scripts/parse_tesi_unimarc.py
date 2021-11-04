@@ -25,7 +25,7 @@ import re
 # sys.stderr.write("arg9 '"+sys.argv[9]+"'\n")
 # sys.stderr.write("arg10 '"+sys.argv[10]+"'\n")
 # sys.stderr.write("arg11 '"+sys.argv[11]+"'\n")
-# sys.stderr.write("arg11 '"+sys.argv[12]+"'\n")
+# sys.stderr.write("arg12 '"+sys.argv[12]+"'\n")
 
 
 metadati_filename = sys.argv[1]
