@@ -71,7 +71,7 @@ function _find_rights_unique()
       line=${array[0]}
       # se riga comentata o vuota skip
 
-echo "line=$line"
+# echo "line=$line"
       if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];     then
         continue
       fi

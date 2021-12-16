@@ -38,7 +38,7 @@ function _do_unimarc_mrk()
     echo "------>nbn_file="$nbn_file
 
 
-    echo "Starting counter from $ctr_001"
+    # echo "Starting counter from $ctr_001"
 
 
     local ctr_file=$unimarc_dir"/ctr_001.txt"     # File con contatore per generazione BID

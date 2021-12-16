@@ -163,12 +163,13 @@ print_configuration
 
 # compress_indexes
 
+# make_receipts
+
 # createUnimarc
 
 # store_in_S3
 # temp_warcs_backup
 
-# make_receipts
 
 # check_for_receipts_mismatch
 
@@ -211,7 +212,7 @@ print_configuration
 # TESTING
 # ---------------
 
-
+# generate_nbn_identifiers_IN_STAND_BY
 
 # ---------------
 # END TESTING
