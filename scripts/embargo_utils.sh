@@ -18,9 +18,12 @@
 # • reserved = OPEN
 #   - Le tesi dichiarate ‘reserved’ possono essere interamente consultate da qualsiasi postazione collegata alle 
 #     reti interne della BNCF e della BNCR.
+# 
 # • none = OPEN
 #   - Le tesi dichiarate ‘none’ sono considerate interamente consultabili da qualsiasi postazione collegata alle reti 
 #     interne della BNCF e della BNCR.
+# 
+# • local = OPEN (LIUC Storti mail del 11/01/2022)
 # 
 # ==============
 # Tipo EMBARGOED

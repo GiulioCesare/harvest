@@ -44,9 +44,12 @@ for record in tree.xpath('//record'):
             jumpoffpageurl = jumpoffpage
 
         # print jumpoffpageurl
+
+        # 10/01/2021 Fixed access to descriptive page - 
         # Exclude LIUC descriptive page
-        if istituto != "liuc":
-            print jumpoffpageurl
+        # if istituto != "liuc":
+        #     print jumpoffpageurl
+        print jumpoffpageurl
 
 
         for components in record.findall(paths['components'], namespaces=ns):

@@ -470,5 +470,7 @@ function createUnimarc()
     echo "Aggiornare lista di tutti i bid aggiungendo i nuovi e rimuovendo i vecchi, lascian inalterati quelli modificati."
     update_oai_bid_dictionary_file $oai_bid_dictionary_file 
 
+    # Aggiorna il contatore per il prossimo giro
+    cp $unimarc_dir"/ctr_001.txt" $unimarc_dir"/ctr_001.txt."$harvest_date
 
 } # end createUnimarc

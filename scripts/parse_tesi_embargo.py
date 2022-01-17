@@ -164,6 +164,10 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                             i+=1
                             continue
                         date=dates[i].text.encode('utf-8')
+
+                        if (date == "In Press"):
+                            i+=1
+                            continue
                         
                         if discussion_date == "":
                             discussion_date=date
