@@ -249,6 +249,7 @@ source scripts/log_utils.sh
 source scripts/warc_utils.sh
 source scripts/receipt_utils.sh
 source scripts/unimarc_utils.sh
+source scripts/unimarc_doppioni_tesi.sh
 source scripts/archived_thesis.sh
 source scripts/embargo_utils.sh
 source scripts/report_utils.sh
@@ -355,6 +356,7 @@ function init_variables()
     redo_seeds_dir="$work_dir/07_redo_seeds"
     receipts_dir="$work_dir/08_receipts"
     unimarc_dir="$work_dir/09_unimarcs"
+    unimarc_doppioni_dir="$work_dir/09_unimarcs/doppioni"
     archived_dir="$work_dir/10_archived"
     nbn_dir="$work_dir/11_nbn"
     rights_dir="$work_dir/12_rights"
@@ -382,6 +384,7 @@ function init_variables()
         $warcs_log_dir
         $receipts_dir
         $unimarc_dir
+        $unimarc_doppioni_dir
         $archived_dir
         $nbn_dir
         $rights_dir
@@ -1443,6 +1446,7 @@ function print_configuration ()
     # echo "  warcs work area dir: $warcs_work_area_dir"
     # echo "  redo seeds dir:     $redo_seeds_dir"
     echo "  unimarc dir:         $unimarc_dir"
+    echo "  unimarc doppioni dir:         $unimarc_doppioni_dir"
     echo "  receipts dir:         $receipts_dir"
     echo "  archived dir:         $archived_dir"
     echo "  nbn dir:         $nbn_dir"
@@ -1733,7 +1737,7 @@ function count_all_seeds()
 function check_directories_existance()
 {
     echo
-    # echo "--> ENSURE SUBDIRECTORIES EXIST for $work_dir"
+    echo "--> ENSURE SUBDIRECTORIES EXIST for $work_dir"
 
      for directory in ${directories[*]}
      do

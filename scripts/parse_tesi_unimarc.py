@@ -300,7 +300,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
 
             dates=statements.findall(paths['dates'], namespaces=ns)
             # out_date="=100    $a"+"20190501d----------k--ita-50----ba"+" "
-            out_date="=100    $a"+"20190501d        --k--ita-50----ba"+" "
+            out_date="=100    $a"+"20"+year2d+"0501d        --k--ita-50----ba"+" "
             if dates is not None:
                 dates_len= len(dates)
                 if (dates_len > 0):
@@ -311,12 +311,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
                     #       Al posto di ‘xxxx’ vanno i primi 4 char di dc:data[0] se tutti e quattro sono numeri; altrimenti va ‘----'
                     sub = date[ 0 : 0 + 4]
                     if sub.isdigit():
-                        # print "=100    $a"+"20190501d"+sub+"------k--ita-50----ba"+" "
-                        # out_date = "=100    $a"+"20190501d"+sub+"------k--ita-50----ba"+" "
-                        out_date = "=100    $a"+"20190501d"+sub+"    --k--ita-50----ba"+" "
-
-            #         else:
-            #             print "=100    $a"+"20190501d----------k--ita-50----ba"+" "
+                        out_date = "=100    $a"+"20"+year2d+"0501d"+sub+"    --k--ita-50----ba"+" "
             print out_date
 
 
