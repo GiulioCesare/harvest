@@ -638,7 +638,7 @@ for record in tree.xpath('.//record'): # Selects all subelements, on all levels 
             #     print "=856  4 $uWAYBACK URL NOT FOUND"+"$2"+jumpoffpageurl
 
             # 25/01/2021 if istituto != "liuc":
-                print "=856  4 $u"+wayback_http_server+"/"+opac_archive_name+"/"+jumpoffpageurl+"$2"+jumpoffpageurl
+            print "=856  4 $u"+wayback_http_server+"/"+opac_archive_name+"/"+jumpoffpageurl+"$2"+jumpoffpageurl
 
 
 

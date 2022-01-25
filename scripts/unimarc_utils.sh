@@ -100,8 +100,9 @@ echo "year2d: $year2d"
         # ts=$WAYBACK_INDEX_DIR"/tmp/"$harvest_date"_tesi_"$istituto".cdxj.clean.ts"
         # echo "ts: "$ts
         echo "Create unimarc in formato ASCII for $metadati_filename"
+        # command="python scripts/parse_tesi_unimarc.py $metadati_filename $oai_bid_dictionary_file $nbn_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente $ctr_file $file_record_aggiornati $file_record_nuovi $file_record_cancellati $year2d"
         # 25/01/2022 command="python scripts/parse_tesi_unimarc.py $metadati_filename $oai_bid_dictionary_file $nbn_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente $ctr_file $file_record_aggiornati $file_record_nuovi $file_record_cancellati $file_record_cancellati_non_in_opac $year2d $istituto"
-        command="python scripts/parse_tesi_unimarc.py $metadati_filename $oai_bid_dictionary_file $nbn_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente $ctr_file $file_record_aggiornati $file_record_nuovi $file_record_cancellati $year2d"
+        command="python scripts/parse_tesi_unimarc.py $metadati_filename $oai_bid_dictionary_file $nbn_file $OPAC_COLLECTION_NAME $WAYBACK_HTTP_SERVER $ambiente $ctr_file $file_record_aggiornati $file_record_nuovi $file_record_cancellati $file_record_cancellati_non_in_opac $year2d"
 # echo "command=$command"
         eval $command > $unimarc_dir/$harvest_date_materiale"_"$istituto.mrk
     fi
