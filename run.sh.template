@@ -115,14 +115,6 @@ echo " `${ora}` Inizio processo di run.sh"
 echo "==================================================="
 
 
-# -------------
-# WHEN NEEDED
-# -------------
-# To execute if in need to recreate the .csv files for harvesting (./csv/etd.csv and ./csv/e_journals.csv )
-# NMB: per ora output in ./tmp per TESTING (csv_td.out, csv_ej.out)
-# 
-# scripts/csvDownload.sh  # Da schema harvest prepara i file in formato csv per l'harvest!!!
-# 
 
 # -------------
 # PRELIMINARIES
@@ -139,6 +131,17 @@ print_configuration
 # ----
 # MAIN
 # ----
+
+
+# -------------
+# ONCE AT HE START OF A HARVEST SESSION
+# -------------
+# To execute if in need to recreate the .csv files for harvesting (./csv/etd.csv and ./csv/e_journals.csv )
+#
+# NMB: scarica le tabelle in ./csv con estensione ".out"
+#
+# scripts/csvDownload.sh $materiale  $MATERIALE_TESI $MATERIALE_EJOURNAL
+
 
 
 # harvest_metadata
@@ -165,7 +168,12 @@ print_configuration
 
 # make_receipts
 
+
+# - Mettere nei file accessori unimarc anche la lista dei bid che devono essere presenti in opac
 # createUnimarc
+
+
+# IN STAND BY elabora_doppioni_tesi
 
 # store_in_S3
 # temp_warcs_backup
@@ -175,24 +183,19 @@ print_configuration
 
 # if [ $materiale == $MATERIALE_TESI ]; then
 #     # find_embargoed
-#     # NON NECESSARIO. Cancellazione da fare con script a parte. scripts/DbDeleteUnembargoed.sh          # Cancelliamo (se presenti) tesi NON sotto embargo
-#     # scripts/DbUpdateInsertEmbargoed.sh    # Carichiamo le tesi sotto embargo sul db
+#     # scripts/DbUpdateInsertEmbargoed.sh    # Carichiamo le tesi sotto embargo sul db. Cancellazione da fare con script a parte. scripts/DbDeleteUnembargoed.sh
 # fi
 
 
-
-
-
 # Rivedere prendendo date da log scarico metadati!!
-# generate_last_harvest_list
+# OLD generate_last_harvest_list
+# generate_harvest_dates_from_metadata_logs
 
 # make_report
 
 # ===================================
 # 27/11/2020 - Creazione file con range di date per l'harvest corrente
 # scripts/DbDownload.sh 	# Da schema harvest prendi l'nanagrafe e date (messi in csv)
-
-# generate_harvest_dates_from_metadata_logs
 
 # scripts/DbUpdateInsertHarvestDate.sh 	# Carichiamo range di date per l'ultimo harvest
 
@@ -242,29 +245,41 @@ echo "================="
 
 # =====================
 # OBSOLETE 
+# 
 # prepare_wget_sites_list
+# 
+# 22/12/2020
+# Procedura da farsi una tantum per splittare warc.gz troppo grandi da caricare unzippati su S3
+# Warc coinvolti solo alcuni dell'harvest del 05/08/2020
+# split_warcs
+
+# =====================
+# NO LONGER WANTED
+# 
+# Procedura da farsi una tantum per generare numero NBN delle tesi archiviate in memoria (storico)
+# generate_archived_thesis_nbn
+
+
 
 # =====================
 # PROCEDURE UNA TANTUM 
 # 
 # Solo se non abbiamo generato gli md5 precedentemente!!!
 # create_dest_warcs_md5
-
-# ---------------
-#  archived thesis per site
-# ---------------
+# 
+# Controlliamo se tesi archiviate in warc
 # find_archived_thesis
-# Procedura da farsi una tantum per generare numero NBN delle tesi archiviate in memoria (storico)
-# generate_archived_thesis_nbn
-
+# 
 # Procedura da farsi una tantum per recuperare il pregresso (storico) da DB MySql di BNCF
 # create_unimarc_from_dublin_core
 
-# 22/12/2020
-# Procedura da farsi una tantum per splittare warc.gz troppo grandi da caricare unzippati su S3
-# Warc coinvolti solo alcuni dell'harvest del 05/08/2020
-# split_warcs
 
-# END PROCEDURE UNA TANTUM 
 # =====================
+# TODO
+# 
+# 19/01/2022
+# TO DO export DB
+#     - manca la 005
+#     - in 100 data1 e data2  ha i trattini che devono diventare ' '
+
 
