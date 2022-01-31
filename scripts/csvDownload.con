@@ -7,7 +7,7 @@
 # --------------------
 # ambiente di sviluppo
 # --------------------
-#[sviluppo]
+[sviluppo]
 
 downloadDir=./csv/
 logFileOut=./logs/csvDownload.log
@@ -18,23 +18,72 @@ userName=md
 userPassword=md_pwd
 
 fieldSeparator=|
-#fieldSeparator=&$%
-#fieldSeparator=�
 rimuoviNewline=true
 # Progress counter in HEX Format
 progress=1FFF
 
+# Per l'export la query prende come TABLENAME il nome della tabella dall'elelnco
+query="select * from " $tableName ""
+endConfig
+
+etd query="SELECT '-', a.harvest_name, a.harvest_url, a.harvest_contact, a.harvest_format, a.harvest_set FROM harvest.anagrafe AS a JOIN nbn.datasource AS ds ON a.id_datasource = ds.datasourceID  where a.harvest_materiale = 'td' order by a.harvest_name;"
+
+e_journals query="SELECT '999', CONCAT(a.harvest_name, '-', ds.datasourceName) AS combo_ds, a.harvest_url, a.harvest_contact, a.harvest_format, a.harvest_set FROM harvest.anagrafe AS a JOIN nbn.datasource AS ds ON a.id_datasource = ds.datasourceID  where a.harvest_materiale = 'ej' order by combo_ds;"
+
+
+# --------------------
+# ambiente di collaudo
+# --------------------
+[collaudo]
+downloadDir=./csv/
+logFileOut=./logs/csvDownload.log
+jdbcDriver=com.mysql.cj.jdbc.Driver
+connectionUrl=jdbc:mysql://localhost:3306
+
+userName=md
+userPassword=md_pwd
+
+fieldSeparator=|
+rimuoviNewline=true
+# Progress counter in HEX Format
+progress=1FFF
 
 # Per l'export la query prende come TABLENAME il nome della tabella dall'elelnco
 query="select * from " $tableName ""
-
 endConfig
 
-# anagrafe_td query="select id_istituzione, id_datasource, harvest_name, harvest_materiale from anagrafe where harvest_materiale = 'td'"
-# date_td query="select * from date where harvest_materiale = 'td'"
+etd query="SELECT '-', a.harvest_name, a.harvest_url, a.harvest_contact, a.harvest_format, a.harvest_set FROM harvest.anagrafe AS a JOIN nbn.datasource AS ds ON a.id_datasource = ds.datasourceID  where a.harvest_materiale = 'td' order by a.harvest_name;"
 
-# csv_ej query="select * from harvest.anagrafe"
+e_journals query="SELECT '999', CONCAT(a.harvest_name, '-', ds.datasourceName) AS combo_ds, a.harvest_url, a.harvest_contact, a.harvest_format, a.harvest_set FROM harvest.anagrafe AS a JOIN nbn.datasource AS ds ON a.id_datasource = ds.datasourceID  where a.harvest_materiale = 'ej' order by combo_ds;"
 
+
+# --------------------
+# ambiente di esercizio
+# --------------------
+[esercizio]
+# OBSOLETE
+
+# --------------------
+# ambiente di esercizio nuovo
+# --------------------
+[nuovo_esercizio]
+
+downloadDir=./csv/
+logFileOut=./logs/csvDownload.log
+jdbcDriver=com.mysql.cj.jdbc.Driver
+connectionUrl=jdbc:mysql://localhost:3306/harvest?serverTimezone=UTC
+userName=harvest
+userPassword=harvest_pwd_2020
+
+
+fieldSeparator=|
+rimuoviNewline=true
+# Progress counter in HEX Format
+progress=1FFF
+
+# Per l'export la query prende come TABLENAME il nome della tabella dall'elelnco
+query="select * from " $tableName ""
+endConfig
 
 etd query="SELECT '-', a.harvest_name, a.harvest_url, a.harvest_contact, a.harvest_format, a.harvest_set FROM harvest.anagrafe AS a JOIN nbn.datasource AS ds ON a.id_datasource = ds.datasourceID  where a.harvest_materiale = 'td' order by a.harvest_name;"
 

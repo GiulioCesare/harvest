@@ -46,7 +46,7 @@ tmr=$(timer)
 echo "Ricostruiamo ./csv/etd.csv and ./csv/e_journals.csv da DB per essere aggiornati sugli istituti presenti"
 
 echo "Scarichiamo ler tabelle di etd ed e-journal"
-java -classpath $BIN_DIR:$BIN_DIR/jdbcDrivers/mysql-connector-java-8.0.13.jar DbDownload scripts/csvDownload.con
+java -classpath $BIN_DIR:$BIN_DIR/jdbcDrivers/mysql-connector-java-8.0.13.jar DbDownload scripts/csvDownload_env.con
 
 
 

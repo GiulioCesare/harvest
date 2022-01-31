@@ -14,6 +14,53 @@
 #. ~.bash_profile
 
 
+parse_csvDownload_con(){
+    echo "parse_csvDownload_con"
+    section_regex="^[[:blank:]]*\[([[:alpha:]_][[:alnum:]_]*)\][[:blank:]]*(#.*)?$"
+
+    [[ -f $1 ]] || { echo "$1 is not a file." >&2;return 1;}
+    if [[ -n $2 ]]
+    then
+        csvDownload_all_con=$1
+        ambiente=$2
+    fi
+    keep=0
+
+echo "csvDownload_all_con="$csvDownload_all_con
+echo "ambiente="$ambiente
+
+    while read -r line
+    do
+
+# echo "line="$line >> run_env.cfg
+
+    if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+        # echo "continue"
+          continue
+    fi
+    if [[ $line =~ $section_regex ]]; then
+        if [[ $keep == 1 ]]; then    # abbiamo incontrato l'inizio di un'altra sezione
+            break
+        fi
+        if [[ $line =~ $ambiente ]]; then
+            echo "# ========" >> scripts/csvDownload_env.con
+            echo "# $ambiente" >> scripts/csvDownload_env.con
+            echo "# ========" >> scripts/csvDownload_env.con
+            keep=1
+            continue;
+        fi
+    fi
+    if [[ $keep == 1 ]]; then
+        echo $line >> scripts/csvDownload_env.con
+    fi
+    done < $csvDownload_all_con
+     
+
+} # parse_csvDownload_con
+
+
+
+
 # Usage: parse_config <file> [<default array name>]
 parse_config(){
     section_regex="^[[:blank:]]*\[([[:alpha:]_][[:alnum:]_]*)\][[:blank:]]*(#.*)?$"
@@ -166,7 +213,7 @@ parse_delete_unembargoed_con(){
         echo $line >> scripts/DbDeleteUnembargoed_env.con
     fi
     done < $delete_unembargoed_all_con
-}
+} # parse_delete_unembargoed_con
 
 
 
@@ -478,7 +525,6 @@ function init_variables()
     parse_delete_unembargoed_con scripts/DbDeleteUnembargoed.con $ambiente
     # source scripts/DbDeleteUnembargoed_env.con
 
-
     # Prepara la configurazione di upload in base all'ambiente di lavoro
     echo "#!/bin/bash" > scripts/DbUpdateInsertEmbargoed_env.con
     echo "" >> scripts/DbUpdateInsertEmbargoed_env.con
@@ -491,6 +537,11 @@ function init_variables()
     parse_update_insert_s3_con scripts/DbUpdateInsertS3.con $ambiente
     # source scripts/DbUpdateInsertS3_env.con
 
+    # Prepara la configurazione di scasrico csv in base all'ambiente di lavoro
+    echo "#!/bin/bash" > scripts/csvDownload_env.con
+    echo "" >> scripts/csvDownload_env.con
+    parse_csvDownload_con scripts/csvDownload.con $ambiente
+    # source scripts/DbUpdateInsertS3_env.con
 
 
 if [[ -z "${HARVEST_UNIVE_PWD}" ]]; then
