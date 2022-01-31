@@ -26,9 +26,9 @@ progress=1FFF
 query="select * from " $tableName ""
 endConfig
 
-etd query="SELECT '-', a.harvest_name, a.harvest_url, a.harvest_contact, a.harvest_format, a.harvest_set FROM harvest.anagrafe AS a JOIN nbn.datasource AS ds ON a.id_datasource = ds.datasourceID  where a.harvest_materiale = 'td' order by a.harvest_name;"
+etd query="SELECT '-', a.harvest_name, a.harvest_url, a.harvest_contact, a.harvest_format, a.harvest_set FROM harvest.anagrafe AS a where a.harvest_materiale = 'td' order by a.harvest_name;"
 
-e_journals query="SELECT '999', CONCAT(a.harvest_name, '-', ds.datasourceName) AS combo_ds, a.harvest_url, a.harvest_contact, a.harvest_format, a.harvest_set FROM harvest.anagrafe AS a JOIN nbn.datasource AS ds ON a.id_datasource = ds.datasourceID  where a.harvest_materiale = 'ej' order by combo_ds;"
+e_journals query="SELECT '-', CONCAT(a.harvest_name, '-', ds.datasourceName) AS combo_ds, a.harvest_url, a.harvest_contact, a.harvest_format, a.harvest_set FROM harvest.anagrafe AS a   where a.harvest_materiale = 'ej' order by combo_ds;"
 
 
 # --------------------
@@ -52,9 +52,9 @@ progress=1FFF
 query="select * from " $tableName ""
 endConfig
 
-etd query="SELECT '-', a.harvest_name, a.harvest_url, a.harvest_contact, a.harvest_format, a.harvest_set FROM harvest.anagrafe AS a JOIN nbn.datasource AS ds ON a.id_datasource = ds.datasourceID  where a.harvest_materiale = 'td' order by a.harvest_name;"
+etd query="SELECT '-', a.harvest_name, a.harvest_url, a.harvest_contact, a.harvest_format, a.harvest_set FROM harvest.anagrafe AS a where a.harvest_materiale = 'td' order by a.harvest_name;"
 
-e_journals query="SELECT '999', CONCAT(a.harvest_name, '-', ds.datasourceName) AS combo_ds, a.harvest_url, a.harvest_contact, a.harvest_format, a.harvest_set FROM harvest.anagrafe AS a JOIN nbn.datasource AS ds ON a.id_datasource = ds.datasourceID  where a.harvest_materiale = 'ej' order by combo_ds;"
+e_journals query="SELECT '-', CONCAT(a.harvest_name, '-', ds.datasourceName) AS combo_ds, a.harvest_url, a.harvest_contact, a.harvest_format, a.harvest_set FROM harvest.anagrafe AS a   where a.harvest_materiale = 'ej' order by combo_ds;"
 
 
 # --------------------
@@ -85,7 +85,7 @@ progress=1FFF
 query="select * from " $tableName ""
 endConfig
 
-etd query="SELECT '-', a.harvest_name, a.harvest_url, a.harvest_contact, a.harvest_format, a.harvest_set FROM harvest.anagrafe AS a JOIN nbn.datasource AS ds ON a.id_datasource = ds.datasourceID  where a.harvest_materiale = 'td' order by a.harvest_name;"
+etd query="SELECT '-', a.harvest_name, a.harvest_url, a.harvest_contact, a.harvest_format, a.harvest_set FROM harvest.anagrafe AS a where a.harvest_materiale = 'td' order by a.harvest_name;"
 
-e_journals query="SELECT '999', CONCAT(a.harvest_name, '-', ds.datasourceName) AS combo_ds, a.harvest_url, a.harvest_contact, a.harvest_format, a.harvest_set FROM harvest.anagrafe AS a JOIN nbn.datasource AS ds ON a.id_datasource = ds.datasourceID  where a.harvest_materiale = 'ej' order by combo_ds;"
+e_journals query="SELECT '-', CONCAT(a.harvest_name, '-', ds.datasourceName) AS combo_ds, a.harvest_url, a.harvest_contact, a.harvest_format, a.harvest_set FROM harvest.anagrafe AS a   where a.harvest_materiale = 'ej' order by combo_ds;"
 

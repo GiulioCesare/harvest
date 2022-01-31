@@ -92,8 +92,8 @@ uploadDir=/_MATERIALE_/13_s3/
 jdbcDriver=com.mysql.cj.jdbc.Driver
 
 connectionUrl=jdbc:mysql://localhost:3306/harvest?serverTimezone=UTC
-userName=harvest
-userPassword=harvest_pwd_2020
+userName=md_ese
+userPassword=md_ese_pwd_2021
 
 fieldSeparator=|
 #fieldSeparator=�

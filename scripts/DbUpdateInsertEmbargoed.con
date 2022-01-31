@@ -84,8 +84,8 @@ uploadDir=./tesi/12_rights/
 jdbcDriver=com.mysql.cj.jdbc.Driver
 
 connectionUrl=jdbc:mysql://localhost:3306/harvest?serverTimezone=UTC
-userName=harvest
-userPassword=harvest_pwd_2020
+userName=md_ese
+userPassword=md_ese_pwd_2021
 
 fieldSeparator=|
 #fieldSeparator=�
