@@ -9,7 +9,7 @@
 # --------------------
 #[sviluppo]
 
-downloadDir=./tmp/
+downloadDir=./csv/
 logFileOut=./logs/csvDownload.log
 jdbcDriver=com.mysql.cj.jdbc.Driver
 connectionUrl=jdbc:mysql://localhost:3306
@@ -35,5 +35,8 @@ endConfig
 
 # csv_ej query="select * from harvest.anagrafe"
 
-csv_ej query="SELECT '999', CONCAT(a.harvest_name, '-', ds.datasourceName) AS combo_ds, a.harvest_url, a.harvest_contact, a.harvest_format, a.harvest_set FROM harvest.anagrafe AS a JOIN nbn.datasource AS ds ON a.id_datasource = ds.datasourceID  where a.harvest_materiale = 'ej' order by combo_ds;"
-csv_td query="SELECT '999', a.harvest_name, a.harvest_url, a.harvest_contact, a.harvest_format, a.harvest_set FROM harvest.anagrafe AS a JOIN nbn.datasource AS ds ON a.id_datasource = ds.datasourceID  where a.harvest_materiale = 'td' order by a.harvest_name;"
+
+etd query="SELECT '-', a.harvest_name, a.harvest_url, a.harvest_contact, a.harvest_format, a.harvest_set FROM harvest.anagrafe AS a JOIN nbn.datasource AS ds ON a.id_datasource = ds.datasourceID  where a.harvest_materiale = 'td' order by a.harvest_name;"
+
+e_journals query="SELECT '999', CONCAT(a.harvest_name, '-', ds.datasourceName) AS combo_ds, a.harvest_url, a.harvest_contact, a.harvest_format, a.harvest_set FROM harvest.anagrafe AS a JOIN nbn.datasource AS ds ON a.id_datasource = ds.datasourceID  where a.harvest_materiale = 'ej' order by combo_ds;"
+

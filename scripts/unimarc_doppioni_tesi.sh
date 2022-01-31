@@ -4,11 +4,47 @@
 # Modulo per l'individuazione di tesi duplicate con diverso BID
 # Richiesta Dr. Sperabene, BNCR
 
+# =================================================================================
+# ALGORITMO:
+# - Troviamo i doppioni nui file unimarc per ogni istituzione di ogni harvest fatto in base al titolo e autore e produciamo un file che contenga:
+#     - la data dell'harvest 
+#     - il BID generato da procedura di harvest
+#     - l'OAI identifier presente nei metadati 
+#     - il titolo della tesi
+#     - l'auore della tesi
+# 
+# - Mettiamo tutti i doppioni trovati in un unico file
+# 
+# - Produciamo la lista dei BID di tutte le tesi cancellate indicate nei metadati
+# 
+# - Rimuoviamo dalla lista dei doppioni eventuali tesi cancellate
+# 
+# - Ordiniamo i duplicati per
+#     - Titolo
+#     - Autore
+#     - BID
+#     - Ddata di harvest
+# 
+# - Facciamo la conta delle rtipetizioni per ogni tesi dupplicata e produciamo una lista che contiene le tesi univoche ed il contatore delle ripetizioni
+#     - Numero di occorrenze
+#     - la data dell'harvest 
+#     - un BID generato da procedura di harvest
+#     - un OAI identifier presente nei metadati 
+#     - il titolo della tesi
+#     - l'auore della tesi
+# 
+# - Produrre una lista per ogni istituzione con l'elenco dei duplicati
+#     Questa lista va inviata alla istituzione perche' proceda alla bonifica.
+# 
+# - All'harvest successivo le tesi duplicate cancellate verranno rimosse dall'Opac
+# 
+# =================================================================================
+# Impegno 7 GG ca per tesi uguali
+
 
 
 
 # File in ordine di creazione
-
 declare -a tesi_mrk_AR=(
 	"./tesi_2018_10_18_storico/09_unimarcs/db/2020_01_26_tesi_db.mrk" 
     "./tesi_2020_08_05/09_unimarcs/2020_08_05_tesi_all.mrk" 
@@ -17,11 +53,15 @@ declare -a tesi_mrk_AR=(
     "./tesi_2022_01_09/09_unimarcs/2022_01_09_tesi_all.mrk"
     )
 
+# Elenchi dei BID cancellati
+declare -a tesi_del_file_AR=(
+    "./tesi_2020_08_05/09_unimarcs/2020_08_05_tesi_oai_bid_deleted.all" 
+    "./tesi_2021_01_19/09_unimarcs/2021_01_19_tesi_oai_bid_deleted.all"
+    "./tesi_2021_09_23/09_unimarcs/2021_09_23_tesi_oai_bid_deleted.all"
+    "./tesi_2022_01_09/09_unimarcs/2022_01_09_tesi_oai_bid_deleted.all"
+    )
 
-
-
-
-
+declare -a tesi_del_record_AR
 
 
 function extract_mkr_duplicates()
@@ -119,9 +159,46 @@ awk_command='
 } # end extract_mkr_duplicates
 
 
+function upload_deleted_records ()
+{
+	# echo "upload deleted records from harvests"
+	for delfile in "${tesi_del_file_AR[@]}"
+	do
+	   echo " --> upload deleted records from: $delfile"
+	
+
+awk_command='
+    BEGIN{FS="|"; }
+    {
+
+	tesi_del_record_AR[$2]=$0
+	# print $2
+
+    }
+    END{
+
+	# for (key in tesi_del_record_AR) 
+	# 	{ 
+	# 		print tesi_del_record_AR[key] 
+	# 	}
+
+    }
+
+    '
+
+    awk "$awk_command"  $delfile
+	done
+
+} # end upload_deleted_records
+
+
 function elabora_mrk_all()
 {
 	echo "elabora_mrk_all"
+
+	upload_deleted_records
+
+
 
 	# echo "Get duplicates from each unimarc mrk file"
 	# for mrkfile in "${tesi_mrk_AR[@]}"
@@ -145,25 +222,37 @@ function elabora_mrk_all()
 	# 	cat $unimarc_doppioni_dir"/"$fname".txt.srt.dup" >> $unimarc_doppioni_dir"/tesi_all.dup"
 	# done
 
+# Remove deleted thesis (if any)
+awk_command='
+    BEGIN{FS="|"; }
+    {
+    # If line commented or empty
+    if ($1 ~ "#"  || $1 == "")
+        next
+
+    if ($2 in tesi_del_file_AR)
+        {
+         print "Rimuovi "$2" dai doppioni"
+         # TODO 
+        }
+
+    fi
+    }'
+
+    awk "$awk_command"  $unimarc_doppioni_dir"/tesi_all.dup"
 
 
 
-	# echo "Order dups by TITLE/BID/HARVEST DATE"
- #    sort -T . -t\| -k 4 -k 2 -k 1 $unimarc_doppioni_dir"/tesi_all.dup" > $unimarc_doppioni_dir"/tesi_all.dup.TBH.srt"
+
+	# echo "Order dups by TITLE/AUTHOR/BID/HARVEST DATE"
+ #    sort -T . -t\| -k 4 -k5 -k 2 -k 1 $unimarc_doppioni_dir"/tesi_all.dup" > $unimarc_doppioni_dir"/tesi_all.dup.TABH.srt"
 
 
-	echo "Find out how many thesis are duplicate and each count"
-	# uniq -f3 -c $unimarc_doppioni_dir"/tesi_all.dup" | sort -n -k 1 > $unimarc_doppioni_dir"/tesi_all.dup.unq.cnt"
-	# Toppa: 22 2020_01_26|TD15024269|oai:elea.unisa.it:10556/1677|Salerno. Il Porto (sono 2 occorrenze e non 22)
-	uniq -f3 -c $unimarc_doppioni_dir"/tesi_all.dup.TBH.srt" | sort -n -k 1 > $unimarc_doppioni_dir"/tesi_all.dup.TBH.srt.unq.cnt"
-	
-
-	echo "Get duplicate thesis count"
-	uniq_dups=`cat $unimarc_doppioni_dir"/tesi_all.dup.TBH.srt.unq.cnt" | wc -l`
-	echo "Dupulicate thesis are: " $uniq_dups
-
-
-
+	# echo "Find out how many thesis are duplicate and each count"
+	# uniq -f3 -c $unimarc_doppioni_dir"/tesi_all.dup.TABH.srt" | sort -n -k 1 > $unimarc_doppioni_dir"/tesi_all.dup.TABH.srt.unq.cnt"
+	# echo "Get duplicate thesis count"
+	# uniq_dups=`cat $unimarc_doppioni_dir"/tesi_all.dup.TABH.srt.unq.cnt" | wc -l`
+	# echo "Dupulicate thesis are: " $uniq_dups
 
 } # end elabora_mrk_all
 
