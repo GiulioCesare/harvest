@@ -63,11 +63,15 @@ function generate_harvest_dates_from_metadata_logs()
   
     echo "generate_harvest_dates"
 
+
     load_anagrafe_array
 
+pwd
     harvested_dates="csv/date.upd_ins"
+echo "harvested_dates =  $harvested_dates"
 
-    if [ -f harvested_dates ]; then
+    if [ -f $harvested_dates ]; then
+        echo "Removing $harvested_dates"
         rm $harvested_dates
     fi
 
@@ -107,10 +111,22 @@ function generate_harvest_dates_from_metadata_logs()
 
 
         db_line="${log_line/$'\n'/'|'}"
+
+        # get the session date
+        fname=$(basename -- "$log_filename")
+        
+        session_date=${fname:0:10}
+
+# echo "session_date=$session_date"        
+        session_date="${session_date//'_'/'-'}"
+# echo "session_date=$session_date"        
+
+        db_line=$db_line"|"$session_date
         
         echo ${anagrafe_ar[$istituto]}"|$db_line" >> $harvested_dates
 
     done < $HARVEST_DIR/$repositories_file
+
 
 } # End generate_harvest_dates_from_metadata_logs
 

@@ -45,7 +45,9 @@ tmr=$(timer)
 
 #java -Xmx256m -classpath ../:classes12.jar it.finsiel.offlineExport.DbDownload downloadIND.prova.txt
 # /opt/java/jdk1.6.0_31/bin/java -Xmx256m -classpath $BIN_DIR:$BIN_DIR/ojdbc6.jar it.finsiel.offlineExport.DbDownload downloadIND.prova.txt
-java -classpath $BIN_DIR:$BIN_DIR/jdbcDrivers/mysql-connector-java-8.0.13.jar DbDownload scripts/DbDownload.con
+# java -classpath $BIN_DIR:$BIN_DIR/jdbcDrivers/mysql-connector-java-8.0.13.jar DbDownload scripts/DbDownload.con
+
+java -classpath $BIN_DIR:$BIN_DIR/jdbcDrivers/mysql-connector-java-8.0.13.jar DbDownload scripts/DbDownload_env.con
 
 echo `${ora}` "Fine processo di DbDownload.sh" 
  

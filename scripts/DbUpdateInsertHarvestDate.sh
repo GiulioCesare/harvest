@@ -21,7 +21,7 @@ tmr=$(timer)
 
 echo Caricamento DB
 # java e' configurato nella variabile di ambiente PATH
-java -classpath $BIN_DIR:$BIN_DIR/jdbcDrivers/mysql-connector-java-8.0.13.jar DbUpdateInsert scripts/DbUpdateInsertHarvestDate.cfg scripts/DbUpdateInsertHarvestDate.con
+java -classpath $BIN_DIR:$BIN_DIR/jdbcDrivers/mysql-connector-java-8.0.13.jar DbUpdateInsert scripts/DbUpdateInsertHarvestDate.cfg scripts/DbUpdateInsertHarvestDate_env.con
 
 
 

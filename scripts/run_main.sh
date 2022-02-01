@@ -14,6 +14,101 @@
 #. ~.bash_profile
 
 
+parse_DbDownload_con(){
+
+    echo "parse_DbDownload_con"
+    section_regex="^[[:blank:]]*\[([[:alpha:]_][[:alnum:]_]*)\][[:blank:]]*(#.*)?$"
+
+    [[ -f $1 ]] || { echo "$1 is not a file." >&2;return 1;}
+    if [[ -n $2 ]]
+    then
+        DbDownload_all_con=$1
+        ambiente=$2
+    fi
+    keep=0
+
+# echo "DbDownload_all_con="$DbDownload_all_con > tmp_env.cfg
+# echo "ambiente="$ambiente >> tmp_env.cfg
+
+    while read -r line
+    do
+
+# echo "->line=$line" >> tmp_env.cfg
+
+    if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+        # echo "continue"
+          continue
+    fi
+    if [[ $line =~ $section_regex ]]; then
+        if [[ $keep == 1 ]]; then    # abbiamo incontrato l'inizio di un'altra sezione
+            # echo "abbiamo incontrato l'inizio di un'altra sezione $line"
+            break
+        fi
+        if [[ $line =~ $ambiente ]]; then
+            echo "# ========" >> scripts/DbDownload_env.con
+            echo "# $ambiente" >> scripts/DbDownload_env.con
+            echo "# ========" >> scripts/DbDownload_env.con
+            keep=1
+            continue;
+        fi
+    fi
+    if [[ $keep == 1 ]]; then
+        echo "$line" >> scripts/DbDownload_env.con
+    fi
+    done < $DbDownload_all_con
+
+} # parse_DbDownload_con
+
+
+parse_DbUpdateInsertHarvestDate_con(){
+
+    echo "parse_DbUpdateInsertHarvestDate_con"
+    section_regex="^[[:blank:]]*\[([[:alpha:]_][[:alnum:]_]*)\][[:blank:]]*(#.*)?$"
+
+    [[ -f $1 ]] || { echo "$1 is not a file." >&2;return 1;}
+    if [[ -n $2 ]]
+    then
+        DbDownload_all_con=$1
+        ambiente=$2
+    fi
+    keep=0
+
+# echo "DbDownload_all_con="$DbDownload_all_con
+# echo "ambiente="$ambiente
+
+    while read -r line
+    do
+
+# echo "line="$line >> run_env.cfg
+
+    if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+        # echo "continue"
+          continue
+    fi
+    if [[ $line =~ $section_regex ]]; then
+        if [[ $keep == 1 ]]; then    # abbiamo incontrato l'inizio di un'altra sezione
+            break
+        fi
+        if [[ $line =~ $ambiente ]]; then
+            echo "# ========" >> scripts/DbUpdateInsertHarvestDate_env.con
+            echo "# $ambiente" >> scripts/DbUpdateInsertHarvestDate_env.con
+            echo "# ========" >> scripts/DbUpdateInsertHarvestDate_env.con
+            keep=1
+            continue;
+        fi
+    fi
+    if [[ $keep == 1 ]]; then
+        echo "$line" >> scripts/DbUpdateInsertHarvestDate_env.con
+    fi
+    done < $DbDownload_all_con
+
+} # parse_DbUpdateInsertHarvestDate_con
+
+
+
+
+
+
 parse_csvDownload_con(){
     echo "parse_csvDownload_con"
     section_regex="^[[:blank:]]*\[([[:alpha:]_][[:alnum:]_]*)\][[:blank:]]*(#.*)?$"
@@ -51,10 +146,9 @@ echo "ambiente="$ambiente
         fi
     fi
     if [[ $keep == 1 ]]; then
-        echo $line >> scripts/csvDownload_env.con
+        echo "$line" >> scripts/csvDownload_env.con
     fi
     done < $csvDownload_all_con
-     
 
 } # parse_csvDownload_con
 
@@ -113,7 +207,7 @@ parse_update_insert_con(){
     keep=0
     while read -r line
     do
-# echo "line="$line >> run_env.cfg
+# echo "line="$line >> tmp_env.cfg
 
     if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
         # echo "continue"
@@ -132,7 +226,7 @@ parse_update_insert_con(){
         fi
     fi
     if [[ $keep == 1 ]]; then
-        echo $line >> scripts/DbUpdateInsertEmbargoed_env.con
+        echo "$line" >> scripts/DbUpdateInsertEmbargoed_env.con
     fi
     done < $update_insert_all_con
 } # End parse_update_insert_con
@@ -173,7 +267,7 @@ parse_update_insert_s3_con(){
 
         line=${line/_MATERIALE_/$work_dir}
 
-        echo $line >> scripts/DbUpdateInsertS3_env.con
+        echo "$line" >> scripts/DbUpdateInsertS3_env.con
     fi
     done < $update_insert_s3_all_con
 } # End parse_update_insert_s3_con
@@ -210,7 +304,7 @@ parse_delete_unembargoed_con(){
         fi
     fi
     if [[ $keep == 1 ]]; then
-        echo $line >> scripts/DbDeleteUnembargoed_env.con
+        echo "$line" >> scripts/DbDeleteUnembargoed_env.con
     fi
     done < $delete_unembargoed_all_con
 } # parse_delete_unembargoed_con
@@ -523,25 +617,39 @@ function init_variables()
     echo "#!/bin/bash" > scripts/DbDeleteUnembargoed_env.con
     echo "" >> scripts/DbDeleteUnembargoed_env.con
     parse_delete_unembargoed_con scripts/DbDeleteUnembargoed.con $ambiente
-    # source scripts/DbDeleteUnembargoed_env.con
+    
 
     # Prepara la configurazione di upload in base all'ambiente di lavoro
     echo "#!/bin/bash" > scripts/DbUpdateInsertEmbargoed_env.con
     echo "" >> scripts/DbUpdateInsertEmbargoed_env.con
     parse_update_insert_con scripts/DbUpdateInsertEmbargoed.con $ambiente
-    # source scripts/DbUpdateInsertEmbargoed_env.con
+    
 
     # Prepara la configurazione di upload in base all'ambiente di lavoro
     echo "#!/bin/bash" > scripts/DbUpdateInsertS3_env.con
     echo "" >> scripts/DbUpdateInsertS3_env.con
     parse_update_insert_s3_con scripts/DbUpdateInsertS3.con $ambiente
-    # source scripts/DbUpdateInsertS3_env.con
+    
 
-    # Prepara la configurazione di scasrico csv in base all'ambiente di lavoro
+    # Prepara la configurazione di scarico csv in base all'ambiente di lavoro
     echo "#!/bin/bash" > scripts/csvDownload_env.con
     echo "" >> scripts/csvDownload_env.con
     parse_csvDownload_con scripts/csvDownload.con $ambiente
-    # source scripts/DbUpdateInsertS3_env.con
+    
+
+    
+    # Prepara la configurazione di scarico csv in base all'ambiente di lavoro
+    echo "#!/bin/bash" > scripts/DbUpdateInsertHarvestDate_env.con
+    echo "" >> scripts/DbUpdateInsertHarvestDate_env.con
+    parse_DbUpdateInsertHarvestDate_con scripts/DbUpdateInsertHarvestDate.con $ambiente
+
+    # Prepara la configurazione di scarico csv in base all'ambiente di lavoro
+    echo "#!/bin/bash" > scripts/DbDownload_env.con
+    echo "" >> scripts/DbDownload_env.con
+    parse_DbDownload_con scripts/DbDownload.con $ambiente
+    
+
+
 
 
 if [[ -z "${HARVEST_UNIVE_PWD}" ]]; then

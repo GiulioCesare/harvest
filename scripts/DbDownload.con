@@ -1,13 +1,13 @@
 #========================================================================================
 #
-# Elenco dei file da usare per esportare DB per creare unimarc offline
+# 01/02/2022 Elenco dei file da usare per esportare DB per creare unimarc offline
 #
 #========================================================================================
 
 # --------------------
 # ambiente di sviluppo
 # --------------------
-#[sviluppo]
+[sviluppo]
 
 downloadDir=./csv/
 logFileOut=./logs/DbDownload.log
@@ -18,12 +18,9 @@ userName=md
 userPassword=md_pwd
 
 fieldSeparator=|
-#fieldSeparator=&$%
-#fieldSeparator=�
 rimuoviNewline=true
 # Progress counter in HEX Format
 progress=1FFF
-
 
 # Per l'export la query prende come TABLENAME il nome della tabella dall'elelnco
 query="select * from " $tableName " where fl_canc != 'S'"
@@ -31,5 +28,65 @@ query="select * from " $tableName " where fl_canc != 'S'"
 endConfig
 
 anagrafe_td query="select id_istituzione, id_datasource, harvest_name, harvest_materiale from anagrafe where harvest_materiale = 'td'"
+anagrafe_ej query="select id_istituzione, id_datasource, harvest_name, harvest_materiale from anagrafe where harvest_materiale = 'ej'"
 date_td query="select * from date where harvest_materiale = 'td'"
+date_ej query="select * from date where harvest_materiale = 'ej'"
+
+
+# --------------------
+# ambiente di collaudo
+# --------------------
+[collaudo]
+
+downloadDir=./csv/
+logFileOut=./logs/DbDownload.log
+jdbcDriver=com.mysql.cj.jdbc.Driver
+connectionUrl=jdbc:mysql://localhost:3306/harvest
+
+userName=md
+userPassword=md_pwd
+
+fieldSeparator=|
+rimuoviNewline=true
+# Progress counter in HEX Format
+progress=1FFF
+
+# Per l'export la query prende come TABLENAME il nome della tabella dall'elelnco
+query="select * from " $tableName " where fl_canc != 'S'"
+
+endConfig
+
+anagrafe_td query="select id_istituzione, id_datasource, harvest_name, harvest_materiale from anagrafe where harvest_materiale = 'td'"
+anagrafe_ej query="select id_istituzione, id_datasource, harvest_name, harvest_materiale from anagrafe where harvest_materiale = 'ej'"
+date_td query="select * from date where harvest_materiale = 'td'"
+date_ej query="select * from date where harvest_materiale = 'ej'"
+
+
+# --------------------
+# ambiente di esercizio nuovo
+# --------------------
+[nuovo_esercizio]
+
+downloadDir=./csv/
+logFileOut=./logs/DbDownload.log
+jdbcDriver=com.mysql.cj.jdbc.Driver
+connectionUrl=jdbc:mysql://localhost:3306/harvest
+
+userName=md_ese
+userPassword=md_ese_pwd_2021
+
+fieldSeparator=|
+rimuoviNewline=true
+# Progress counter in HEX Format
+progress=1FFF
+
+# Per l'export la query prende come TABLENAME il nome della tabella dall'elelnco
+query="select * from " $tableName " where fl_canc != 'S'"
+
+endConfig
+
+anagrafe_td query="select id_istituzione, id_datasource, harvest_name, harvest_materiale from anagrafe where harvest_materiale = 'td'"
+anagrafe_ej query="select id_istituzione, id_datasource, harvest_name, harvest_materiale from anagrafe where harvest_materiale = 'ej'"
+date_td query="select * from date where harvest_materiale = 'td'"
+date_ej query="select * from date where harvest_materiale = 'ej'"
 

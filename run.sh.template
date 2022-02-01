@@ -187,19 +187,15 @@ print_configuration
 # fi
 
 
-# Rivedere prendendo date da log scarico metadati!!
-# OLD generate_last_harvest_list
-# generate_harvest_dates_from_metadata_logs
-
 # make_report
 
 # ===================================
-# 27/11/2020 - Creazione file con range di date per l'harvest corrente
-# scripts/DbDownload.sh 	# Da schema harvest prendi l'nanagrafe e date (messi in csv)
+# Aggiornamento last harvest date
 
+# scripts/DbDownload.sh 	# Da schema harvest prendi dati dell'nanagrafe e date (in ./csv)
+# generate_harvest_dates_from_metadata_logs
 # scripts/DbUpdateInsertHarvestDate.sh 	# Carichiamo range di date per l'ultimo harvest
 
-# generate_last_harvest_dates
 # ===================================
 
 
