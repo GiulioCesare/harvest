@@ -2035,7 +2035,7 @@ replace_warc_indexes_with_compressed_ones_in_memoria
 # 04/10/2021
 function check_harvest()
 {
-    echo "function check_harvest()"
+echo "function check_harvest()"
 # Controlli per vedere se abbiamo scaricato meno di quanto dovuto
 # ---------------------------------------------------------------
 get_warcked_seeds_and_not_from_logs
