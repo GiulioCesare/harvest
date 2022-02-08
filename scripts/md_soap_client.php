@@ -91,7 +91,7 @@
      
      try {
          $client = new SoapClient($webServicesServer . "/MagazziniDigitaliServices/services/CheckMDPort?wsdl",
-             //*array('soap_version'   => SOAP_1_4)
+             // *array('soap_version'   => SOAP_1_4)
              array('exceptions' => true,)
              );
          //         var_dump($client->__getFunctions());
@@ -173,7 +173,7 @@ function sendFile($login, $password, $area_temporanea, $filename, $webServicesSe
         return;
     }
     if (! isset($software)) {
-        echo "<BR>Invalid Software authentication";
+        echo "Invalid Software authentication";
         return;
     }
 // var_dump($software);    

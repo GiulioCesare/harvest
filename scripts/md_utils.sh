@@ -116,17 +116,23 @@ function copy_istituto_warcs_to_temporary_area
     echo "copy_istituto_warcs_to_temporary_area: " $istituto
 
 
-wild_fn=$dest_warcs_dir"/$harvest_date_materiale"_"$istituto-*.warc.gz"
+	wild_fn=$dest_warcs_dir"/$harvest_date_materiale"_"$istituto-*.warc.gz*"
 
-echo "wild_fn: $wild_fn"
+	echo "wild_fn: $wild_fn"
 
     for filename in $wild_fn ; do
         echo ""
         echo "Process $filename"
         fname=$(basename -- "$filename")
 
-        echo "TODO copy $fname in area yemporanea"
-return
+if [ $fname == "2020_11_11_tesi_lumsa-00000.warc.gz" ]; then
+	echo "SKIP $fname" 
+	continue
+fi
+
+
+
+        echo "TODO copy $fname in area temporanea"
 
 
 
@@ -151,39 +157,59 @@ return
 
         # Copiamo il warc.gz in area temporanea
 
-        filename=$harvest_date_materiale"_"$istituto".warc.gz"
-        warc_source_filename=$dest_warcs_dir"/"$filename
+        # filename=$harvest_date_materiale"_"$istituto".warc.gz"
+        # filenameMD5=$filename".md5"
+        
+        warc_source_filename=$dest_warcs_dir"/"$fname
+        # warc_source_filename_md5=$warc_source_filename".md5"
+        
         area_temporanea=$root_area_temporanea"/"$p_iva
 
-        # echo "warc_source_filename: "$warc_source_filename
-        # echo "area_temporanea: "$area_temporanea
-        # echo "filename: "$filename
+        echo "warc_source_filename: "$warc_source_filename
+        # echo "warc_source_filename_md5: "$warc_source_filename_md5
+        echo "area_temporanea: "$area_temporanea
+        echo "fname: "$fname
+
 
         echo "creaiamo il link al file da caricare nella'area temporanea"
         # Il file linkato viene rimosso dalla procedura di MD una volta archiviato il documento
-        ln -s $warc_source_filename $area_temporanea"/"$filename
-        # ls -l $area_temporanea
-
+        ln -s $warc_source_filename $area_temporanea"/"$fname
         ret=$?
-
         if [ $ret -gt 0 ]
         then
-           echo "$ret: failed to create link " $warc_source_filename $area_temporanea"/"$filename
+           echo "$ret: failed to create link " $warc_source_filename""$area_temporanea"/"$fname
            # Probably already present
            # continue
         fi
+        echo "linked filename = "$area_temporanea"/"$fname
+
+
+        # ln -s $warc_source_filename_md5 $area_temporanea"/"$fname".md5"
+        # ret=$?
+        # if [ $ret -gt 0 ]
+        # then
+           # echo "$ret: failed to create link " $warc_source_filename""$area_temporanea"/"$fname
+           # # Probably already present
+           # # continue
+        # fi
+        # echo "linked filename = "$area_temporanea"/"$fname".md5"
 
 
         # Informo MD of file put in temporary area
         sw_login=${fields[2]}
         sw_pwd=${fields[3]}
 
-        # Output di invio dati a MD in file di log
-        echo "Informo MD che "$sw_login" ha messo "$filename" in "$root_area_temporanea"/"$p_iva
+        echo "Output di invio dati a MD in file di log"
+        echo "Informo MD che "$sw_login" ha messo "$fname" in "$root_area_temporanea"/"$p_iva
 
-        php scripts/md_soap_client.php $sw_login $sw_pwd $area_temporanea $filename $webServicesServer > $md_dir"/"$filename".md_log"
-        echo "Source: $warc_source_filename" >> $md_dir"/"$filename".md_log"
 
+        php scripts/md_soap_client.php $sw_login $sw_pwd $area_temporanea $fname $webServicesServer > $md_dir"/"$fname".md_log"
+        
+        echo "Source: $warc_source_filename" >> $md_dir"/"$fname".md_log"
+echo ""
+echo "==============>"
+echo ""
+      
       
         # Prepariamo il record da archiviare in DB harvest.storageMD
 
@@ -220,7 +246,7 @@ function copy_warcs_to_temporary_area ()
         istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
         # echo "istituto="$istituto
 
-        copy_istituto_warcs_to_temporary_area
+        copy_istituto_warcs_to_temporary_area $istituto
 
      done < "$repositories_file"
 
