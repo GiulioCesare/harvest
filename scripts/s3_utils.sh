@@ -835,13 +835,13 @@ echo "file_to_upload: $file_to_upload"
 
        	# Check if whole file to upload exist
 	    if [ ! -f $file_to_upload ]; then
-# echo "# Whole file does not exist. Could be a segmented file"
+				# echo "# Whole file does not exist. Could be a segmented file"
 
-# Trova meta.warc.gz
-wildfn=$dest_warcs_dir"/"$harvest_date_materiale"_"$istituto-????".warc.gz"
-# echo "wildfn: $wildfn"
-			if ls $wildfn > /dev/null 2>&1; then
-# echo "# UPLOADING SEGMENTED WARC"
+				# Trova meta.warc.gz
+				wildfn=$dest_warcs_dir"/"$harvest_date_materiale"_"$istituto-????".warc.gz"
+				# echo "wildfn: $wildfn"
+							if ls $wildfn > /dev/null 2>&1; then
+				# echo "# UPLOADING SEGMENTED WARC"
 			    # ========================
 		    	_upload_segmented_warc_to_s3 $istituto
 		    	continue
@@ -1111,7 +1111,7 @@ function upload_warc_logs_to_s3
 
 	upload_file_to_s3 $multipart_mode $file_to_upload $md5_file_to_upload $s3_path_filename $log_filename
 
-} # end upload_metadati_to_s3
+} # end upload_warc_logs_to_s3
 
 
 function prepare_harvest_record_warc_logs()
@@ -1177,3 +1177,58 @@ function prepare_harvest_record_unimarc()
 
 
 } # end prepare_harvest_record_metadati
+
+
+
+
+
+
+
+
+# function download_warcs_from_s3_custom()
+# {
+	# echo "--------------------------------"
+	# echo "Downloading warcs.gz from S3 storage"
+	# echo "warcs.gz will be downloaded with accociated .md5 file in same folder"
+# 
+# 
+  # local istituto="depositolegale"
+  # local warc_filename="2020_08_05_tesi_depositolegale.warc.gz.aa"
+  # local file_to_download_to="/mnt/volume2/backup/2021_09_23_tesi.da_mettere_altrove/froms3/"$warc_filename
+  # local md5_file_to_download_to=$file_to_download_to".md5"
+  # local s3_path_filename="harvest/2020_08_05_tesi/warcs/"$warc_filename
+# 
+# 
+  # echo "istituto="$istituto
+  # echo "ambiente="$ambiente
+  # echo " warc_filename="$warc_filename
+  # # echo " harvest_date_materiale="$harvest_date_materiale
+  # echo " file_to_download_to="$file_to_download_to
+  # echo " md5_file_to_download_to="$md5_file_to_download_to
+  # echo " s3_path_filename="$s3_path_filename
+# 
+# echo "DOWNLOADING"
+		# java -Damazons3.scanner.retrynumber=12 -Damazons3.scanner.maxwaittime=3 -Dcom.amazonaws.sdk.disableCertChecking \
+		# -cp "./bin/*" it.s3.s3clientMP.HighLevelMultipartUploadDownload \
+		# action=download \
+		# file_to_upload="dummy.warc.gz"\
+		# file_to_upload="dummy.warc.gz.md5"\
+		# s3_keyname=$s3_path_filename \
+		# file_to_download_to=$file_to_download_to \
+# 
+# 
+# # HighLevelMultipartUpload
+	# # action=upload|download
+	# # file_to_upload=source_filename,
+	# # md5_file_to_upload=md5_filename,
+	# # s3_keyname=S3_full_path_filename
+	# # file_to_download_to=local_destination_full_path_filename
+# 
+# 
+		# # check_download_integrity $file_to_download_to $md5_file_to_download_to
+# 
+# } # End download_warcs_from_s3_custom
+
+
+
+

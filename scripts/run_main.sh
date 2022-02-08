@@ -1976,7 +1976,7 @@ function store_in_S3()
 # Prima di fare le ricevute facciamo il salvataggio dei dati su S3
 #
 # # --------------------------------
-# Caricamebnto dati su S3 da harvest Almaviva 
+# Caricamento dati su S3 da harvest Almaviva 
 # 
 # Si usa il file etd.csv per guidare il caricamento
 # multipart_mode=true
@@ -1986,12 +1986,12 @@ function store_in_S3()
 # prepare_harvest_record_metadati
 # scripts/DbUpdateInsertS3.sh
 
-# upload_warcs_to_s3 $multipart_mode
+upload_warcs_to_s3 $multipart_mode
 # prepare_harvest_record_AV
 # scripts/DbUpdateInsertS3.sh
-
-
 # upload_warc_logs_to_s3 $multipart_mode
+
+
 # prepare_harvest_record_warc_logs
 # scripts/DbUpdateInsertS3.sh
 

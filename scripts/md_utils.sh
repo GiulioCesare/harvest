@@ -110,48 +110,25 @@ function copy_files_in_area_temporanea()
 
 
 
+function copy_istituto_warcs_to_temporary_area
+{
+    local istituto=$1
+    echo "copy_istituto_warcs_to_temporary_area: " $istituto
 
 
-# funzione gia' presente in warc-utils.sh
-#function copy_warc_to_destination_dir ()
-#{
-#    echo "copy_warc_to_destination_dir"
-#    local source_filename=$1
-#    local dest_filename=$2
-#
-#    echo "source_filename: " $source_filename
-#    echo "dest_filename: " $dest_filename
-#
-#
-#    echo "Copying $source_filename to $dest_filename"
-#    
-#    cp -p $source_filename $dest_filename
-#
-#    if [ $? -ne 0 ]; then
-#        echo "ERROR: while copying warc file!!! STOP COPYING"
-#        return 1 
-#    fi
-#    return 0 
-#} # End copy_warc_to_destination_dir
+wild_fn=$dest_warcs_dir"/$harvest_date_materiale"_"$istituto-*.warc.gz"
+
+echo "wild_fn: $wild_fn"
+
+    for filename in $wild_fn ; do
+        echo ""
+        echo "Process $filename"
+        fname=$(basename -- "$filename")
+
+        echo "TODO copy $fname in area yemporanea"
+return
 
 
-function copy_warcs_to_temporary_area ()
-    {
-     while IFS='|' read -r -a array line
-     do
-        line=${array[0]}
-
-        if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
-        break
-        fi
-
-        # se riga comentata o vuota skip
-        if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
-             continue
-        fi
-
-        istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
-        # echo "istituto="$istituto
 
         # Troviamo la partita iva da usare nell'area temporanea
         if test "${software_ar[$istituto]+isset}"
@@ -173,28 +150,28 @@ function copy_warcs_to_temporary_area ()
 
 
         # Copiamo il warc.gz in area temporanea
+
         filename=$harvest_date_materiale"_"$istituto".warc.gz"
         warc_source_filename=$dest_warcs_dir"/"$filename
-        # warc_dest_filename=$root_area_temporanea"/"$p_iva"/"$filename
         area_temporanea=$root_area_temporanea"/"$p_iva
 
-# echo "warc_source_filename: "$warc_source_filename
-# echo "area_temporanea: "$area_temporanea
-# echo "filename: "$filename
+        # echo "warc_source_filename: "$warc_source_filename
+        # echo "area_temporanea: "$area_temporanea
+        # echo "filename: "$filename
 
-echo "creaiamo il link al file da caricare nella'area temporanea"
-# Il file linkato viene rimosso dalla procedura di MD una volta archiviato il documento
-ln -s $warc_source_filename $area_temporanea"/"$filename
-# ls -l $area_temporanea
+        echo "creaiamo il link al file da caricare nella'area temporanea"
+        # Il file linkato viene rimosso dalla procedura di MD una volta archiviato il documento
+        ln -s $warc_source_filename $area_temporanea"/"$filename
+        # ls -l $area_temporanea
 
-ret=$?
+        ret=$?
 
-if [ $ret -gt 0 ]
-then
-   echo "$ret: failed to create link " $warc_source_filename $area_temporanea"/"$filename
-   # Probably already present
-   # continue
-fi
+        if [ $ret -gt 0 ]
+        then
+           echo "$ret: failed to create link " $warc_source_filename $area_temporanea"/"$filename
+           # Probably already present
+           # continue
+        fi
 
 
         # Informo MD of file put in temporary area
@@ -204,8 +181,8 @@ fi
         # Output di invio dati a MD in file di log
         echo "Informo MD che "$sw_login" ha messo "$filename" in "$root_area_temporanea"/"$p_iva
 
-php scripts/md_soap_client.php $sw_login $sw_pwd $area_temporanea $filename $webServicesServer > $md_dir"/"$filename".md_log"
-echo "Source: $warc_source_filename" >> $md_dir"/"$filename".md_log"
+        php scripts/md_soap_client.php $sw_login $sw_pwd $area_temporanea $filename $webServicesServer > $md_dir"/"$filename".md_log"
+        echo "Source: $warc_source_filename" >> $md_dir"/"$filename".md_log"
 
       
         # Prepariamo il record da archiviare in DB harvest.storageMD
@@ -220,7 +197,30 @@ echo "Source: $warc_source_filename" >> $md_dir"/"$filename".md_log"
 #       - data file
 #       - timestamp (creazione record) automatico
 
+    done
+} # End copy_istituto_warcs_to_temporary_area
 
+
+
+function copy_warcs_to_temporary_area ()
+    {
+     while IFS='|' read -r -a array line
+     do
+        line=${array[0]}
+
+        if [[ ${line:0:1} == "@" ]]; then # Ignore rest of file
+        break
+        fi
+
+        # se riga comentata o vuota skip
+        if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+             continue
+        fi
+
+        istituto=$(echo "${array[1]}" | cut -f 1 -d '.')
+        # echo "istituto="$istituto
+
+        copy_istituto_warcs_to_temporary_area
 
      done < "$repositories_file"
 
