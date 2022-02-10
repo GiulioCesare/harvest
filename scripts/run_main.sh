@@ -14,6 +14,51 @@
 #. ~.bash_profile
 
 
+parse_swLoginDownload_con()
+{
+echo "parse_swLoginDownload_con"
+
+    section_regex="^[[:blank:]]*\[([[:alpha:]_][[:alnum:]_]*)\][[:blank:]]*(#.*)?$"
+
+    [[ -f $1 ]] || { echo "$1 is not a file." >&2;return 1;}
+    if [[ -n $2 ]]
+    then
+        DbDownload_all_con=$1
+        ambiente=$2
+    fi
+    keep=0
+
+
+    while read -r line
+    do
+
+# echo "->line=$line" >> tmp_env.cfg
+
+    if [[ ${line:0:1} == "#" ]] || [[ ${line} == "" ]];  then
+        # echo "continue"
+          continue
+    fi
+    if [[ $line =~ $section_regex ]]; then
+        if [[ $keep == 1 ]]; then    # abbiamo incontrato l'inizio di un'altra sezione
+            # echo "abbiamo incontrato l'inizio di un'altra sezione $line"
+            break
+        fi
+        if [[ $line =~ $ambiente ]]; then
+            echo "# ========" >> scripts/swLoginDownload_env.con
+            echo "# $ambiente" >> scripts/swLoginDownload_env.con
+            echo "# ========" >> scripts/swLoginDownload_env.con
+            keep=1
+            continue;
+        fi
+    fi
+    if [[ $keep == 1 ]]; then
+        echo "$line" >> scripts/swLoginDownload_env.con
+    fi
+    done < $DbDownload_all_con
+
+} # End parse_swLoginDownload_con
+
+
 parse_DbDownload_con(){
 
     echo "parse_DbDownload_con"
@@ -648,6 +693,10 @@ function init_variables()
     echo "" >> scripts/DbDownload_env.con
     parse_DbDownload_con scripts/DbDownload.con $ambiente
     
+    # Prepara la configurazione di scarico sw_login in base all'ambiente di lavoro
+    echo "#!/bin/bash" > scripts/swLoginDownload_env.con
+    echo "" >> scripts/swLoginDownload_env.con
+    parse_swLoginDownload_con scripts/swLoginDownload.con $ambiente
 
 
 

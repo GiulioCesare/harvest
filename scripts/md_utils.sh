@@ -12,15 +12,11 @@
 # KO - gunzip su link cambia il file anche se read only?
 #     NOT GOOD - make target of link read only a.warc.gz
 #             gunzip will rename it  to a.warc after unzipping!!!!
-#             CAN\'T AFFORD THAT
+#             CAN'T AFFORD THAT
 
 declare -A software_ar
 
 
-function download_sites_software_login()
-{
-    echo "download_sites_software "     # in csv/sw_login.csv
-}
 
 
 
@@ -112,9 +108,9 @@ function load_sites_software_login_ar()
 
 function md_archive_file()
 {
-    local $istituto=$1
+    local istituto=$1
     local source_filename=$2
-    local fnmae=$4
+    local fnmae=$3
 
     sw=${software_ar[$istituto]};
     # echo "sw: "$sw
@@ -274,7 +270,15 @@ sw_login_file="csv/sw_login.csv"
 
 function prepare_docs_for_MD()
 {
-# download_sites_software_login
+    echo "download_sw_login "     # in csv/sw_login.csv
+    pwd
+    cd ./scripts
+    ./swLoginDownload.sh
+    cd ../csv
+    mv sw_login.out sw_login.csv
+    cd ..
+return;
+    
 
     if [ $ambiente == "sviluppo" ]; then
         echo "copying: /home/argentino/workspace/pdt/cli_app/md_soap_client.php scripts/."  
@@ -287,7 +291,7 @@ function prepare_docs_for_MD()
 
     load_sites_software_login_ar $sw_login_file
     # copy_warcs_to_temporary_area
-    copy_unimarc_to_temporary_area
+    # copy_unimarc_to_temporary_area
 
 
 } # end prepare_docs_for_MD

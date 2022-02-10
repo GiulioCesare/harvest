@@ -1,0 +1,83 @@
+#========================================================================================
+#
+# Elenco dei file da usare per esportare DB per creare unimarc offline
+#
+#========================================================================================
+
+# --------------------
+# ambiente di sviluppo
+# --------------------
+[sviluppo]
+
+downloadDir=../csv/
+logFileOut=../logs/swLoginDownload.log
+jdbcDriver=com.mysql.cj.jdbc.Driver
+connectionUrl=jdbc:mysql://localhost:3306/MagazziniDigitali3_Locale
+
+userName=md
+userPassword=md_pwd
+
+fieldSeparator=|
+rimuoviNewline=true
+# Progress counter in HEX Format
+progress=1FFF
+
+# Per l'export la query prende come TABLENAME il nome della tabella dall'elelnco
+query="select * from " $tableName ""
+endConfig
+
+sw_login query="select MDIstituzione.login, MDIstituzione.piva, MDSoftware.login, MDSoftware.password from MDIstituzione inner join MDSoftware on MDSoftware.id_istituzione=MDIstituzione.id order by MDIstituzione.login"
+
+
+
+
+
+
+# --------------------
+# ambiente di collaudo
+# --------------------
+[collaudo]
+downloadDir=../csv/
+logFileOut=../logs/swLoginDownload.log
+jdbcDriver=com.mysql.cj.jdbc.Driver
+connectionUrl=jdbc:mysql://localhost:3306/MagazziniDigitali3_Collaudo
+
+userName=md
+userPassword=md_pwd
+
+fieldSeparator=|
+rimuoviNewline=true
+# Progress counter in HEX Format
+progress=1FFF
+
+# Per l'export la query prende come TABLENAME il nome della tabella dall'elelnco
+query="select * from " $tableName ""
+endConfig
+
+sw_login query="select MDIstituzione.login, MDIstituzione.piva, MDSoftware.login, MDSoftware.password from MDIstituzione inner join MDSoftware on MDSoftware.id_istituzione=MDIstituzione.id order by MDIstituzione.login"
+
+
+# --------------------
+# ambiente di esercizio nuovo
+# --------------------
+[nuovo_esercizio]
+
+downloadDir=../csv/
+logFileOut=../logs/swLoginDownload.log
+jdbcDriver=com.mysql.cj.jdbc.Driver
+connectionUrl=jdbc:mysql://localhost:3306/MagazziniDigitali3?serverTimezone=UTC
+userName=md_ese
+userPassword=md_ese_pwd_2021
+
+
+fieldSeparator=|
+rimuoviNewline=true
+# Progress counter in HEX Format
+progress=1FFF
+
+# Per l'export la query prende come TABLENAME il nome della tabella dall'elelnco
+query="select * from " $tableName ""
+endConfig
+
+sw_login query="select MDIstituzione.login, MDIstituzione.piva, MDSoftware.login, MDSoftware.password from MDIstituzione inner join MDSoftware on MDSoftware.id_istituzione=MDIstituzione.id order by MDIstituzione.login"
+
