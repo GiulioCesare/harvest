@@ -40,7 +40,7 @@ sw_login query="select MDIstituzione.login, MDIstituzione.piva, MDSoftware.login
 downloadDir=../csv/
 logFileOut=../logs/swLoginDownload.log
 jdbcDriver=com.mysql.cj.jdbc.Driver
-connectionUrl=jdbc:mysql://localhost:3306/MagazziniDigitali3_Collaudo
+connectionUrl=jdbc:mysql://localhost:3306/MagazziniDigitali3_Collaudo?serverTimezone=UTC
 
 userName=md
 userPassword=md_pwd

@@ -258,6 +258,16 @@ function copy_unimarc_to_temporary_area ()
 
 
 
+function download_sw_login()
+{
+    echo "download_sw_login "     # in csv/sw_login.csv
+    pwd
+    cd ./scripts
+    ./swLoginDownload.sh
+    cd ../csv
+    mv sw_login.out sw_login.csv
+    cd ..
+} # End download_sw_login
 
 
 # =================================
@@ -270,15 +280,8 @@ sw_login_file="csv/sw_login.csv"
 
 function prepare_docs_for_MD()
 {
-    echo "download_sw_login "     # in csv/sw_login.csv
-    pwd
-    cd ./scripts
-    ./swLoginDownload.sh
-    cd ../csv
-    mv sw_login.out sw_login.csv
-    cd ..
-return;
-    
+    download_sw_login
+
 
     if [ $ambiente == "sviluppo" ]; then
         echo "copying: /home/argentino/workspace/pdt/cli_app/md_soap_client.php scripts/."  
@@ -288,8 +291,10 @@ return;
 
     echo "webServicesServer: "$webServicesServer
 
-
     load_sites_software_login_ar $sw_login_file
+
+echo "... UNCOMMENT TO CONTINUE"
+
     # copy_warcs_to_temporary_area
     # copy_unimarc_to_temporary_area
 

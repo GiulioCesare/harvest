@@ -198,8 +198,6 @@ function elabora_mrk_all()
 
 	upload_deleted_records
 
-
-
 	# echo "Get duplicates from each unimarc mrk file"
 	# for mrkfile in "${tesi_mrk_AR[@]}"
 	# do
@@ -209,12 +207,10 @@ function elabora_mrk_all()
 
 
 	# echo "--> Put all the duplicates together"
-
  #    if [ -f $unimarc_doppioni_dir"/tesi_all.dup" ]; then
  #    	echo "remove tesi_all.dup"
  #        rm $unimarc_doppioni_dir"/tesi_all.dup"
  #    fi
-
 	# for mrkfile in "${tesi_mrk_AR[@]}"
 	# do
 	#    	echo "  $mrkfile"
@@ -222,37 +218,36 @@ function elabora_mrk_all()
 	# 	cat $unimarc_doppioni_dir"/"$fname".txt.srt.dup" >> $unimarc_doppioni_dir"/tesi_all.dup"
 	# done
 
-# Remove deleted thesis (if any)
-awk_command='
-    BEGIN{FS="|"; }
-    {
-    # If line commented or empty
-    if ($1 ~ "#"  || $1 == "")
-        next
-
-    if ($2 in tesi_del_file_AR)
-        {
-         print "Rimuovi "$2" dai doppioni"
-         # TODO 
-        }
-
-    fi
-    }'
-
-    awk "$awk_command"  $unimarc_doppioni_dir"/tesi_all.dup"
+	# echo "Remove deleted thesis (if any)"
+	# awk_command='
+	# 	BEGIN{FS="|"; }
+	# 	{
+	# 	# If line commented or empty
+	# 	if ($1 ~ "#"  || $1 == "")
+	# 	    next
+	# 	if ($2 in tesi_del_file_AR)
+	# 	    {
+	# 	     print "Rimuovi "$2" dai doppioni"
+	# 	     # TODO 
+	# 	    }
+	# 	fi
+	# 	}'
+ #    awk "$awk_command"  $unimarc_doppioni_dir"/tesi_all.dup"
 
 
 
 
-	# echo "Order dups by TITLE/AUTHOR/BID/HARVEST DATE"
- #    sort -T . -t\| -k 4 -k5 -k 2 -k 1 $unimarc_doppioni_dir"/tesi_all.dup" > $unimarc_doppioni_dir"/tesi_all.dup.TABH.srt"
 
+	# echo "Order dups by TITLE/AUTHOR/HARVEST DATE/BID"
+ #    sort -T . -t\| -k 4 -k5 -k 1 -k 2 $unimarc_doppioni_dir"/tesi_all.dup" > $unimarc_doppioni_dir"/tesi_all.dup.TAHB.srt"
 
 	# echo "Find out how many thesis are duplicate and each count"
-	# uniq -f3 -c $unimarc_doppioni_dir"/tesi_all.dup.TABH.srt" | sort -n -k 1 > $unimarc_doppioni_dir"/tesi_all.dup.TABH.srt.unq.cnt"
+	# uniq -f3 -c $unimarc_doppioni_dir"/tesi_all.dup.TAHB.srt" | sort -n -k 1 > $unimarc_doppioni_dir"/tesi_all.dup.TAHB.srt.unq.cnt"
+
 	# echo "Get duplicate thesis count"
-	# uniq_dups=`cat $unimarc_doppioni_dir"/tesi_all.dup.TABH.srt.unq.cnt" | wc -l`
+	# uniq_dups=`cat $unimarc_doppioni_dir"/tesi_all.dup.TAHB.srt.unq.cnt" | wc -l`
 	# echo "Dupulicate thesis are: " $uniq_dups
+	# Dupulicate thesis are:  3951
 
 } # end elabora_mrk_all
 
